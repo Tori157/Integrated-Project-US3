@@ -24,7 +24,7 @@ function getStatusText(status) {
     case 'DONE':
       return 'Done'
     default:
-      return 'Unknown Status'
+      return 'No Status'
   }
 }
 </script>
