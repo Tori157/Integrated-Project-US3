@@ -1,4 +1,4 @@
-import HelloWorld from '../HelloWorld.vue'
+import HelloWorld from ''
 
 describe('HelloWorld', () => {
   it('playground', () => {
