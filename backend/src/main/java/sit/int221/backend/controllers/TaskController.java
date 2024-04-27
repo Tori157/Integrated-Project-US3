@@ -8,10 +8,12 @@ import sit.int221.backend.dtos.SimpleAllTaskDTO;
 import sit.int221.backend.entities.Task;
 import sit.int221.backend.services.ListMapper;
 import sit.int221.backend.services.TaskService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/v1/tasks")
 public class TaskController {
     @Autowired
