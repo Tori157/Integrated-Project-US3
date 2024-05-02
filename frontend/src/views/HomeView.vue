@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 const tasks = ref([])
 async function fetchData() {
   const response = await fetch('http://localhost:8080/v1/tasks')
-  
+
   const data = await response.json()
   console.log(data)
   return data

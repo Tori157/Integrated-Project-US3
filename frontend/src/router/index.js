@@ -25,22 +25,3 @@ const router = createRouter({
 })
 
 export default router
-
-// import { createRouter, createWebHistory } from 'vue-router'
-// import TaskModalDetail from '../components/TaskModalDetail.vue' // ปรับเปลี่ยนที่ตั้งไฟล์ตามโครงสร้างของโปรเจคของคุณ
-
-// const routes = [
-//   {
-//     path: '/task/:id',
-//     name: 'task-modaldetail',
-//     component: TaskModalDetail
-//   }
-//   // เพิ่มเส้นทางอื่น ๆ ตามต้องการ
-// ]
-
-// const router = createRouter({
-//   history: createWebHistory(),
-//   routes
-// })
-
-// export default router
