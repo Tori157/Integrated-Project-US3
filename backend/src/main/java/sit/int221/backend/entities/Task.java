@@ -2,6 +2,7 @@ package sit.int221.backend.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -12,6 +13,7 @@ import java.time.ZonedDateTime;
 @Table(name = "tasks")
 public class Task {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String title;
     private String description;
@@ -20,11 +22,9 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
-    @CreatedDate
-//    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss z")
+    @CreationTimestamp
     private ZonedDateTime createdOn;
 
     @UpdateTimestamp
-//    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss z")
     private ZonedDateTime updatedOn;
 }

@@ -32,6 +32,4 @@ public class ListMapper {
         page.setContent(mapList(source.getContent(), targetClass, modelMapper));
         return page;
     }
-
-
 }
