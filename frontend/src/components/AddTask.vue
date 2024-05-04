@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-
 const title = ref('')
 const description = ref('')
 const assignees = ref('')
@@ -10,13 +9,13 @@ const router = useRouter()
 
 const saveTask = async () => {
   const taskData = {
-    title: title.value,
-    description: description.value,
-    assignees: assignees.value,
+    title: title.value.trim(),
+    description: description.value.trim(),
+    assignees: assignees.value.trim(),
     status: status.value
   }
   try {
-    const response = await fetch('http://localhost:5173/v1/tasks', {
+    const response = await fetch('http://localhost:8080/v1/tasks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -24,7 +23,8 @@ const saveTask = async () => {
       body: JSON.stringify(taskData)
     })
     if (response.ok) {
-      router.push('/tasks') // Navigate back to tasks page
+      router.push('/task') // Navigate back to tasks page
+      
     } else {
       console.error('Failed to save task:', response.statusText)
     }
@@ -74,10 +74,10 @@ const saveTask = async () => {
             v-model="status"
             class="text-white mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option value="done">No Status</option>
-            <option value="todo">To Do</option>
-            <option value="doing">Doing</option>
-            <option value="done">Done</option>
+            <option value="NO_STATUS">No Status</option>
+            <option value="TO_DO">To Do</option>
+            <option value="DOING">Doing</option>
+            <option value="DONE">Done</option>
           </select>
         </div>
         <div class="flex mt-5 justify-center">

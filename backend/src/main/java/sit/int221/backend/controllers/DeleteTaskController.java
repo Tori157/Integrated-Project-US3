@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sit.int221.backend.dtos.AddEditTaskDTO;
 import sit.int221.backend.dtos.AllTaskDTO;
-import sit.int221.backend.entities.Task;
 import sit.int221.backend.exceptions.ErrorResponse;
 import sit.int221.backend.exceptions.ItemNotFoundException;
 import sit.int221.backend.services.ListMapper;
@@ -20,7 +18,7 @@ import java.time.Instant;
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/v1/tasks")
-public class TaskExController {
+public class DeleteTaskController {
     @Autowired
     private TaskService service;
     @Autowired
