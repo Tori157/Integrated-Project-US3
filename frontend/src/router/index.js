@@ -21,8 +21,13 @@ const router = createRouter({
         },
         {
           path: 'add',
-          name: 'task-addmodal', // Changed the name to 'task-addmodal'
+          name: 'task-addmodal',
           component: () => import('../components/AddTask.vue')
+        },
+        {
+          path: 'delete',
+          name: 'task-deletemodal',
+          component: () => import('../components/DeleteCard.vue')
         }
       ]
     }

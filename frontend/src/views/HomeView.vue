@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+// import { handleSaveClick } from '../components/AddTask.vue'
 const tasks = ref([])
-const modalVisible = ref(false)
 async function fetchData() {
   const response = await fetch('http://localhost:8080/v1/tasks')
 
@@ -28,11 +28,16 @@ function getStatusText(status) {
       return 'No Status'
   }
 }
-function toggleModal() {
-  modalVisible.value = !modalVisible.value
-}
+// const modalVisible = ref(false)
+// function toggleModal() {
+//   modalVisible.value = !modalVisible.value
+// }
+// const handleSaveClick = () => {
+//   modalVisible.value = !modalVisible.value
+//   console.log('Save button clicked!')
+// }
 </script>
-
+<!-- @click="toggleModal" -->
 <template>
   <div class="p-10 w-screen h-screen bg-gray-800">
     <div class="itbkk-us3 container mx-auto w-full max-w-screen-xl">
@@ -44,7 +49,11 @@ function toggleModal() {
         </h1>
       </div>
       <div class="flex justify-between items-center mx-auto max-w-lg">
-        <div class="bg-green-200 px-6 py-4 mx-2 my-4 mt-1 rounded-md text-lg flex items-center">
+        <!-- alert add success -->
+        <div
+          v-if="modalVisible"
+          class="bg-green-200 px-6 py-4 mx-2 my-4 mt-1 rounded-md text-lg flex items-center"
+        >
           <svg viewBox="0 0 24 24" class="text-green-600 w-5 h-5 sm:w-5 sm:h-5 mr-3">
             <path
               fill="currentColor"
@@ -53,8 +62,9 @@ function toggleModal() {
           </svg>
           <span class="text-green-800">The task has been successfully added.</span>
         </div>
+
         <button
-          class="itbkk-btn float-left px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center hover:bg-blue-600"
+          class="itbkk-btn absolute top-25 right-10 px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
           @click="$router.push({ name: 'task-addmodal' })"
         >
           Add Task
@@ -68,11 +78,8 @@ function toggleModal() {
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <tr>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
-
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Title</th>
-
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Assignees</th>
-
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
@@ -85,15 +92,10 @@ function toggleModal() {
               v-for="(task, index) in tasks"
               :key="index"
             >
-              <!-- <tr
-              class="itbkk-item bg-blue-100 border-blue-300 hover:bg-blue-200"
-              v-for="(task, index) in tasks"
-              :key="index"
-            > -->
               <!-- id -->
               <th class="itbkk-id px-6 py-4 text-base text-blue-600 font-medium">
-                {{ task.id }}
-                <!-- {{ index + 1 }} -->
+                <!-- {{ task.id }} -->
+                {{ index + 1 }}
               </th>
 
               <!-- Title -->
@@ -116,6 +118,7 @@ function toggleModal() {
 
               <td class="itbkk-status">
                 <div
+                  div
                   class="w-[115px] border-4 border-blue-100 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
                   :class="{
                     'bg-red-400': getStatusText(task.status) === 'No Status',
@@ -128,13 +131,13 @@ function toggleModal() {
                 </div>
               </td>
               <td>
-                <button @click="toggleModal">
-                  <img src="/image/ico/setting-5-svgrepo-com.svg" class="h-10 w-10 mt-4" />
+                <button onclick="">
+                  <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
                 </button>
               </td>
               <td>
-                <button @click="toggleModal">
-                  <img src="/image/ico/trash-xmark-svgrepo-com.svg" class="h-10 w-10 mt-4" />
+                <button @click="$router.push({ name: 'task-deletemodal' })">
+                  <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2" />
                 </button>
               </td>
             </tr>
@@ -150,30 +153,9 @@ function toggleModal() {
         </div>
       </div>
 
-      <div
-        v-if="modalVisible"
-        class="absolute left-0 right-0 m-auto bg-slate-50 flex h-1/6 w-1/6 shadow-lg rounded-md"
-      >
-        <div class="flex flex-col gap-10 justify-center mx-8 mt-2">
-          <h1 class="font-bold text-xl text-stone-600">Delete a Task</h1>
-          <h3 class="itbkk-message text-stone-600">
-            Do you want to delete the task {{ tasks.title }} ?
-          </h3>
-          <div class="flex flex-wrap justify-end">
-            <button class="itbkk-button-confirm px-6 py-0.5 text-green-700 rounded-lg">
-              Confirm
-            </button>
-            <button
-              @click="toggleModal"
-              class="itbkk-button-cancel px-6 py-0.5 text-red-700 rounded-lg"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
       <router-view />
-      <router-view name="modal" />
+      <router-view name="addmodal" />
+      <router-view name="deletemodal" :taskId="taskId" />
     </div>
   </div>
 </template>

@@ -1,10 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+// import {toggleModal} from '../views/HomeView.vue'
 const title = ref('')
 const description = ref('')
 const assignees = ref('')
-const status = ref('todo')
+const status = ref('NO_STATUS')
 const router = useRouter()
 
 const saveTask = async () => {
@@ -23,8 +24,7 @@ const saveTask = async () => {
       body: JSON.stringify(taskData)
     })
     if (response.ok) {
-      router.push('/task') // Navigate back to tasks page
-      
+      router.push('/task')
     } else {
       console.error('Failed to save task:', response.statusText)
     }
@@ -32,18 +32,23 @@ const saveTask = async () => {
     console.error('Error saving task:', error)
   }
 }
+// const handleSaveClick = () => {
+//   // ส่งค่าไปยัง HomeView.vue
+//   toggleModal()
+// }
 </script>
 
 <template>
   <div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
     <div class="bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
       <h2 class="text-xl font-bold mb-2 text-center text-20 text-black">Add Task</h2>
+
       <form @submit.prevent="saveTask">
         <div class="mb-6">
           <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
           <input
             type="text"
-            id="title"
+            id="itbkk-title"
             v-model="title"
             class="text-white mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
@@ -53,7 +58,7 @@ const saveTask = async () => {
             >Description</label
           >
           <textarea
-            id="description"
+            id="itbkk-description"
             v-model="description"
             class="text-white mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           ></textarea>
@@ -62,7 +67,7 @@ const saveTask = async () => {
           <label for="assignees" class="block text-sm font-medium text-gray-700">Assignees</label>
           <input
             type="text"
-            id="assignees"
+            id="itbkk-assignees"
             v-model="assignees"
             class="text-white mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
@@ -70,7 +75,7 @@ const saveTask = async () => {
         <div class="mb-4">
           <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
           <select
-            id="status"
+            id="itbkk-status"
             v-model="status"
             class="text-white mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
@@ -82,12 +87,23 @@ const saveTask = async () => {
         </div>
         <div class="flex mt-5 justify-center">
           <button
+            id="itbkk-button-confirm"
             type="submit"
+            v-if="title.trim().length > 0"
             class="bg-green-400 border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
           >
             Save
           </button>
+          <!-- <button
+            id="itbkk-button-confirm"
+            @click="handleSaveClick"
+            v-if="title.trim().length > 0"
+            class="bg-green-400 border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
+          >
+            Save
+          </button> -->
           <button
+            id="itbkk-button-cancle"
             type="button"
             @click="() => router.back()"
             class="bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
