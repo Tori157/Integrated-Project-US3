@@ -38,6 +38,12 @@ function getStatusText(status) {
         >
           IT-Bangmod Kradan Kanban
         </h1>
+        <button
+          class="itbkk-btn px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center hover:bg-blue-600"
+          @click="$router.push({ name: 'task-addmodal' })"
+        >
+          Add Task
+        </button>
       </div>
 
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -114,6 +120,7 @@ function getStatusText(status) {
         </div>
       </div>
       <router-view />
+      <router-view name="modal" />
     </div>
   </div>
 </template>

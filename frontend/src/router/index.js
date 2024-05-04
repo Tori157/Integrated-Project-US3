@@ -18,6 +18,11 @@ const router = createRouter({
           path: ':id',
           name: 'task-modaldetail',
           component: () => import('../views/TaskDetail.vue')
+        },
+        {
+          path: 'add',
+          name: 'task-addmodal', // Changed the name to 'task-addmodal'
+          component: () => import('../components/AddTask.vue')
         }
       ]
     }

@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @RestController
-@CrossOrigin(origins = "http://ip23us3.sit.kmutt.ac.th")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/v1/tasks")
 public class TaskExController {
     @Autowired
