@@ -5,8 +5,7 @@ const tasks = ref([])
 const modalVisible = ref(false)
 
 async function fetchData() {
-  const response = await fetch('http://localhost:8080/v1/tasks')
-
+  const response = await fetch('http://ip23us3.sit.kmutt.ac.th:8080/v1/tasks')
   const data = await response.json()
   console.log(data)
   return data
