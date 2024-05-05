@@ -105,8 +105,8 @@ function toggleModal() {
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Title</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Assignees</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
+              <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
+              <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
             </tr>
           </thead>
 
@@ -164,7 +164,7 @@ function toggleModal() {
                   @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
                 >
                   <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
-                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2" />
+                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-1.5" />
                   </router-link>
                 </button>
               </td>
@@ -180,7 +180,6 @@ function toggleModal() {
           </p>
         </div>
       </div>
-
       <router-view />
       <router-view name="addmodal" />
       <router-view name="deletemodal" :id="tasks.id" />
