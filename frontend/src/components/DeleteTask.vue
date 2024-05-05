@@ -72,9 +72,12 @@ function cancel() {
       <div class="mt-5 mb-5 p-6 pt-0 text-center bg-blue-100">
         <img src="/image/ico/alert-2-svgrepo-com.svg" class="w-20 h-20 mx-auto" />
 
-        <h3 class="itbkk-message text-xl font-normal text-gray-500 mt-5 mb-6">
+        <h3
+          class="itbkk-message text-xl font-bold text-gray-500 mt-5 mb-6 whitespace-normal break-words"
+        >
           Do you want to delete the task number {{ taskId }} - "{{ taskTitle }}"?
         </h3>
+
         <button
           @click="deleteTask(taskId)"
           class="itbkk-button-confirm mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"

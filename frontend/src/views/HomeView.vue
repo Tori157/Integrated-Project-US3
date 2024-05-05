@@ -98,15 +98,15 @@ function toggleModal() {
         class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-20"
       >
         <!-- table-fixed break-words border border-separate border-spacing-y-2 mb-16 -->
-        <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300 mt-5">
+        <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <tr>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Title</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Assignees</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
-              <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
-              <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
+              <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
+              <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
             </tr>
           </thead>
 
@@ -156,7 +156,7 @@ function toggleModal() {
               </td>
               <td>
                 <button onclick="">
-                  <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-20 mt-1" />
+                  <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
                 </button>
               </td>
               <td>
@@ -164,7 +164,7 @@ function toggleModal() {
                   @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
                 >
                   <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
-                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-10 mt-2" />
+                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2" />
                   </router-link>
                 </button>
               </td>
