@@ -18,10 +18,7 @@ async function fetchTask() {
     getTimezone() // Call setTimezone function here
   } catch (error) {
     console.error('Error fetching tasks:', error)
-    alert('The requested task does not exist')
-    setTimeout(() => {
-      router.push('/task')
-    }, 3000)
+    router.push('/error')
   }
 }
 
@@ -61,8 +58,6 @@ function formateDateTime(time) {
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
-
-
 </script>
 
 <template>

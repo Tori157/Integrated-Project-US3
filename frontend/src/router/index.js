@@ -30,6 +30,11 @@ const router = createRouter({
           component: () => import('../components/DeleteTask.vue')
         }
       ]
+    },
+    {
+      path: '/error',
+      name: 'task-error',
+      component: () => import('../views/NotFound.vue')
     }
   ]
 })

@@ -1,6 +1,6 @@
 <script setup>
 // import { onMounted, ref } from 'vue'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 
 const tasks = ref([])
 
@@ -31,16 +31,34 @@ function getStatusText(status) {
       return 'No Status'
   }
 }
+// const showAlert = ref(false)
+// function toggleModal() {
+//   showAlert.value = !showAlert.value
+// }
+
+// watch(tasks.value.length, (newTasks, oldTasks) => {
+//   if (newTasks.value.length > oldTasks.value.length) {
+//     toggleModal()
+//     console.log(tasks.value.length)
+//   }
+// })
 const showAlert = ref(false)
-function toggleModal() {
+const toggleModal = () => {
   showAlert.value = !showAlert.value
 }
 
-watch(tasks.value.length, (newTasks, oldTasks) => {
-  if (newTasks.value.length > oldTasks.value.length) {
-    toggleModal()
-    console.log(tasks.value.length)
-  }
+const handleTaskAdded = () => {
+  toggleModal()
+}
+// Listen for taskAdded event from Add Task component
+onMounted(() => {
+  // Listen for taskAdded event
+  window.addEventListener('taskAdded', handleTaskAdded)
+})
+
+onUnmounted(() => {
+  // Cleanup event listener
+  window.removeEventListener('taskAdded', handleTaskAdded)
 })
 </script>
 
@@ -187,6 +205,9 @@ watch(tasks.value.length, (newTasks, oldTasks) => {
             no tasks
           </p>
         </div>
+        <!-- <div>
+          <button @click="showToast">Show Toast</button>
+        </div> -->
       </div>
       <router-view />
       <router-view name="addmodal" />

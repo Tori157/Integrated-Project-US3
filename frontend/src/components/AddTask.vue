@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { defineEmits } from 'vue' // Import defineEmits
 const title = ref('')
 const description = ref('')
 const assignees = ref('')
@@ -26,7 +27,7 @@ const saveTask = async () => {
     })
     if (response.status === 200) {
       router.push('/task')
-
+      emits('taskAdded') // Now emit is recognized
       // setTimeout(function () {
       //   window.location.reload()
       // }, 200)
@@ -37,8 +38,6 @@ const saveTask = async () => {
     console.error('Error saving task:', error)
   }
 }
-
-
 </script>
 
 <template>

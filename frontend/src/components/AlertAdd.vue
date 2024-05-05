@@ -1,8 +1,23 @@
-<script></script>
+<script>
+import Vue from 'vue'
+import Toasted from 'vue-toasted'
+
+Vue.use(Toasted)
+export default {
+  methods: {
+    showToast() {
+      this.$toasted.show('Message', {
+        theme: 'toasted-primary', // สีของ Toast Modal
+        position: 'top-right', // ตำแหน่งของ Toast Modal
+        duration: 3000 // ระยะเวลาที่ Toast Modal จะแสดง (มิลลิวินาที)
+      })
+    }
+  }
+}
+</script>
 
 <template>
   <div
-    v-if="showAlert"
     class="itbkk-messege bg-green-200 mr-40 px-6 py-3 mx-2 my-4 rounded-md text-lg flex items-center mx-auto max-w-lg fixed top-5 right-20 z-50"
   >
     <svg viewBox="0 0 24 24" class="text-green-600 w-5 h-5 sm:w-5 sm:h-5 mr-3">
@@ -13,7 +28,6 @@
     </svg>
     <span class="text-green-800">The task has been successfully added.</span>
     <button
-      @click="toggleModal()"
       type="button"
       class="-mx-1.5 -my-1.5 bg-green-200 text-gray-400 hover:text-gray-700 rounded-full ml-1 focus:ring-1 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center h-8 w-8"
       data-dismiss-target="#toast-success"
