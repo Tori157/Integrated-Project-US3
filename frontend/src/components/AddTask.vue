@@ -7,6 +7,8 @@ const assignees = ref('')
 const status = ref('NO_STATUS')
 const router = useRouter()
 
+defineEmits(['taskAdded'])
+
 const saveTask = async () => {
   const taskData = {
     title: title.value.trim(),
@@ -24,9 +26,10 @@ const saveTask = async () => {
     })
     if (response.status === 200) {
       router.push('/task')
-      setTimeout(function () {
-        window.location.reload()
-      }, 200)
+
+      // setTimeout(function () {
+      //   window.location.reload()
+      // }, 200)
     } else {
       console.error('Failed to save task:', response.statusText)
     }
@@ -34,6 +37,8 @@ const saveTask = async () => {
     console.error('Error saving task:', error)
   }
 }
+
+
 </script>
 
 <template>
