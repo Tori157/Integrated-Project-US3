@@ -1,13 +1,29 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
 
 const tasks = ref([])
-
 const taskId = route.params.id
+const taskTitle = ref('')
+
+onMounted(async () => {
+  try {
+    const response = await fetch('http://localhost:8080/v1/tasks')
+    const data = await response.json()
+    tasks.value = data
+
+    // Set the task title based on the taskId
+    const task = tasks.value.find((task) => task.id === parseInt(taskId))
+    if (task) {
+      taskTitle.value = task.title
+    }
+  } catch (error) {
+    console.error('Error fetching tasks:', error)
+  }
+})
 
 async function deleteTask(taskId) {
   try {
@@ -19,8 +35,23 @@ async function deleteTask(taskId) {
       console.log('Task deleted successfully')
       tasks.value = tasks.value.filter((task) => task.id !== taskId)
       router.push('/task') // Redirect to task page after successful deletion
-    } else {
+      setTimeout(function () {
+        window.location.reload()
+      }, 200)
+    }
+    // if (res.status === 404) {
+    //   console.log('The task does not exist.')
+    //   router.push('/task')
+    //   setTimeout(function () {
+    //     window.location.reload()
+    //   }, 200)
+    // }
+    else {
       console.error('Failed to delete task')
+      router.push('/task')
+      setTimeout(function () {
+        window.location.reload()
+      }, 200)
     }
   } catch (error) {
     console.error('Error:', error)
@@ -35,14 +66,14 @@ function cancel() {
 <template>
   <div
     id="modelConfirm"
-    class="fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4 flex justify-center items-center"
+    class="fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4 flex justify-center items-center bg-blue-100"
   >
-    <div class="relative mx-auto shadow-xl rounded-md bg-white max-w-md">
-      <div class="p-6 pt-0 text-center">
-        <img src="/image/ico/alert-2-svgrepo-com.svg" class="mt-4 w-20 h-20 text-red-600 mx-auto" />
+    <div class="relative mx-auto shadow-xl rounded-md max-w-md bg-blue-100">
+      <div class="mt-5 mb-5 p-6 pt-0 text-center bg-blue-100">
+        <img src="/image/ico/alert-2-svgrepo-com.svg" class="w-20 h-20 mx-auto" />
 
         <h3 class="itbkk-message text-xl font-normal text-gray-500 mt-5 mb-6">
-          Do you want to delete the task number ""?
+          Do you want to delete the task number {{ taskId }} - "{{ taskTitle }}"?
         </h3>
         <button
           @click="deleteTask(taskId)"

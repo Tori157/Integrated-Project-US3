@@ -41,14 +41,52 @@ function getStatusText(status) {
       </div>
       <div class="flex justify-between items-center mx-auto max-w-lg">
         <!-- alert add success -->
-        <div class="bg-green-200 px-6 py-4 mx-2 my-4 mt-1 rounded-md text-lg flex items-center">
-          <svg viewBox="0 0 24 24" class="text-green-600 w-5 h-5 sm:w-5 sm:h-5 mr-3">
-            <path
+        <div
+        
+          id="toast-success"
+          class="flex items-center w-full max-w-xs p-2 mb-4 text-gray-500 rounded-lg shadow bg-white"
+          role="alert"
+        >
+          <div
+            class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
-              d="M12,0A12,12,0,1,0,24,12,12.014,12.014,0,0,0,12,0Zm6.927,8.2-6.845,9.289a1.011,1.011,0,0,1-1.43.188L5.764,13.769a1,1,0,1,1,1.25-1.562l4.076,3.261,6.227-8.451A1,1,0,1,1,18.927,8.2Z"
-            ></path>
-          </svg>
-          <span class="text-green-800">The task has been successfully added.</span>
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
+              />
+            </svg>
+            <span class="sr-only">Check icon</span>
+          </div>
+          <div class="ml-3 text-sm font-normal">The task has been successfully added.</div>
+          <button
+            type="button"
+            class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8"
+            data-dismiss-target="#toast-success"
+            aria-label="Close"
+          >
+            <span class="sr-only">Close</span>
+            <svg
+              class="w-3 h-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 14"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+              />
+            </svg>
+          </button>
         </div>
 
         <button
@@ -83,8 +121,8 @@ function getStatusText(status) {
             >
               <!-- id -->
               <th class="itbkk-id px-6 py-4 text-base text-blue-600 font-medium">
-                {{ task.id }}
-                <!-- {{ index + 1 }} -->
+                <!-- {{ task.id }} -->
+                {{ index + 1 }}
               </th>
 
               <!-- Title -->
@@ -126,11 +164,11 @@ function getStatusText(status) {
               </td>
               <td>
                 <button
-                  @click="$router.push({ name: 'task-deletemodal', params: { id: tasks.id } })"
+                  @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
                 >
-                  <router-link :to="{ name: 'task-deletemodal', params: { id: tasks.id } }">
-                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2"
-                  /></router-link>
+                  <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
+                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2" />
+                  </router-link>
                 </button>
               </td>
             </tr>

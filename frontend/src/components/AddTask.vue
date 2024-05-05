@@ -22,7 +22,7 @@ const saveTask = async () => {
       },
       body: JSON.stringify(taskData)
     })
-    if (response.ok) {
+    if (response.status === 200) {
       router.push('/task')
       setTimeout(function () {
         window.location.reload()

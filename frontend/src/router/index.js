@@ -25,7 +25,7 @@ const router = createRouter({
           component: () => import('../components/AddTask.vue')
         },
         {
-          path: 'delete',
+          path: ':id/delete',
           name: 'task-deletemodal',
           component: () => import('../components/DeleteCard.vue')
         }
