@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-// import { handleSaveClick } from '../components/AddTask.vue'
 const tasks = ref([])
 async function fetchData() {
   const response = await fetch('http://localhost:8080/v1/tasks')
@@ -28,16 +27,8 @@ function getStatusText(status) {
       return 'No Status'
   }
 }
-// const modalVisible = ref(false)
-// function toggleModal() {
-//   modalVisible.value = !modalVisible.value
-// }
-// const handleSaveClick = () => {
-//   modalVisible.value = !modalVisible.value
-//   console.log('Save button clicked!')
-// }
 </script>
-<!-- @click="toggleModal" -->
+
 <template>
   <div class="p-10 w-screen h-screen bg-gray-800">
     <div class="itbkk-us3 container mx-auto w-full max-w-screen-xl">
@@ -50,10 +41,7 @@ function getStatusText(status) {
       </div>
       <div class="flex justify-between items-center mx-auto max-w-lg">
         <!-- alert add success -->
-        <div
-          v-if="modalVisible"
-          class="bg-green-200 px-6 py-4 mx-2 my-4 mt-1 rounded-md text-lg flex items-center"
-        >
+        <div class="bg-green-200 px-6 py-4 mx-2 my-4 mt-1 rounded-md text-lg flex items-center">
           <svg viewBox="0 0 24 24" class="text-green-600 w-5 h-5 sm:w-5 sm:h-5 mr-3">
             <path
               fill="currentColor"
@@ -64,7 +52,7 @@ function getStatusText(status) {
         </div>
 
         <button
-          class="itbkk-btn absolute top-25 right-10 px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+          class="itbkk-btn absolute top-10 right-10 px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
           @click="$router.push({ name: 'task-addmodal' })"
         >
           Add Task
@@ -94,8 +82,8 @@ function getStatusText(status) {
             >
               <!-- id -->
               <th class="itbkk-id px-6 py-4 text-base text-blue-600 font-medium">
-                <!-- {{ task.id }} -->
-                {{ index + 1 }}
+                {{ task.id }}
+                <!-- {{ index + 1 }} -->
               </th>
 
               <!-- Title -->
@@ -136,7 +124,24 @@ function getStatusText(status) {
                 </button>
               </td>
               <td>
-                <button @click="$router.push({ name: 'task-deletemodal' })">
+                <!-- <button @click="$router.push({ id: task.id, task: task.title })">
+                  <router-link
+                    :to="{
+                      name: 'task-deletemodal',
+                      params: { id: task.id, task: task.title }
+                    }"
+                  >
+                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2"
+                  /></router-link>
+                </button> -->
+                <button
+                  @click="
+                    $router.push({
+                      name: 'task-deletemodal',
+                      params: { id: tasks.id, title: tasks.title }
+                    })
+                  "
+                >
                   <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2" />
                 </button>
               </td>
@@ -155,7 +160,7 @@ function getStatusText(status) {
 
       <router-view />
       <router-view name="addmodal" />
-      <router-view name="deletemodal" :taskId="taskId" />
+      <router-view name="deletemodal" :id="tasks.id" />
     </div>
   </div>
 </template>

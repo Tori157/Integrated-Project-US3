@@ -61,13 +61,6 @@ function formateDateTime(time) {
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
-
-const modal = document.getElementById('my_modal_3')
-window.addEventListener('click', function (event) {
-  if (event.target === modal) {
-    modal.style.display = 'none'
-  }
-})
 </script>
 
 <template>
