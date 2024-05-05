@@ -124,7 +124,7 @@ function getStatusText(status) {
                 </button>
               </td>
               <td>
-                <!-- <button @click="$router.push({ id: task.id, task: task.title })">
+                <button @click="$router.push({ id: task.id, task: task.title })">
                   <router-link
                     :to="{
                       name: 'task-deletemodal',
@@ -133,8 +133,8 @@ function getStatusText(status) {
                   >
                     <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2"
                   /></router-link>
-                </button> -->
-                <button
+                </button>
+                <!-- <button
                   @click="
                     $router.push({
                       name: 'task-deletemodal',
@@ -143,7 +143,7 @@ function getStatusText(status) {
                   "
                 >
                   <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2" />
-                </button>
+                </button> -->
               </td>
             </tr>
           </tbody>

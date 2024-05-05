@@ -1,8 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 
 const tasks = ref([])
 
@@ -16,6 +17,8 @@ async function fetchData() {
     return []
   }
 }
+
+const taskId = route.params.id
 
 onMounted(async () => {
   tasks.value = await fetchData()
@@ -50,11 +53,11 @@ function cancel() {
     <div class="flex flex-col gap-10 justify-center mx-8 mt-2">
       <h1 class="font-bold text-xl text-stone-600">Delete a Task</h1>
       <h3 class="itbkk-message text-stone-600">
-        Do you want to delete the task "{{ $route.params.title }}"?
+        Do you want to delete the task "{{ route.params.title }}"?
       </h3>
       <div class="flex flex-wrap justify-end">
         <button
-          @click="deleteTask($route.params.id)"
+          @click="deleteTask(taskId)"
           class="itbkk-button-confirm px-6 py-0.5 text-green-700 rounded-lg"
         >
           Confirm
