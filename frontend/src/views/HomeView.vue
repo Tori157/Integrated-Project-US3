@@ -1,6 +1,6 @@
 <script setup>
 // import { onMounted, ref } from 'vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const tasks = ref([])
 
@@ -14,6 +14,7 @@ async function fetchData() {
 onMounted(async () => {
   const data = await fetchData()
   tasks.value = data
+  console.log(tasks.value.length)
 })
 
 function getStatusText(status) {
@@ -30,11 +31,17 @@ function getStatusText(status) {
       return 'No Status'
   }
 }
-
-const showAlert = ref(true)
+const showAlert = ref(false)
 function toggleModal() {
   showAlert.value = !showAlert.value
 }
+
+watch(tasks.value.length, (newTasks, oldTasks) => {
+  if (newTasks.value.length > oldTasks.value.length) {
+    toggleModal()
+    console.log(tasks.value.length)
+  }
+})
 </script>
 
 <template>
@@ -50,6 +57,7 @@ function toggleModal() {
       <div class="flex justify-between items-center mx-auto max-w-lg">
         <!-- alert add success -->
         <div
+          id="toast-success"
           v-if="showAlert"
           class="bg-green-200 mr-40 px-6 py-3 mx-2 my-4 rounded-md text-lg flex items-center mx-auto max-w-lg fixed top-5 right-20 z-50"
         >
@@ -155,7 +163,7 @@ function toggleModal() {
                 </div>
               </td>
               <td>
-                <button onclick="">
+                <button onclick="toggleModal()">
                   <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
                 </button>
               </td>

@@ -1,9 +1,9 @@
-<script setup></script>
+<script></script>
 
 <template>
   <div
     v-if="showAlert"
-    class="bg-green-200 mr-40 px-6 py-3 mx-2 my-4 rounded-md text-lg flex items-center mx-auto max-w-lg fixed top-5 right-20 z-50"
+    class="itbkk-messege bg-green-200 mr-40 px-6 py-3 mx-2 my-4 rounded-md text-lg flex items-center mx-auto max-w-lg fixed top-5 right-20 z-50"
   >
     <svg viewBox="0 0 24 24" class="text-green-600 w-5 h-5 sm:w-5 sm:h-5 mr-3">
       <path
