@@ -60,8 +60,9 @@ function getStatusText(status) {
       </div>
 
       <div
-        class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-auto mx-auto ml-0"
+        class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1350px] mx-auto ml-0 my-auto"
       >
+        <!-- table-fixed break-words border border-separate border-spacing-y-2 mb-16 -->
         <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <tr>
@@ -124,26 +125,13 @@ function getStatusText(status) {
                 </button>
               </td>
               <td>
-                <button @click="$router.push({ id: task.id, task: task.title })">
-                  <router-link
-                    :to="{
-                      name: 'task-deletemodal',
-                      params: { id: task.id, task: task.title }
-                    }"
-                  >
+                <button
+                  @click="$router.push({ name: 'task-deletemodal', params: { id: tasks.id } })"
+                >
+                  <router-link :to="{ name: 'task-deletemodal', params: { id: tasks.id } }">
                     <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2"
                   /></router-link>
                 </button>
-                <!-- <button
-                  @click="
-                    $router.push({
-                      name: 'task-deletemodal',
-                      params: { id: tasks.id, title: tasks.title }
-                    })
-                  "
-                >
-                  <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2" />
-                </button> -->
               </td>
             </tr>
           </tbody>

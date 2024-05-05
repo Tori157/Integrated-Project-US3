@@ -61,6 +61,8 @@ function formateDateTime(time) {
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
+
+
 </script>
 
 <template>

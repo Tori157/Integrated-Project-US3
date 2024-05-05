@@ -6,7 +6,6 @@ const description = ref('')
 const assignees = ref('')
 const status = ref('NO_STATUS')
 const router = useRouter()
-// const onTaskAdded = () => {}
 
 const saveTask = async () => {
   const taskData = {
@@ -25,7 +24,9 @@ const saveTask = async () => {
     })
     if (response.ok) {
       router.push('/task')
-      // onTaskAdded()
+      setTimeout(function () {
+        window.location.reload()
+      }, 200)
     } else {
       console.error('Failed to save task:', response.statusText)
     }
@@ -109,7 +110,7 @@ const saveTask = async () => {
           <button
             id="itbkk-button-cancle"
             type="button"
-            @click="() => router.back()"
+            @click="() => router.push('/task')"
             class="bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel
