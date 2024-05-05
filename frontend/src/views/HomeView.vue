@@ -31,7 +31,7 @@ function getStatusText(status) {
   }
 }
 
-const showAlert = ref(false)
+const showAlert = ref(true)
 function toggleModal() {
   showAlert.value = !showAlert.value
 }
@@ -39,7 +39,7 @@ function toggleModal() {
 
 <template>
   <div class="p-10 w-screen h-screen bg-gray-800">
-    <div class="itbkk-us3 container mx-auto w-full max-w-screen-xl">
+    <div class="itbkk-us3 container mx-auto w-full max-w-screen-xl ml-40">
       <div class="flex justify-between items-center mb-4">
         <h1
           class="mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r to-emerald-400 from-sky-400"
@@ -98,15 +98,15 @@ function toggleModal() {
         class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-20"
       >
         <!-- table-fixed break-words border border-separate border-spacing-y-2 mb-16 -->
-        <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
+        <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300 mt-5">
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <tr>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Title</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Assignees</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
+              <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
+              <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
             </tr>
           </thead>
 
@@ -156,7 +156,7 @@ function toggleModal() {
               </td>
               <td>
                 <button onclick="">
-                  <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
+                  <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-20 mt-1" />
                 </button>
               </td>
               <td>
@@ -164,7 +164,7 @@ function toggleModal() {
                   @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
                 >
                   <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
-                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-2" />
+                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-10 mt-2" />
                   </router-link>
                 </button>
               </td>
