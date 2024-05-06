@@ -1,14 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { defineEmits } from 'vue' // Import defineEmits
+
 const title = ref('')
 const description = ref('')
 const assignees = ref('')
 const status = ref('NO_STATUS')
 const router = useRouter()
-
-defineEmits(['taskAdded'])
 
 const saveTask = async () => {
   const taskData = {
@@ -27,10 +25,18 @@ const saveTask = async () => {
     })
     if (response.status === 200) {
       router.push('/task')
-      emits('taskAdded') // Now emit is recognized
-      // setTimeout(function () {
-      //   window.location.reload()
-      // }, 200)
+      // Alert
+      const toastDiv = document.createElement('div')
+      toastDiv.className = 'toast toast-top toast-end z-50'
+      const alertSuccessDiv = document.createElement('div')
+      alertSuccessDiv.className = 'alert alert-success'
+      alertSuccessDiv.innerHTML = '<span>The task has been successfully added.</span>'
+      toastDiv.appendChild(alertSuccessDiv)
+      document.body.appendChild(toastDiv)
+
+      setTimeout(function () {
+        window.location.reload()
+      }, 2000)
     } else {
       console.error('Failed to save task:', response.statusText)
     }

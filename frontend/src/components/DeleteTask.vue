@@ -15,7 +15,6 @@ onMounted(async () => {
     const data = await response.json()
     tasks.value = data
 
-    // Set the task title based on the taskId
     const task = tasks.value.find((task) => task.id === parseInt(taskId))
     if (task) {
       taskTitle.value = task.title
@@ -34,10 +33,23 @@ async function deleteTask(taskId) {
     if (res.status === 200) {
       console.log('Task deleted successfully')
       tasks.value = tasks.value.filter((task) => task.id !== taskId)
-      router.push('/task') // Redirect to task page after successful deletion
+      router.push('/task')
+
+      console.error('Failed to delete task')
+      const toastDiv = document.createElement('div')
+      toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
+      const alertSuccessDiv = document.createElement('div')
+      alertSuccessDiv.className = 'alert alert-success'
+      alertSuccessDiv.innerHTML =
+        '<span>The task has been deleted. <i class="fas fa-times"></i></span>' // ไอคอนลบ
+      alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
+      alertSuccessDiv.style.color = 'white' // สีข้อความ
+      toastDiv.appendChild(alertSuccessDiv)
+      document.body.appendChild(toastDiv)
+      document.body.appendChild(toastDiv)
       setTimeout(function () {
         window.location.reload()
-      }, 200)
+      }, 2000)
     }
     // if (res.status === 404) {
     //   console.log('The task does not exist.')
@@ -48,10 +60,22 @@ async function deleteTask(taskId) {
     // }
     else {
       console.error('Failed to delete task')
+      const toastDiv = document.createElement('div')
+      toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
+      const alertSuccessDiv = document.createElement('div')
+      alertSuccessDiv.className = 'alert alert-danger'
+      alertSuccessDiv.innerHTML = '<span>Failed to delete task.</span>'
+      alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
+      alertSuccessDiv.style.color = 'white' // สีข้อความ
+      toastDiv.appendChild(alertSuccessDiv)
+      document.body.appendChild(toastDiv)
+      setTimeout(function () {
+        window.location.reload()
+      }, 2000)
       router.push('/task')
       setTimeout(function () {
         window.location.reload()
-      }, 200)
+      }, 2000)
     }
   } catch (error) {
     console.error('Error:', error)

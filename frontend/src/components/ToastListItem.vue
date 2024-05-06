@@ -1,5 +1,4 @@
-<script></script>
-
+<script setup></script>
 <template>
   <div
     id="toast-success"
@@ -13,7 +12,6 @@
     </svg>
     <span class="text-green-800">The task has been successfully added.</span>
     <button
-      @click="toggleModal()"
       type="button"
       class="-mx-1.5 -my-1.5 bg-green-200 text-gray-400 hover:text-gray-700 rounded-full ml-1 focus:ring-1 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center h-8 w-8"
       data-dismiss-target="#toast-success"
