@@ -12,10 +12,29 @@ const router = createRouter({
     {
       path: '/task',
       name: 'tasks',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/HomeView.vue')
+      component: () => import('../views/HomeView.vue'),
+      children: [
+        {
+          path: ':id',
+          name: 'task-modaldetail',
+          component: () => import('../views/TaskDetail.vue')
+        },
+        {
+          path: 'add',
+          name: 'task-addmodal',
+          component: () => import('../components/AddTask.vue')
+        },
+        {
+          path: ':id/delete',
+          name: 'task-deletemodal',
+          component: () => import('../components/DeleteTask.vue')
+        }
+      ]
+    },
+    {
+      path: '/error',
+      name: 'task-error',
+      component: () => import('../views/NotFound.vue')
     }
   ]
 })
