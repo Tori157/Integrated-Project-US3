@@ -31,6 +31,17 @@ const saveTask = async () => {
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
       alertSuccessDiv.innerHTML = '<span>The task has been successfully added.</span>'
+      alertSuccessDiv.style.backgroundColor = 'green' // สีพื้นหลัง
+      alertSuccessDiv.style.color = 'white' // สีข้อความ
+
+      // เพิ่มปุ่ม "ปิด" เพื่อปิด Toast
+      const closeButton = document.createElement('button')
+      closeButton.innerText = 'Close'
+      closeButton.onclick = function () {
+        document.body.removeChild(toastDiv)
+      }
+      alertSuccessDiv.appendChild(closeButton)
+
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 

@@ -34,49 +34,90 @@ async function deleteTask(taskId) {
       console.log('Task deleted successfully')
       tasks.value = tasks.value.filter((task) => task.id !== taskId)
       router.push('/task')
-
+      // alert
       console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
+      toastDiv.className = 'toast toast-top toast-end' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML =
-        '<span>The task has been deleted. <i class="fas fa-times"></i></span>' // ไอคอนลบ
+      alertSuccessDiv.innerHTML = '<span>The task has been deleted.</span>'
       alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
+
+      // เพิ่มปุ่ม "ปิด" เพื่อปิด Toast
+      const closeButton = document.createElement('button')
+      closeButton.innerText = 'Close'
+      closeButton.onclick = function () {
+        document.body.removeChild(toastDiv)
+      }
+      alertSuccessDiv.appendChild(closeButton)
+
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
-      document.body.appendChild(toastDiv)
+
+      // reload
       setTimeout(function () {
         window.location.reload()
       }, 2000)
     }
-    // if (res.status === 404) {
-    //   console.log('The task does not exist.')
-    //   router.push('/task')
-    //   setTimeout(function () {
-    //     window.location.reload()
-    //   }, 200)
-    // }
-    else {
+    if (res.status === 404) {
+      console.log('The task does not exist.')
+      console.error('Failed to delete task')
+      // const toastDiv = document.createElement('div')
+      // toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
+      // const alertSuccessDiv = document.createElement('div')
+      // alertSuccessDiv.className = 'alert alert-success'
+      // alertSuccessDiv.innerHTML = '<span>The task does not exist.</span>'
+      // alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
+      // alertSuccessDiv.style.color = 'white' // สีข้อความ
+      // toastDiv.appendChild(alertSuccessDiv)
+      // document.body.appendChild(toastDiv)
+      // document.body.appendChild(toastDiv)
+
       console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
+      toastDiv.className = 'toast toast-top toast-end' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-danger'
+      alertSuccessDiv.className = 'alert alert-success'
       alertSuccessDiv.innerHTML = '<span>Failed to delete task.</span>'
-      alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
+      alertSuccessDiv.style.backgroundColor = 'orange' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
+
+      // เพิ่มปุ่ม "ปิด" เพื่อปิด Toast
+      const closeButton = document.createElement('button')
+      closeButton.innerText = 'Close'
+      closeButton.onclick = function () {
+        document.body.removeChild(toastDiv)
+      }
+      alertSuccessDiv.appendChild(closeButton)
+
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
-      setTimeout(function () {
-        window.location.reload()
-      }, 2000)
+
       router.push('/task')
       setTimeout(function () {
         window.location.reload()
       }, 2000)
     }
+    // else {
+    //   console.error('Failed to delete task')
+    //   const toastDiv = document.createElement('div')
+    //   toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
+    //   const alertSuccessDiv = document.createElement('div')
+    //   alertSuccessDiv.className = 'alert alert-danger'
+    //   alertSuccessDiv.innerHTML = '<span>Failed to delete task.</span>'
+    //   alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
+    //   alertSuccessDiv.style.color = 'white' // สีข้อความ
+    //   toastDiv.appendChild(alertSuccessDiv)
+    //   document.body.appendChild(toastDiv)
+    //   setTimeout(function () {
+    //     window.location.reload()
+    //   }, 2000)
+    //   router.push('/task')
+    //   setTimeout(function () {
+    //     window.location.reload()
+    //   }, 2000)
+    // }
   } catch (error) {
     console.error('Error:', error)
   }
