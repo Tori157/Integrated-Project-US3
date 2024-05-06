@@ -79,7 +79,7 @@ async function deleteTask(taskId) {
       toastDiv.className = 'toast toast-top toast-end' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>Failed to delete task.</span>'
+      alertSuccessDiv.innerHTML = '<span>The task does not exist.</span>'
       alertSuccessDiv.style.backgroundColor = 'orange' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
 
