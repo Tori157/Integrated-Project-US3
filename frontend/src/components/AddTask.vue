@@ -23,7 +23,7 @@ const saveTask = async () => {
       },
       body: JSON.stringify(taskData)
     })
-    if (response.status === 200) {
+    if (response.status === 201) {
       router.push('/task')
       // Alert
       const toastDiv = document.createElement('div')
@@ -106,7 +106,7 @@ const saveTask = async () => {
           </select>
         </div>
         <div class="flex mt-5 justify-center">
-          <button
+          <!-- <button
             id="itbkk-button-confirm"
             type="submit"
             v-if="title.trim().length > 0"
@@ -114,20 +114,37 @@ const saveTask = async () => {
             class="bg-green-400 border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
           >
             Save
-          </button>
-          <!-- <button
-            id="itbkk-button-confirm"
-            @click="handleSaveClick"
-            v-if="title.trim().length > 0"
-            class="bg-green-400 border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
-          >
-            Save
           </button> -->
           <button
-            id="itbkk-button-cancle"
+            id="itbkk-button-confirm"
+            type="submit"
+            :disabled="title.trim().length === 0"
+            @click="toggleModal"
+            class="itbkk-button-confirm"
+            :class="[
+              'border-4',
+              'border-white',
+              'rounded-3xl',
+              'mx-5',
+              'p-8',
+              'px-7',
+              'py-2',
+              'text-base',
+              'text-white',
+              'font-semibold',
+              'text-center',
+              title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
+              title.trim().length === 0 ? 'disabled' : ''
+            ]"
+          >
+            Save
+          </button>
+
+          <button
+            id="itbkk-button-cancel"
             type="button"
             @click="() => router.push('/task')"
-            class="bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
+            class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel
           </button>
