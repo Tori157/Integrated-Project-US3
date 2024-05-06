@@ -18,8 +18,23 @@ const router = createRouter({
           path: ':id',
           name: 'task-modaldetail',
           component: () => import('../views/TaskDetail.vue')
+        },
+        {
+          path: 'add',
+          name: 'task-addmodal',
+          component: () => import('../components/AddTask.vue')
+        },
+        {
+          path: ':id/delete',
+          name: 'task-deletemodal',
+          component: () => import('../components/DeleteTask.vue')
         }
       ]
+    },
+    {
+      path: '/error',
+      name: 'task-error',
+      component: () => import('../views/NotFound.vue')
     }
   ]
 })

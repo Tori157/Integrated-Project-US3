@@ -18,10 +18,7 @@ async function fetchTask() {
     getTimezone() // Call setTimezone function here
   } catch (error) {
     console.error('Error fetching tasks:', error)
-    alert('The requested task does not exist')
-    setTimeout(() => {
-      router.push('/task')
-    }, 3000)
+    router.push('/error')
   }
 }
 
@@ -65,89 +62,82 @@ function getTimezone() {
 
 <template>
   <div
-    v-if="tasks && Object.keys(tasks).length !== 0"
     class="absolute top-0 left-0 backdrop-blur-sm"
+    v-if="tasks && Object.keys(tasks).length !== 0"
   >
     <div id="my_modal_2" class="flex items-center justify-center w-screen h-screen">
-      <div class="flex h-max w-max bg-blue-100 rounded-xl border-2 border-slate-600">
+      <div
+        id="my_modal_3"
+        class="flex h-max w-max bg-blue-100 rounded-xl border-2 border-slate-600"
+      >
         <div class="l-zone w-max">
           <div
-            class="itbkk-title text-16px ml-10 mt-10 flex justify-between items-center p-5 bg-white w-96 rounded-xl text-slate-600 overflow-auto"
+            class="itbkk-title ml-10 mt-10 items-center p-5 break-words bg-white w-96 rounded-xl text-sm text-blue-600 font-normal h-22"
           >
             {{ tasks.title }}
           </div>
+
           <div class="ml-10 mt-4">
-            <h2 class="w-max text-slate-600">Description:</h2>
-            <textarea
-              class="itbkk-description h-64 bg-white rounded-xl w-96 mt-2 text-sm p-4"
-              :class="!tasks.description ? 'text-[grey] italic' : 'text-slate-600'"
-              :value="tasks.description || 'Unassigned'"
-              @input="tasks.description = $event.target.value"
-              v-show="tasks.description || tasks.description === ''"
-            >
-            </textarea>
+            <h2 class="w-max text-base text-rose-400 font-medium">Description:</h2>
             <div
-              :class="!tasks.description ? 'text-[grey] italic' : 'text-slate-600'"
-              class="itbkk-description hidden"
+              class="itbkk-description break-words bg-white rounded-xl mt-2 text-sm p-5 mb-10 w-96 h-64"
+              :class="!tasks.description ? 'text-[grey] italic' : 'text-blue-600'"
             >
-              {{ tasks.description || 'No Description Provided' }}
+              {{ tasks.description.trim() || 'No Description Provided' }}
             </div>
           </div>
         </div>
 
         <div class="r-zone m-10">
-          <div class="text-slate-600">Assigness:</div>
-          <textarea
-            class="itbkk-assignees mt-3 h-44 w-full bg-white rounded-xl mb-2 text-sm p-4"
-            :class="!tasks.assignees ? 'text-[grey] italic' : 'text-slate-600'"
-            :value="tasks.assignees || 'Unassigned'"
-            @input="tasks.assignees = $event.target.value"
-            v-show="tasks.assignees || tasks.assignees === ''"
+          <div class="text-base text-rose-400 font-medium">Assigness:</div>
+          <div
+            class="itbkk-assignees break-words bg-white rounded-xl mt-2 text-sm p-4 mb-8"
+            :class="!tasks.assignees ? 'text-[grey] italic' : 'text-blue-600'"
           >
-          </textarea>
+            {{ tasks.assignees || 'Unassigned' }}
+          </div>
 
-          <div class="text-slate-600">Status:</div>
-          <select
-            class="itbkk-status mt-2 bg-white rounded-lg w-24 ml-2 h-max text-slate-600 border border-slate-600 hover:bg-white"
+          <div class="text-base text-rose-400 font-medium">Status:</div>
+          <div
+            class="itbkk-status break-words bg-white rounded-lg mt-2 h-max text-blue-600 text-center h-10 p-2 mb-8"
           >
-            <option value=" ">{{ getStatusText(tasks.status) }}</option>
-            <option value="nostatus">No Status</option>
-            <option value="todo">To Do</option>
-            <option value="doing">Doing</option>
-            <option value="done">Done</option>
-          </select>
+            {{ getStatusText(tasks.status) }}
+          </div>
 
-          <div class="itbkk-timezone mt-4 mb-2 text-slate-600 text-sm">
-            Timezone : {{ getTimezone(tasks.timezone) }}
+          <div class="itbkk-timezone mt-6 mb-3 ml-2 text-sm text-blue-600 font-normal">
+            <span class="text-base text-rose-400 font-medium">Timezone :</span>
+            {{ getTimezone(tasks.timezone) }}
           </div>
-          <div class="itbkk-created-on mb-2 text-slate-600 text-sm">
-            Create On: {{ formateDateTime(tasks.createdOn) }}
+
+          <div class="itbkk-created-on mb-3 ml-2 text-sm text-blue-600 font-normal">
+            <span class="text-base text-rose-400 font-medium">Create On :</span>
+            {{ formateDateTime(tasks.createdOn).replace(/,/g, '') }}
           </div>
-          <div class="itbkk-updated-on mb-2 text-slate-600 text-sm">
-            Update On: {{ formateDateTime(tasks.updatedOn) }}
+
+          <div class="itbkk-updated-on mb-8 ml-2 text-sm text-blue-600 font-normal">
+            <span class="text-base text-rose-400 font-medium">Update On :</span>
+            {{ formateDateTime(tasks.updatedOn).replace(/,/g, '') }}
           </div>
+
           <div class="flex">
-            <form method="dialog" class="modal-backdrop">
-              <button>close</button>
-            </form>
-            <div class="modal-action">
-              <form method="dialog" class="flex">
-                <button
+            <form method="dialog" class="flex">
+              <!-- <button
                   class="itbkk-button btn mr-6 bg-green-500 hover:bg-green-600 w-max h-5 border-solid text-slate-600 border-4 border-white rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center"
                 >
                   Save
-                </button>
-                <button
-                  class="itbkk-button btn bg-red-400 hover:bg-red-500 w-max h-5 border-solid text-slate-600 border-4 border-white rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center"
-                  @click="() => router.back()"
-                >
-                  Close
-                </button>
-              </form>
-            </div>
+                </button> -->
+
+              <button
+                class="itbkk-button btn mr-6 bg-green-500 hover:bg-green-600 border-4 border-white hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
+                @click="() => router.back()"
+              >
+                OK
+              </button>
+            </form>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- </div> -->
 </template>
