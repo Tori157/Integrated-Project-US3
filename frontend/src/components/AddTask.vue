@@ -27,25 +27,20 @@ const saveTask = async () => {
       router.push('/task')
       // Alert
       const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-end z-50'
+      toastDiv.className = 'toast toast-top toast-center z-50'
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
       alertSuccessDiv.innerHTML = '<span>The task has been successfully added.</span>'
-      alertSuccessDiv.style.backgroundColor = 'green' // สีพื้นหลัง
+      alertSuccessDiv.style.backgroundColor = 'rgb(34 197 94)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
-
-      // เพิ่มปุ่ม "ปิด" เพื่อปิด Toast
-      const closeButton = document.createElement('button')
-      closeButton.innerText = 'Close'
-      closeButton.onclick = function () {
-        document.body.removeChild(toastDiv)
-      }
-      alertSuccessDiv.appendChild(closeButton)
+      alertSuccessDiv.style.textAlign = 'center'; // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex'; // ให้เนื้อหาอยู่ตรงกลาง
 
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
       setTimeout(function () {
+        document.body.removeChild(toastDiv);
         window.location.reload()
       }, 2000)
     } else {
@@ -64,46 +59,24 @@ const saveTask = async () => {
 
       <form @submit.prevent="saveTask">
         <div class="mb-6">
-          <label for="title" class="text-rose-400 block text-sm font-medium text-gray-700"
-            >Title</label
-          >
-          <input
-            type="text"
-            id="itbkk-title"
-            v-model="title"
-            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+          <label for="title" class="text-rose-400 block text-sm font-medium text-gray-700">Title</label>
+          <input type="text" id="itbkk-title" v-model="title"
+            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
         </div>
         <div class="mb-4">
-          <label for="description" class="text-rose-400 block text-sm font-medium text-gray-700"
-            >Description</label
-          >
-          <textarea
-            id="itbkk-description"
-            v-model="description"
-            class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          ></textarea>
+          <label for="description" class="text-rose-400 block text-sm font-medium text-gray-700">Description</label>
+          <textarea id="itbkk-description" v-model="description"
+            class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
         </div>
         <div class="mb-4">
-          <label for="assignees" class="text-rose-400 block text-sm font-medium text-gray-700"
-            >Assignees</label
-          >
-          <input
-            type="text"
-            id="itbkk-assignees"
-            v-model="assignees"
-            class="bg-white text-blue-600 mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          />
+          <label for="assignees" class="text-rose-400 block text-sm font-medium text-gray-700">Assignees</label>
+          <input type="text" id="itbkk-assignees" v-model="assignees"
+            class="bg-white text-blue-600 mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
         </div>
         <div class="mb-4">
-          <label for="status" class="text-rose-400 block text-sm font-medium text-gray-700"
-            >Status</label
-          >
-          <select
-            id="itbkk-status"
-            v-model="status"
-            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          >
+          <label for="status" class="text-rose-400 block text-sm font-medium text-gray-700">Status</label>
+          <select id="itbkk-status" v-model="status"
+            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             <option value="NO_STATUS">No Status</option>
             <option value="TO_DO">To Do</option>
             <option value="DOING">Doing</option>
@@ -111,13 +84,8 @@ const saveTask = async () => {
           </select>
         </div>
         <div class="flex mt-5 justify-center">
-          <button
-            id="itbkk-button-confirm"
-            type="submit"
-            v-if="title.trim().length > 0"
-            @click="toggleModal"
-            class="bg-green-400 border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
-          >
+          <button id="itbkk-button-confirm" type="submit" v-if="title.trim().length > 0" @click="toggleModal"
+            class="bg-green-400 border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center">
             Save
           </button>
           <!-- <button
@@ -128,12 +96,8 @@ const saveTask = async () => {
           >
             Save
           </button> -->
-          <button
-            id="itbkk-button-cancle"
-            type="button"
-            @click="() => router.push('/task')"
-            class="bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
-          >
+          <button id="itbkk-button-cancle" type="button" @click="() => router.push('/task')"
+            class="bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center">
             Cancel
           </button>
         </div>

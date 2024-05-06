@@ -113,7 +113,7 @@ onUnmounted(() => {
         </div>
 
         <button
-          class="itbkk-btn absolute top-10 right-10 px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+          class="itbkk-button-add absolute top-10 right-20 px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
           @click="$router.push({ name: 'task-addmodal' })"
         >
           Add Task
@@ -121,7 +121,7 @@ onUnmounted(() => {
       </div>
 
       <div
-        class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-20"
+        class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-22 "
       >
         <!-- table-fixed break-words border border-separate border-spacing-y-2 mb-16 -->
         <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
@@ -186,7 +186,7 @@ onUnmounted(() => {
                 </button>
               </td>
               <td>
-                <button
+                <button class="itbkk-button-action"
                   @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
                 >
                   <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
@@ -215,3 +215,4 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
+

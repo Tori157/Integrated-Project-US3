@@ -37,26 +37,21 @@ async function deleteTask(taskId) {
       // alert
       console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-end' // ตำเเหน่ง
+      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
       alertSuccessDiv.innerHTML = '<span>The task has been deleted.</span>'
-      alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
+      alertSuccessDiv.style.backgroundColor = 'rgb(244 63 94)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
-
-      // เพิ่มปุ่ม "ปิด" เพื่อปิด Toast
-      const closeButton = document.createElement('button')
-      closeButton.innerText = 'Close'
-      closeButton.onclick = function () {
-        document.body.removeChild(toastDiv)
-      }
-      alertSuccessDiv.appendChild(closeButton)
+      alertSuccessDiv.style.textAlign = 'center'; // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex'; // ให้เนื้อหาอยู่ตรงกลาง
 
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
       // reload
       setTimeout(function () {
+        document.body.removeChild(toastDiv);
         window.location.reload()
       }, 2000)
     }
@@ -76,26 +71,22 @@ async function deleteTask(taskId) {
 
       console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-end' // ตำเเหน่ง
+      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
       alertSuccessDiv.innerHTML = '<span>The task does not exist.</span>'
-      alertSuccessDiv.style.backgroundColor = 'orange' // สีพื้นหลัง
+      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
-
-      // เพิ่มปุ่ม "ปิด" เพื่อปิด Toast
-      const closeButton = document.createElement('button')
-      closeButton.innerText = 'Close'
-      closeButton.onclick = function () {
-        document.body.removeChild(toastDiv)
-      }
-      alertSuccessDiv.appendChild(closeButton)
+      alertSuccessDiv.style.textAlign = 'center'; // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex'; // ให้เนื้อหาอยู่ตรงกลาง
+      
 
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
       router.push('/task')
       setTimeout(function () {
+        document.body.removeChild(toastDiv);
         window.location.reload()
       }, 2000)
     }
@@ -144,8 +135,9 @@ function cancel() {
         </h3>
 
         <button
+        class="itbkk-button-delete mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"
           @click="deleteTask(taskId)"
-          class="itbkk-button-confirm mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"
+          
         >
           Confirm
         </button>
