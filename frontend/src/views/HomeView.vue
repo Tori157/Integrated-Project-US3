@@ -63,6 +63,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+  
   <div class="p-10 w-screen h-screen bg-gray-800">
     <div class="itbkk-us3 container mx-auto w-full max-w-screen-xl ml-40">
       <div class="flex justify-between items-center mb-4">
@@ -209,10 +210,22 @@ onUnmounted(() => {
           <button @click="showToast">Show Toast</button>
         </div> -->
       </div>
+      <div>
+        <button @click="toggleModal"><img src="/image/ico/trash-xmark-svgrepo-com.svg" class="h-10 w-10 mt-4"></button>
+      </div>
+      <div v-if="modalVisible" class="absolute left-0 right-0 m-auto bg-slate-50 flex h-1/6 w-1/6 shadow-lg rounded-md">
+        <div class="flex flex-col gap-10 justify-center mx-8 mt-2">
+          <h1 class="font-bold text-xl text-stone-600">Delete a Task</h1>
+          <h3 class="itbkk-message text-stone-600">Do you want to delete the task "{{ tasks.title }}"?</h3>
+          <div class="flex flex-wrap justify-end">
+            <button class="itbkk-button-confirm px-6 py-0.5 text-green-700 rounded-lg">Confirm</button>
+            <button @click="toggleModal" class="itbkk-button-cancel px-6 py-0.5 text-red-700 rounded-lg">Cancel</button>
+          </div>
+        </div>
+      </div>
       <router-view />
       <router-view name="addmodal" />
       <router-view name="deletemodal" :id="tasks.id" />
     </div>
   </div>
 </template>
-
