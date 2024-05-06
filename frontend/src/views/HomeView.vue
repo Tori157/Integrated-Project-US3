@@ -210,9 +210,6 @@ onUnmounted(() => {
           <button @click="showToast">Show Toast</button>
         </div> -->
       </div>
-      <div>
-        <button @click="toggleModal"><img src="/image/ico/trash-xmark-svgrepo-com.svg" class="h-10 w-10 mt-4"></button>
-      </div>
       <div v-if="modalVisible" class="absolute left-0 right-0 m-auto bg-slate-50 flex h-1/6 w-1/6 shadow-lg rounded-md">
         <div class="flex flex-col gap-10 justify-center mx-8 mt-2">
           <h1 class="font-bold text-xl text-stone-600">Delete a Task</h1>
