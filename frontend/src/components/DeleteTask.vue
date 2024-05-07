@@ -11,7 +11,7 @@ const taskTitle = ref('')
 
 onMounted(async () => {
   try {
-    const response = await fetch('http://localhost:8080/v1/tasks')
+    const response = await fetch('http://ip23us3.sit.kmutt.ac.th:8080/v1/tasks')
     const data = await response.json()
     tasks.value = data
 
@@ -26,7 +26,7 @@ onMounted(async () => {
 
 async function deleteTask(taskId) {
   try {
-    const res = await fetch(`http://localhost:8080/v1/tasks/${taskId}`, {
+    const res = await fetch(`http://ip23us3.sit.kmutt.ac.th:8080/v1/tasks/${taskId}`, {
       method: 'DELETE'
     })
 

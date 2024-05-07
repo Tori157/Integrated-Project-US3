@@ -16,7 +16,7 @@ const saveTask = async () => {
     status: status.value
   }
   try {
-    const response = await fetch('http://localhost:8080/v1/tasks', {
+    const response = await fetch('http://ip23us3.sit.kmutt.ac.th:8080/v1/tasks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
