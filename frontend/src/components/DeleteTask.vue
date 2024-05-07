@@ -142,27 +142,11 @@ function cancel() {
         </h3>
 
         <button
-          id="itbkk-button-delete"
+          @click="deleteTask(taskId)"
           class="itbkk-button-delete mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"
-          @click="deleteTask(taskId)"
         >
           Confirm
         </button>
-
-        <!-- <button
-          @click="deleteTask(taskId)"
-          data-v-cd27e9b3=""
-          class="itbkk-button-confirm px-6 py-3 bg-red-500 rounded-full text-white"
-        >
-          Confirm
-        </button>
-        <button
-          @click="cancel"
-          data-v-cd27e9b3=""
-          class="itbkk-button-cancel px-6 py-3 bg-[#C9D1D8] text-black rounded-full"
-        >
-          Cancel
-        </button> -->
 
         <button
           @click="cancel"
