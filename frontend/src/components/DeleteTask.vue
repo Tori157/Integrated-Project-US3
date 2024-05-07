@@ -6,7 +6,7 @@ const router = useRouter()
 const route = useRoute()
 
 const tasks = ref([])
-const taskId = route.params.id
+const taskId = parseInt(route.params.id)
 const taskTitle = ref('')
 
 onMounted(async () => {
@@ -43,15 +43,15 @@ async function deleteTask(taskId) {
       alertSuccessDiv.innerHTML = '<span>The task has been deleted.</span>'
       alertSuccessDiv.style.backgroundColor = 'rgb(244 63 94)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center'; // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex'; // ให้เนื้อหาอยู่ตรงกลาง
+      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
 
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
       // reload
       setTimeout(function () {
-        document.body.removeChild(toastDiv);
+        document.body.removeChild(toastDiv)
         window.location.reload()
       }, 2000)
     }
@@ -74,19 +74,18 @@ async function deleteTask(taskId) {
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The task does not exist.</span>'
+      alertSuccessDiv.innerHTML = '<span>An error has occurred, the task does not exist.</span>'
       alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center'; // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex'; // ให้เนื้อหาอยู่ตรงกลาง
-      
+      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
 
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
       router.push('/task')
       setTimeout(function () {
-        document.body.removeChild(toastDiv);
+        document.body.removeChild(toastDiv)
         window.location.reload()
       }, 2000)
     }
@@ -113,6 +112,14 @@ async function deleteTask(taskId) {
     console.error('Error:', error)
   }
 }
+function findIndexById(taskId) {
+  for (let i = 0; i < tasks.value.length; i++) {
+    if (tasks.value[i].id === taskId) {
+      return i
+    }
+  }
+  return null // หากไม่พบ task ที่มีไอดีที่ระบุ
+}
 
 function cancel() {
   router.push('/task')
@@ -131,16 +138,16 @@ function cancel() {
         <h3
           class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
         >
-          Do you want to delete the task number {{ taskId }} - "{{ taskTitle }}"?
+          "Do you want to delete the task number {{ findIndexById(taskId) + 1 }} - {{ taskTitle }}"?
         </h3>
 
         <button
-        class="itbkk-button-delete mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"
           @click="deleteTask(taskId)"
-          
+          class="itbkk-button-delete mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"
         >
           Confirm
         </button>
+
         <button
           @click="cancel"
           class="itbkk-button-cancel ml-5 text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-cyan-200 border border-gray-200 font-medium inline-flex items-center rounded-lg text-base px-3 py-2.5 text-center"
