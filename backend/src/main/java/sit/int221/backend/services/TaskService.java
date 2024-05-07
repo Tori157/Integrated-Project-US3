@@ -31,14 +31,14 @@ public class TaskService {
 
     public Task getTaskById(Integer id) {
         return repository.findById(id).orElseThrow(
-                () -> new ItemNotFoundException("Task id " + id + " dose not exist !!!") {
+                () -> new ItemNotFoundException( "Task id " + id + " dose not exist !!!"){
+
                 }
         );
     }
 
     @Transactional
     public AddEditTaskDTO createNewTask(Task task) {
-        task.setId(null);
         return modelMapper.map(repository.save(task), AddEditTaskDTO.class);
     }
 
@@ -62,7 +62,8 @@ public class TaskService {
         }
 
         Task existngTask = repository.findById(id).orElseThrow(
-                () -> new ItemNotFoundException("Task id " + id + " dose not exist !!!"));
+                () -> new HttpClientErrorException(HttpStatus.NOT_FOUND,
+                        "Task id " + id + " dose not exist !!!"));
 
         existngTask.setTitle(task.getTitle());
         existngTask.setDescription(task.getDescription());

@@ -63,7 +63,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-  
   <div class="p-10 w-screen h-screen bg-gray-800">
     <div class="itbkk-us3 container mx-auto w-full max-w-screen-xl ml-40">
       <div class="flex justify-between items-center mb-4">
@@ -122,7 +121,7 @@ onUnmounted(() => {
       </div>
 
       <div
-        class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-22 "
+        class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-22"
       >
         <!-- table-fixed break-words border border-separate border-spacing-y-2 mb-16 -->
         <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
@@ -181,13 +180,16 @@ onUnmounted(() => {
                   {{ getStatusText(task.status) }}
                 </div>
               </td>
-              <td>
-                <button onclick="toggleModal()">
-                  <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
+              <td> 
+                <button class="itbkk-button-edite" onclick="toggleModal()">
+                  <router-link :to="{ name: 'task-edite', params: { id: task.id } }">
+                    <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
+                  </router-link>
                 </button>
               </td>
               <td>
-                <button class="itbkk-button-action"
+                <button
+                  class="itbkk-button-action"
                   @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
                 >
                   <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
