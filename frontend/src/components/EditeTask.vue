@@ -122,7 +122,7 @@ onMounted(fetchTask)
       >
         <div class="l-zone w-max">
           <div
-            class="itbkk-title bg-white ml-10 mt-10 items-center p-5 break-words w-96 rounded-xl text-sm text-blue-600 font-normal h-22"
+            class="itbkk-title ml-10 mt-10 break-words text-blue-600 bg-white rounded-xl p-5 w-96 text-sm font-normal h-22"
           >
             <!-- Editable Title -->
             <input
