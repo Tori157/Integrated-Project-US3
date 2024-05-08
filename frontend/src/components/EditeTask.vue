@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const tasks = ref([])
-const editedTask = ref({})
+// const editedTask = ref({})
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 const route = useRoute()
 const router = useRouter()
@@ -32,12 +32,55 @@ async function saveChanges() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(editedTask.value)
+      body: JSON.stringify(tasks.value)
     })
     if (response.ok) {
+      router.push('/task')
       console.log('Task updated successfully')
-    } else {
-      throw new Error('Failed to update task')
+
+      // Alert
+      const toastDiv = document.createElement('div')
+      toastDiv.className = 'toast toast-top toast-center z-50'
+      const alertSuccessDiv = document.createElement('div')
+      alertSuccessDiv.className = 'alert alert-success'
+      alertSuccessDiv.innerHTML = '<span>The task has been updated</span>'
+      alertSuccessDiv.style.backgroundColor = 'rgb(34 197 94)' // สีพื้นหลัง
+      alertSuccessDiv.style.color = 'white' // สีข้อความ
+      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
+
+      toastDiv.appendChild(alertSuccessDiv)
+      document.body.appendChild(toastDiv)
+
+      setTimeout(function () {
+        document.body.removeChild(toastDiv)
+        window.location.reload()
+      }, 2000)
+    }
+    if (response.status === 404) {
+      console.log('The task does not exist.')
+      console.error('Failed to update task')
+
+      // alert
+      console.error('Failed to delete task')
+      const toastDiv = document.createElement('div')
+      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
+      const alertSuccessDiv = document.createElement('div')
+      alertSuccessDiv.className = 'alert alert-success'
+      alertSuccessDiv.innerHTML = '<span>An error has occurred, the task does not exist.</span>'
+      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
+      alertSuccessDiv.style.color = 'white' // สีข้อความ
+      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
+
+      toastDiv.appendChild(alertSuccessDiv)
+      document.body.appendChild(toastDiv)
+
+      router.push('/task')
+      setTimeout(function () {
+        document.body.removeChild(toastDiv)
+        window.location.reload()
+      }, 2000)
     }
   } catch (error) {
     console.error('Error updating task:', error)
@@ -82,7 +125,12 @@ onMounted(fetchTask)
             class="itbkk-title bg-white ml-10 mt-10 items-center p-5 break-words w-96 rounded-xl text-sm text-blue-600 font-normal h-22"
           >
             <!-- Editable Title -->
-            <input v-model="editedTask.title" type="text" class="w-full" />
+            <input
+              v-model="tasks.title"
+              type="text"
+              class="w-full"
+              style="background-color: white"
+            />
           </div>
 
           <div class="ml-10 mt-4">
@@ -90,8 +138,8 @@ onMounted(fetchTask)
 
             <!-- Editable Description -->
             <textarea
-              v-model="editedTask.description"
-              class="itbkk-description break-words bg-white rounded-xl mt-2 text-sm p-5 mb-10 w-96 h-64"
+              v-model="tasks.description"
+              class="itbkk-description break-words text-blue-600 bg-white rounded-xl mt-2 text-sm p-5 mb-10 w-96 h-64"
             ></textarea>
           </div>
         </div>
@@ -100,16 +148,16 @@ onMounted(fetchTask)
           <div class="text-base text-rose-400 font-medium">Assigness:</div>
           <!-- Editable Assignees -->
           <input
-            v-model="editedTask.assignees"
+            v-model="tasks.assignees"
             type="text"
-            class="itbkk-assignees break-words bg-white rounded-xl mt-2 text-sm p-4 mb-8 w-96"
+            class="itbkk-assignees break-words text-blue-600 bg-white rounded-xl mt-2 text-sm p-4 mb-8 w-96"
           />
 
           <div class="text-base text-rose-400 font-medium">Status:</div>
           <!-- Editable Status -->
           <select
-            v-model="editedTask.status"
-            class="itbkk-status break-words bg-white rounded-lg mt-2 h-max text-blue-600 text-center h-10 p-2 mb-8"
+            v-model="tasks.status"
+            class="itbkk-status bg-white text-blue-600 mt-1 block h-9 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-left"
           >
             <option value="NO_STATUS">No Status</option>
             <option value="TO_DO">To Do</option>
@@ -144,10 +192,10 @@ onMounted(fetchTask)
               </button>
 
               <button
-                class="itbkk-button btn mr-6 bg-green-500 hover:bg-green-600 border-4 border-white hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
+                class="itbkk-button btn mr-6 bg-red-500 hover:bg-red-600 border-4 border-white hover:border-red-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
                 @click="() => router.back()"
               >
-                OK
+                Cancle
               </button>
             </form>
           </div>

@@ -180,8 +180,8 @@ onUnmounted(() => {
                   {{ getStatusText(task.status) }}
                 </div>
               </td>
-              <td> 
-                <button class="itbkk-button-edite" onclick="toggleModal()">
+              <td>
+                <button class="itbkk-button-edite">
                   <router-link :to="{ name: 'task-edite', params: { id: task.id } }">
                     <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
                   </router-link>
