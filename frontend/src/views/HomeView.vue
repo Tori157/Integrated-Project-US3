@@ -181,7 +181,10 @@ onUnmounted(() => {
                 </div>
               </td>
               <td>
-                <button class="itbkk-button-edite">
+                <button
+                  class="itbkk-button-edite"
+                  @click="$router.push({ name: 'task-edite', params: { id: task.id } })"
+                >
                   <router-link :to="{ name: 'task-edite', params: { id: task.id } }">
                     <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
                   </router-link>
@@ -212,6 +215,7 @@ onUnmounted(() => {
       <router-view />
       <router-view name="addmodal" />
       <router-view name="deletemodal" :id="tasks.id" />
+      <router-view name="editemodal" :id="tasks.id" />
     </div>
   </div>
 </template>
