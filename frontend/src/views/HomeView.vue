@@ -112,13 +112,20 @@ onUnmounted(() => {
             </svg>
           </button>
         </div>
-
-        <button
-          class="itbkk-button-add absolute top-10 right-20 px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
-          @click="$router.push({ name: 'task-addmodal' })"
-        >
-          Add Task
-        </button>
+        <div class="">
+          <button
+            class="itbkk-button-add top-10 right-60 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+            @click="$router.push({ name: 'task-addmodal' })"
+          >
+            Add Task
+          </button>
+          <button
+            class="itbkk-button-add top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+            @click="$router.push({ name: '' })"
+          >
+            Manage Status
+          </button>
+        </div>
       </div>
 
       <div

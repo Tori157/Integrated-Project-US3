@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 const tasks = ref([])
 // const editedTask = ref({})
-const originalTasks = ref({})
+
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 const route = useRoute()
 const router = useRouter()
@@ -19,7 +19,7 @@ async function fetchTask() {
     }
     const data = await response.json()
     tasks.value = data
-
+    originalTasks.value = { ...tasks.value }
     getTimezone()
   } catch (error) {
     console.error('Error fetching tasks:', error)
@@ -111,7 +111,7 @@ function getTimezone() {
 }
 
 onMounted(fetchTask)
-
+const originalTasks = ref({})
 const isModified = computed(() => {
   return JSON.stringify(tasks.value) !== JSON.stringify(originalTasks.value)
 })
@@ -137,6 +137,7 @@ const isModified = computed(() => {
               type="text"
               class="w-full"
               style="background-color: white"
+              maxlength="100"
             />
           </div>
 
@@ -147,6 +148,7 @@ const isModified = computed(() => {
             <textarea
               v-model="tasks.description"
               class="itbkk-description break-words text-blue-600 bg-white rounded-xl mt-2 text-sm p-5 mb-10 w-96 h-64"
+              maxlength="500"
             ></textarea>
           </div>
         </div>
@@ -158,6 +160,7 @@ const isModified = computed(() => {
             v-model="tasks.assignees"
             type="text"
             class="itbkk-assignees break-words text-blue-600 bg-white rounded-xl mt-2 text-sm p-4 mb-8 w-96"
+            maxlength="30"
           />
 
           <div class="text-base text-rose-400 font-medium">Status:</div>
@@ -202,7 +205,6 @@ const isModified = computed(() => {
               >
                 Save
               </button>
-
               <button
                 class="itbkk-button btn mr-6 bg-red-500 hover:bg-red-600 border-4 border-white hover:border-red-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
                 @click="() => router.back()"
