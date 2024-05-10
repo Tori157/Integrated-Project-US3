@@ -1,9 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+// import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const tasks = ref([])
 // const editedTask = ref({})
+const originalTasks = ref({})
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 const route = useRoute()
 const router = useRouter()
@@ -17,6 +19,7 @@ async function fetchTask() {
     }
     const data = await response.json()
     tasks.value = data
+
     getTimezone()
   } catch (error) {
     console.error('Error fetching tasks:', error)
@@ -108,6 +111,10 @@ function getTimezone() {
 }
 
 onMounted(fetchTask)
+
+const isModified = computed(() => {
+  return JSON.stringify(tasks.value) !== JSON.stringify(originalTasks.value)
+})
 </script>
 
 <template>
@@ -185,8 +192,13 @@ onMounted(fetchTask)
           <div class="flex">
             <form method="dialog" class="flex">
               <button
+                :disabled="!isModified || tasks.title.trim().length === 0"
                 @click="saveChanges"
-                class="itbkk-button-edit btn mr-6 bg-green-500 hover:bg-green-600 border-4 border-white hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
+                class="itbkk-button-edit btn text-white border-white mr-6 bg-green-500 hover:bg-green-600 border-4 hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
+                :class="
+                  (!isModified || tasks.title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
+                  !isModified || tasks.title.trim().length === 0 ? 'disabled' : '')
+                "
               >
                 Save
               </button>

@@ -7,6 +7,7 @@ const description = ref('')
 const assignees = ref('')
 const status = ref('NO_STATUS')
 const router = useRouter()
+const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 const saveTask = async () => {
   const taskData = {
@@ -16,7 +17,7 @@ const saveTask = async () => {
     status: status.value
   }
   try {
-    const response = await fetch('http://localhost:8080/v1/tasks', {
+    const response = await fetch(SERVER_URL + `/v1/tasks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -3,9 +3,10 @@
 import { onMounted, ref, onUnmounted } from 'vue'
 
 const tasks = ref([])
+const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 async function fetchData() {
-  const response = await fetch('http://localhost:8080/v1/tasks')
+  const response = await fetch(SERVER_URL + `/v1/tasks`)
 
   const data = await response.json()
   console.log(data)
