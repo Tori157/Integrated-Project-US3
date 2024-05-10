@@ -1,5 +1,4 @@
 <script setup>
-// import { onMounted, ref } from 'vue'
 import { onMounted, ref, onUnmounted } from 'vue'
 
 const tasks = ref([])
@@ -18,31 +17,6 @@ onMounted(async () => {
   console.log(tasks.value.length)
 })
 
-function getStatusText(status) {
-  switch (status) {
-    case 'NO_STATUS':
-      return 'No Status'
-    case 'TO_DO':
-      return 'To Do'
-    case 'DOING':
-      return 'Doing'
-    case 'DONE':
-      return 'Done'
-    default:
-      return 'No Status'
-  }
-}
-// const showAlert = ref(false)
-// function toggleModal() {
-//   showAlert.value = !showAlert.value
-// }
-
-// watch(tasks.value.length, (newTasks, oldTasks) => {
-//   if (newTasks.value.length > oldTasks.value.length) {
-//     toggleModal()
-//     console.log(tasks.value.length)
-//   }
-// })
 const showAlert = ref(false)
 const toggleModal = () => {
   showAlert.value = !showAlert.value
@@ -51,14 +25,12 @@ const toggleModal = () => {
 const handleTaskAdded = () => {
   toggleModal()
 }
-// Listen for taskAdded event from Add Task component
+
 onMounted(() => {
-  // Listen for taskAdded event
   window.addEventListener('taskAdded', handleTaskAdded)
 })
 
 onUnmounted(() => {
-  // Cleanup event listener
   window.removeEventListener('taskAdded', handleTaskAdded)
 })
 </script>
@@ -73,20 +45,13 @@ onUnmounted(() => {
           IT-Bangmod Kradan Kanban
         </h1>
       </div>
-
       <div class="flex justify-between items-center mx-auto max-w-lg">
         <div class="">
           <button
-            class="itbkk-button-add top-10 right-60 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+            class="itbkk-button-add top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
             @click="$router.push({ name: 'task-addmodal' })"
           >
-            Add Task
-          </button>
-          <button
-            class="itbkk-button-add top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
-            @click="$router.push({ name: 'statuslist' })"
-          >
-            Manage Status
+            Add Status
           </button>
         </div>
       </div>
@@ -94,15 +59,13 @@ onUnmounted(() => {
       <div
         class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-22"
       >
-        <!-- table-fixed break-words border border-separate border-spacing-y-2 mb-16 -->
         <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <tr>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Title</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide">Assignees</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
-              <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
+              <th scope="col" class="px-6 py-3 text-center tracking-wide">Description</th>
+              <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
               <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
             </tr>
           </thead>
@@ -130,27 +93,11 @@ onUnmounted(() => {
 
               <td
                 class="itbkk-assignees px-6 py-4 text-center text-base text-blue-600 font-medium"
-                :class="{ 'text-gray-500 italic': !task.assignees }"
+                :class="{ 'text-gray-500 italic': !task.description }"
               >
-                {{ task.assignees || 'Unassigned' }}
+                {{ task.description || 'No Description Unassigned' }}
               </td>
 
-              <!-- Status -->
-
-              <td class="itbkk-status">
-                <div
-                  div
-                  class="w-[115px] border-4 border-blue-100 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
-                  :class="{
-                    'bg-red-400': getStatusText(task.status) === 'No Status',
-                    'bg-purple-400': getStatusText(task.status) === 'To Do',
-                    'bg-yellow-400': getStatusText(task.status) === 'Doing',
-                    'bg-green-500': getStatusText(task.status) === 'Done'
-                  }"
-                >
-                  {{ getStatusText(task.status) }}
-                </div>
-              </td>
               <td>
                 <button
                   class="itbkk-button-edite"

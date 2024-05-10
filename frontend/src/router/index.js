@@ -40,6 +40,38 @@ const router = createRouter({
       path: '/error',
       name: 'task-error',
       component: () => import('../views/NotFound.vue')
+    },
+    {
+      path: '/editerror',
+      name: 'taskedite-error',
+      component: () => import('../views/EditNotFound.vue')
+    },
+    {
+      path: '/statuslist',
+      name: 'statuslist',
+      component: () => import('../views/StatusList.vue'),
+      children: [
+        {
+          path: 'add',
+          name: 'status-addmodal',
+          component: () => import('../components/AddStatus.vue')
+        },
+        {
+          path: 'edit',
+          name: 'status-editmodal',
+          component: () => import('../components/EditStatus.vue')
+        },
+        {
+          path: ':id/delete',
+          name: 'status-deletemodal',
+          component: () => import('../components/DeleteStatus.vue')
+        },
+        {
+          path: 'transfer',
+          name: 'status-transfermodal',
+          component: () => import('../components/TransferStatus.vue')
+        }
+      ]
     }
   ]
 })

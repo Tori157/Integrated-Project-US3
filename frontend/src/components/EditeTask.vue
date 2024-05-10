@@ -23,7 +23,7 @@ async function fetchTask() {
     getTimezone()
   } catch (error) {
     console.error('Error fetching tasks:', error)
-    router.push('/error')
+    router.push('/editerror')
   }
 }
 
