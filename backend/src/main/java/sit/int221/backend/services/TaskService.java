@@ -9,6 +9,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import sit.int221.backend.dtos.AddEditTaskDTO;
 import sit.int221.backend.dtos.AllTaskDTO;
 import sit.int221.backend.entities.Task;
+import sit.int221.backend.entities.TaskStatus;
 import sit.int221.backend.exceptions.ItemNotFoundException;
 import sit.int221.backend.repositories.TaskRepository;
 
@@ -31,7 +32,7 @@ public class TaskService {
 
     public Task getTaskById(Integer id) {
         return repository.findById(id).orElseThrow(
-                () -> new ItemNotFoundException( "Task id " + id + " dose not exist !!!"){
+                () -> new ItemNotFoundException("Task id " + id + " dose not exist !!!") {
 
                 }
         );
@@ -39,6 +40,15 @@ public class TaskService {
 
     @Transactional
     public AddEditTaskDTO createNewTask(Task task) {
+        if (task.getStatus() == null) {
+            task.setStatus(TaskStatus.NO_STATUS);
+        }
+        if (task.getTitle() != null && task.getDescription() != null && task.getAssignees() != null) {
+            task.setTitle(task.getTitle());
+            task.setDescription(task.getDescription());
+            task.setAssignees(task.getAssignees());
+            task.setStatus(task.getStatus());
+        }
         return modelMapper.map(repository.save(task), AddEditTaskDTO.class);
     }
 
@@ -54,18 +64,12 @@ public class TaskService {
 
     @Transactional
     public AddEditTaskDTO updateTask(Integer id, Task task) {
-        if (task.getId() != null) {
-            if (!task.getId().equals(id)) {
-                throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,
-                        "Conflict id !!! (" + id + " vs " + task.getId() + ")");
-            }
-        }
 
         Task existngTask = repository.findById(id).orElseThrow(
-                () -> new HttpClientErrorException(HttpStatus.NOT_FOUND,
-                        "Task id " + id + " dose not exist !!!"));
+                () -> new ItemNotFoundException("Task id " + id + " dose not exist !!!")
+        );
 
-        existngTask.setTitle(task.getTitle());
+        existngTask.setTitle((task.getTitle()));
         existngTask.setDescription(task.getDescription());
         existngTask.setAssignees(task.getAssignees());
         existngTask.setStatus(task.getStatus());
