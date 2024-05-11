@@ -100,7 +100,6 @@ async function deleteTask(taskId) {
         window.location.reload()
       }, 2000)
     }
-
   } catch (error) {
     console.error('Error:', error)
   }
@@ -111,7 +110,7 @@ function findIndexById(taskId) {
       return i
     }
   }
-  return null 
+  return null
 }
 
 function cancel() {

@@ -55,7 +55,9 @@ const saveTask = async () => {
 <template>
   <div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
     <div class="bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
-      <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">Edit Status</h2>
+      <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">
+        Edit Status
+      </h2>
 
       <form @submit.prevent="">
         <div class="mb-6">
@@ -70,7 +72,9 @@ const saveTask = async () => {
           />
         </div>
         <div class="mb-4">
-          <label for="status-description" class="text-rose-400 block text-sm font-medium text-gray-700"
+          <label
+            for="status-description"
+            class="text-rose-400 block text-sm font-medium text-gray-700"
             >Description</label
           >
           <textarea
@@ -79,22 +83,7 @@ const saveTask = async () => {
             class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           ></textarea>
         </div>
-        <div class="flex mt-5 justify-between">
-            <div class="itbkk-timezone mx-10 mb-3 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Timezone :</span>
-            <!-- {{ getTimezone(tasks.timezone) }} -->
-          </div>
 
-          <div class="itbkk-created-on mx-10 mb-3 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Create On :</span>
-            <!-- {{ formateDateTime(tasks.createdOn).replace(/,/g, '') }} -->
-          </div>
-
-          <div class="itbkk-updated-on mx-10 mb-8 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Update On :</span>
-            <!-- {{ formateDateTime(tasks.updatedOn).replace(/,/g, '') }} -->
-          </div>
-        </div>
         <div class="flex mt-5 justify-center">
           <!-- <button
             id="itbkk-button-confirm"

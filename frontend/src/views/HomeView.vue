@@ -151,25 +151,35 @@ onUnmounted(() => {
                   {{ getStatusText(task.status) }}
                 </div>
               </td>
-              <td>
-                <button
-                  class="itbkk-button-edite"
-                  @click="$router.push({ name: 'task-edite', params: { id: task.id } })"
-                >
-                  <router-link :to="{ name: 'task-edite', params: { id: task.id } }">
-                    <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
-                  </router-link>
-                </button>
-              </td>
-              <td>
-                <button
-                  class="itbkk-button-action"
-                  @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
-                >
-                  <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
-                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-1.5" />
-                  </router-link>
-                </button>
+              <td class="flex">
+                <div class="flex mt-3 space-x-0">
+                  <!-- <div class="itbkk-button-action flex mt-3 space-x-0"> -->
+                  <button
+                    id="itbkk-button-edite"
+                    class="itbkk-button-edite"
+                    @click="$router.push({ name: 'task-edite', params: { id: task.id } })"
+                  >
+                    <router-link :to="{ name: 'task-edite', params: { id: task.id } }">
+                      <img
+                        src="/image/ico/edit-3-svgrepo-com.svg"
+                        class="itbkk-button-edite h-8 li-3 w-36"
+                      />
+                    </router-link>
+                  </button>
+
+                  <button
+                    id="itbkk-button-delete"
+                    class="itbkk-button-delete"
+                    @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
+                  >
+                    <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
+                      <img
+                        src="/image/ico/delete-svgrepo-com.svg"
+                        class="itbkk-button-delete h-7 w-36 mt-0.5"
+                      />
+                    </router-link>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>

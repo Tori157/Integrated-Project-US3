@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, onUnmounted } from 'vue'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const tasks = ref([])
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
@@ -48,14 +49,24 @@ onUnmounted(() => {
       <div class="flex justify-between items-center mx-auto max-w-lg">
         <div class="">
           <button
-            class="itbkk-button-add top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
-            @click="$router.push({ name: 'task-addmodal' })"
+            class="itbkk-button-add top-10 right-60 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+            @click="$router.push({ name: 'status-addmodal' })"
           >
             Add Status
           </button>
+          <button
+            class="itbkk-button-add top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+            @click="$router.push({ name: 'status-transfermodal' })"
+          >
+            Tranfer Status
+          </button>
         </div>
       </div>
-
+      <h1
+        class="mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r to-emerald-400 from-sky-400"
+      >
+        <a href="#" class="hover:underline" @click="router.push('/task')">Home</a> >>> StatusList
+      </h1>
       <div
         class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-22"
       >
@@ -85,25 +96,23 @@ onUnmounted(() => {
               <!-- Title -->
               <td class="itbkk-title text-left whitespace-normal">
                 <a href="#" class="px-6 py-4 font-medium text-base text-blue-600 hover:underline">
-                  <router-link :to="{ name: 'task-modaldetail', params: { id: task.id } }">
-                    {{ task.title.trim() }}
-                  </router-link>
+                  {{ tasks.title.trim() }}
                 </a>
               </td>
 
               <td
                 class="itbkk-assignees px-6 py-4 text-center text-base text-blue-600 font-medium"
-                :class="{ 'text-gray-500 italic': !task.description }"
+                :class="{ 'text-gray-500 italic': !tasks.description }"
               >
-                {{ task.description || 'No Description Unassigned' }}
+                {{ tasks.description || 'No Description Unassigned' }}
               </td>
 
               <td>
                 <button
                   class="itbkk-button-edite"
-                  @click="$router.push({ name: 'task-edite', params: { id: task.id } })"
+                  @click="$router.push({ name: 'status-editmodal', params: { id: task.id } })"
                 >
-                  <router-link :to="{ name: 'task-edite', params: { id: task.id } }">
+                  <router-link :to="{ name: 'status-editmodal', params: { id: task.id } }">
                     <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
                   </router-link>
                 </button>
@@ -111,9 +120,9 @@ onUnmounted(() => {
               <td>
                 <button
                   class="itbkk-button-action"
-                  @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
+                  @click="$router.push({ name: 'status-deletemodal', params: { id: task.id } })"
                 >
-                  <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
+                  <router-link :to="{ name: 'status-deletemodal', params: { id: task.id } }">
                     <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-1.5" />
                   </router-link>
                 </button>

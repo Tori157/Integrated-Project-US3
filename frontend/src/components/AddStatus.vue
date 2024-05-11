@@ -55,7 +55,9 @@ const saveTask = async () => {
 <template>
   <div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
     <div class="bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
-      <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">Add Status</h2>
+      <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">
+        Add Status
+      </h2>
 
       <form @submit.prevent="">
         <div class="mb-6">
@@ -70,7 +72,9 @@ const saveTask = async () => {
           />
         </div>
         <div class="mb-4">
-          <label for="status-description" class="text-rose-400 block text-sm font-medium text-gray-700"
+          <label
+            for="status-description"
+            class="text-rose-400 block text-sm font-medium text-gray-700"
             >Description</label
           >
           <textarea
