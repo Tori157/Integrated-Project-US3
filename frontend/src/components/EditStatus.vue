@@ -80,10 +80,10 @@ async function saveChanges() {
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
-      // setTimeout(function () {
-      //   document.body.removeChild(toastDiv)
-      //   window.location.reload()
-      // }, 2000)
+      setTimeout(function () {
+        document.body.removeChild(toastDiv)
+        window.location.reload()
+      }, 2000)
     }
     if (response.status === 404) {
       console.log('The task does not exist.')
@@ -106,10 +106,10 @@ async function saveChanges() {
 
       router.push('/task')
 
-      // setTimeout(function () {
-      //   document.body.removeChild(toastDiv)
-      //   window.location.reload()
-      // }, 2000)
+      setTimeout(function () {
+        document.body.removeChild(toastDiv)
+        window.location.reload()
+      }, 2000)
     }
   } catch (error) {
     console.error('Error updating task:', error)
@@ -127,21 +127,20 @@ const isModified = computed(() => {
   )
 })
 
-function formatStatusName(name) {
-  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
-  if (name === name.toLowerCase()) {
-    return name.replace(/_/g, ' ')
-  }
+// function formatStatusName(name) {
+//   // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
+//   if (name === name.toLowerCase()) {
+//     return name.replace(/_/g, ' ')
+//   }
+//   // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
+//   const formattedName = name
+//     .replace(/_/g, ' ')
+//     .toLowerCase()
+//     .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
 
-  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
-  const formattedName = name
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
-
-  // ตัดช่องว่างและเครื่องหมาย _ ออก
-  return formattedName.replace(/_/g, ' ').trim()
-}
+//   // ตัดช่องว่างและเครื่องหมาย _ ออก
+//   return formattedName.replace(/_/g, ' ').trim()
+// }
 </script>
 
 <template>
@@ -159,7 +158,7 @@ function formatStatusName(name) {
           <input
             type="text"
             id="itbkk-status-name"
-            :value="formatStatusName(statuses.name)"
+            v-model="statuses.name"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>

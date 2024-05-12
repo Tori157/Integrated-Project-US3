@@ -1,10 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-// import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const tasks = ref([])
-// const editedTask = ref({})
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 const route = useRoute()
@@ -63,7 +61,7 @@ async function saveChanges() {
     if (response.status === 404) {
       console.log('The task does not exist.')
       console.error('Failed to update task')
-      
+
       // alert
       console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
@@ -116,8 +114,6 @@ const originalTasks = ref({})
 const isModified = computed(() => {
   return JSON.stringify(tasks.value) !== JSON.stringify(originalTasks.value)
 })
-
-
 </script>
 
 <template>

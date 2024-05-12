@@ -50,12 +50,11 @@ public class StatusService {
         if (status.getName().equals("No Status") || status.getName().equals("NO_STATUS")) {
             throw new MethodNotAllowedException("The " + oldStatus.getName() + " cannot be edited ");
         }
-        if (!oldStatus.getName().equals(status.getName())) {
+
             oldStatus.setName(status.getName());
             oldStatus.setDescription(status.getDescription());
             return statusRepository.save(oldStatus);
-        }
-        return oldStatus;
+
     }
 
 //    @Transactional

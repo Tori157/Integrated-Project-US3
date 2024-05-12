@@ -37,21 +37,21 @@ onUnmounted(() => {
 })
 console.log(statuses)
 
-function formatStatusName(name) {
-  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
-  if (name === name.toLowerCase()) {
-    return name.replace(/_/g, ' ')
-  }
+// function formatStatusName(name) {
+//   // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
+//   if (name === name.toLowerCase()) {
+//     return name.replace(/_/g, ' ')
+//   }
 
-  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
-  const formattedName = name
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+//   // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
+//   const formattedName = name
+//     .replace(/_/g, ' ')
+//     .toLowerCase()
+//     .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
 
-  // ตัดช่องว่างและเครื่องหมาย _ ออก
-  return formattedName.replace(/_/g, ' ').trim()
-}
+//   // ตัดช่องว่างและเครื่องหมาย _ ออก
+//   return formattedName.replace(/_/g, ' ').trim()
+// }
 </script>
 
 <template>
@@ -108,7 +108,7 @@ function formatStatusName(name) {
               <!-- Title -->
               <td class="itbkk-title text-left whitespace-normal">
                 <a href="#" class="px-6 py-4 font-medisum text-base text-blue-600 hover:underline">
-                  {{ formatStatusName(statuses.name) }}
+                  {{ statuses.name }}
                 </a>
               </td>
 
@@ -116,7 +116,7 @@ function formatStatusName(name) {
                 class="itbkk-assignees px-6 py-4 text-center text-base text-blue-600 font-medium"
                 :class="{ 'text-gray-500 italic': !statuses.description }"
               >
-                {{ statuses.description || 'No Description Unassigned' }}
+                {{ statuses.description || 'No description is provided.' }}
               </td>
 
               <td>
