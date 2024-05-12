@@ -1,9 +1,8 @@
-package sit.int221.backend.services;
+package sit.int221.backend.service;
 
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import sit.int221.backend.dtos.PageDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +26,4 @@ public class ListMapper {
         return listMapper;
     }
 
-    public <S, T> PageDTO<T> toPageDTO(Page<S> source, Class<T> targetClass, ModelMapper modelMapper) {
-        PageDTO<T> page = modelMapper.map(source, PageDTO.class);
-        page.setContent(mapList(source.getContent(), targetClass, modelMapper));
-        return page;
-    }
 }

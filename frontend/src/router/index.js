@@ -65,11 +65,6 @@ const router = createRouter({
           path: ':id/delete',
           name: 'status-deletemodal',
           component: () => import('../components/DeleteStatus.vue')
-        },
-        {
-          path: 'transfer',
-          name: 'status-transfermodal',
-          component: () => import('../components/TransferStatus.vue')
         }
       ]
     }

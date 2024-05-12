@@ -4,42 +4,16 @@ import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
+const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
-const tasks = ref([])
-const taskId = parseInt(route.params.id)
-const taskTitle = ref('')
-const taskStatus = ref('')
-
-function getStatusText(status) {
-  switch (status) {
-    case 'NO_STATUS':
-      return 'No Status'
-    case 'TO_DO':
-      return 'To Do'
-    case 'DOING':
-      return 'Doing'
-    case 'DONE':
-      return 'Done'
-    default:
-      return 'No Status'
-  }
-}
+const statuses = ref([])
+const statusId = parseInt(route.params.id)
 
 onMounted(async () => {
   try {
-    const response = await fetch('http://localhost:8080/v1/tasks')
+    const response = await fetch(SERVER_URL + `/v2/statuses`)
     const data = await response.json()
-    tasks.value = data
-
-    const task = tasks.value.find((task) => task.id === parseInt(taskId))
-    if (task) {
-      taskTitle.value = task.title
-    }
-
-    const status = tasks.value.find((status) => status.id === parseInt(taskId))
-    if (status) {
-      taskStatus.value = task.status
-    }
+    statuses.value = data
   } catch (error) {
     console.error('Error fetching tasks:', error)
   }
@@ -47,21 +21,21 @@ onMounted(async () => {
 
 async function deleteTask(taskId) {
   try {
-    const res = await fetch(`http://localhost:8080/v1/tasks/${taskId}`, {
+    const res = await fetch(SERVER_URL + `/v2/statuses/${taskId}`, {
       method: 'DELETE'
     })
 
     if (res.status === 200) {
-      console.log('Task deleted successfully')
-      tasks.value = tasks.value.filter((task) => task.id !== taskId)
-      router.push('/task')
+      console.log('Status deleted successfully')
+      statuses.value = statuses.value.filter((status) => status.id !== statusId)
+      router.push('/statuslist')
       // alert
       console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The task has been deleted.</span>'
+      alertSuccessDiv.innerHTML = '<span>The Status has been deleted.</span>'
       alertSuccessDiv.style.backgroundColor = 'rgb(244 63 94)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
       alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
@@ -77,25 +51,14 @@ async function deleteTask(taskId) {
       }, 2000)
     }
     if (res.status === 404) {
-      console.log('The task does not exist.')
-      console.error('Failed to delete task')
-      // const toastDiv = document.createElement('div')
-      // toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
-      // const alertSuccessDiv = document.createElement('div')
-      // alertSuccessDiv.className = 'alert alert-success'
-      // alertSuccessDiv.innerHTML = '<span>The task does not exist.</span>'
-      // alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
-      // alertSuccessDiv.style.color = 'white' // สีข้อความ
-      // toastDiv.appendChild(alertSuccessDiv)
-      // document.body.appendChild(toastDiv)
-      // document.body.appendChild(toastDiv)
+      console.log('Status not found.')
+      console.error('Failed to delete status')
 
-      console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>An error has occurred, the task does not exist.</span>'
+      alertSuccessDiv.innerHTML = '<span>An error has occurred, the status does not exist.</span>'
       alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
       alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
@@ -110,36 +73,17 @@ async function deleteTask(taskId) {
         window.location.reload()
       }, 2000)
     }
-    // else {
-    //   console.error('Failed to delete task')
-    //   const toastDiv = document.createElement('div')
-    //   toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
-    //   const alertSuccessDiv = document.createElement('div')
-    //   alertSuccessDiv.className = 'alert alert-danger'
-    //   alertSuccessDiv.innerHTML = '<span>Failed to delete task.</span>'
-    //   alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
-    //   alertSuccessDiv.style.color = 'white' // สีข้อความ
-    //   toastDiv.appendChild(alertSuccessDiv)
-    //   document.body.appendChild(toastDiv)
-    //   setTimeout(function () {
-    //     window.location.reload()
-    //   }, 2000)
-    //   router.push('/task')
-    //   setTimeout(function () {
-    //     window.location.reload()
-    //   }, 2000)
-    // }
   } catch (error) {
     console.error('Error:', error)
   }
 }
-function findIndexById(taskId) {
-  for (let i = 0; i < tasks.value.length; i++) {
-    if (tasks.value[i].id === taskId) {
+function findIndexById(statusId) {
+  for (let i = 0; i < statuses.value.length; i++) {
+    if (statuses.value[i].id === statusId) {
       return i
     }
   }
-  return null // หากไม่พบ task ที่มีไอดีที่ระบุ
+  return null
 }
 
 function cancel() {
@@ -159,11 +103,11 @@ function cancel() {
         <h3
           class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
         >
-          Do you want to delete the {{ getStatusText(taskStatus) }} status?
+          Do you want to delete the {{ findIndexById(statuses.name) }} status?
         </h3>
 
         <button
-          @click="deleteTask(taskId)"
+          @click="deleteTask(statusId)"
           class="itbkk-button-confirm mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"
         >
           Confirm

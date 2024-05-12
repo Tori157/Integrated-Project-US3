@@ -2,26 +2,23 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const title = ref('')
+const name = ref('') // เพิ่ม ref สำหรับเก็บชื่อสถานะ
 const description = ref('')
-const assignees = ref('')
-const status = ref('NO_STATUS')
 const router = useRouter()
+const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
-const saveTask = async () => {
-  const taskData = {
-    title: title.value.trim(),
-    description: description.value.trim(),
-    assignees: assignees.value.trim(),
-    status: status.value
+const saveStatus = async () => {
+  const statusData = {
+    name: name.value.trim(), // ใช้ name แทน statuses[index].name
+    description: description.value.trim()
   }
   try {
-    const response = await fetch('http://localhost:8080/v1/tasks', {
+    const response = await fetch(SERVER_URL + `/v2/statuses`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(taskData)
+      body: JSON.stringify(statusData)
     })
     if (response.status === 201) {
       router.push('/statuslist')
@@ -30,7 +27,7 @@ const saveTask = async () => {
       toastDiv.className = 'toast toast-top toast-center z-50'
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The task has been successfully added.</span>'
+      alertSuccessDiv.innerHTML = '<span>The Status has been successfully added.</span>'
       alertSuccessDiv.style.backgroundColor = 'rgb(34 197 94)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
       alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
@@ -59,7 +56,7 @@ const saveTask = async () => {
         Add Status
       </h2>
 
-      <form @submit.prevent="">
+      <form @submit.prevent="saveStatus">
         <div class="mb-6">
           <label for="status-name" class="text-rose-400 block text-sm font-medium text-gray-700"
             >Name</label
@@ -67,7 +64,7 @@ const saveTask = async () => {
           <input
             type="text"
             id="itbkk-status-name"
-            v-model="title"
+            v-model="name"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
@@ -93,10 +90,12 @@ const saveTask = async () => {
           >
             Save
           </button> -->
+          <!-- :disabled="statuses.trim().length" -->
+          <!-- name.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
+              name.trim().length === 0 ? 'disabled' : '' -->
           <button
             id="itbkk-button-confirm"
             type="submit"
-            :disabled="title.trim().length === 0"
             @click="toggleModal"
             class="itbkk-button-confirm"
             :class="[
@@ -110,9 +109,7 @@ const saveTask = async () => {
               'text-base',
               'text-white',
               'font-semibold',
-              'text-center',
-              title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
-              title.trim().length === 0 ? 'disabled' : ''
+              'text-center'
             ]"
           >
             Save

@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import sit.int221.backend.dtos.AddEditTaskDTO;
 import sit.int221.backend.dtos.AllTaskDTO;
 import sit.int221.backend.entities.Task;
-import sit.int221.backend.services.ListMapper;
-import sit.int221.backend.services.TaskService;
+import sit.int221.backend.service.ListMapper;
+import sit.int221.backend.service.TaskService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173","http://ip23us3.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th/us3/"})
 @RequestMapping("/v1/tasks")
 public class TaskController {
     @Autowired

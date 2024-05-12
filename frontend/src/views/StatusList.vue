@@ -2,11 +2,12 @@
 import { onMounted, ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const tasks = ref([])
+
+const statuses = ref([])
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 async function fetchData() {
-  const response = await fetch(SERVER_URL + `/v1/tasks`)
+  const response = await fetch(SERVER_URL + `/v2/statuses`)
 
   const data = await response.json()
   console.log(data)
@@ -14,8 +15,8 @@ async function fetchData() {
 }
 onMounted(async () => {
   const data = await fetchData()
-  tasks.value = data
-  console.log(tasks.value.length)
+  statuses.value = data
+  console.log(statuses.value.length)
 })
 
 const showAlert = ref(false)
@@ -34,6 +35,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('taskAdded', handleTaskAdded)
 })
+console.log(statuses)
 </script>
 
 <template>
@@ -74,7 +76,7 @@ onUnmounted(() => {
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <tr>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide">Title</th>
+              <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Description</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
               <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
@@ -84,7 +86,7 @@ onUnmounted(() => {
           <tbody>
             <tr
               class="itbkk-item bg-blue-100 border-blue-300 hover:bg-blue-200"
-              v-for="(task, index) in tasks"
+              v-for="(statuses, index) in statuses"
               :key="index"
             >
               <!-- id -->
@@ -95,24 +97,24 @@ onUnmounted(() => {
 
               <!-- Title -->
               <td class="itbkk-title text-left whitespace-normal">
-                <a href="#" class="px-6 py-4 font-medium text-base text-blue-600 hover:underline">
-                  {{ tasks.title.trim() }}
+                <a href="#" class="px-6 py-4 font-medisum text-base text-blue-600 hover:underline">
+                  {{ statuses.name }}
                 </a>
               </td>
 
               <td
                 class="itbkk-assignees px-6 py-4 text-center text-base text-blue-600 font-medium"
-                :class="{ 'text-gray-500 italic': !tasks.description }"
+                :class="{ 'text-gray-500 italic': !statuses.description }"
               >
-                {{ tasks.description || 'No Description Unassigned' }}
+                {{ statuses.description || 'No Description Unassigned' }}
               </td>
 
               <td>
                 <button
                   class="itbkk-button-edite"
-                  @click="$router.push({ name: 'status-editmodal', params: { id: task.id } })"
+                  @click="$router.push({ name: 'status-editmodal', params: { id: statuses.id } })"
                 >
-                  <router-link :to="{ name: 'status-editmodal', params: { id: task.id } }">
+                  <router-link :to="{ name: 'status-editmodal', params: { id: statuses.id } }">
                     <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-1" />
                   </router-link>
                 </button>
@@ -120,9 +122,9 @@ onUnmounted(() => {
               <td>
                 <button
                   class="itbkk-button-action"
-                  @click="$router.push({ name: 'status-deletemodal', params: { id: task.id } })"
+                  @click="$router.push({ name: 'status-deletemodal', params: { id: statuses.id } })"
                 >
-                  <router-link :to="{ name: 'status-deletemodal', params: { id: task.id } }">
+                  <router-link :to="{ name: 'status-deletemodal', params: { id: statuses.id } }">
                     <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-1.5" />
                   </router-link>
                 </button>
@@ -131,18 +133,18 @@ onUnmounted(() => {
           </tbody>
         </table>
 
-        <div v-if="!tasks.length">
+        <div v-if="!statuses.length">
           <p
             class="text-center text-gray-500 text-base font-medium bg-white h-10 items-center flex justify-center"
           >
-            no tasks
+            no statuses
           </p>
         </div>
       </div>
       <router-view />
       <router-view name="addmodal" />
-      <router-view name="deletemodal" :id="tasks.id" />
-      <router-view name="editemodal" :id="tasks.id" />
+      <router-view name="deletemodal" :id="statuses.id" />
+      <router-view name="editemodal" :id="statuses.id" />
     </div>
   </div>
 </template>
