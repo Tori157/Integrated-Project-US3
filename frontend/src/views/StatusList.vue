@@ -36,6 +36,22 @@ onUnmounted(() => {
   window.removeEventListener('taskAdded', handleTaskAdded)
 })
 console.log(statuses)
+
+function formatStatusName(name) {
+  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
+  if (name === name.toLowerCase()) {
+    return name.replace(/_/g, ' ')
+  }
+
+  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
+  const formattedName = name
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+
+  // ตัดช่องว่างและเครื่องหมาย _ ออก
+  return formattedName.replace(/_/g, ' ').trim()
+}
 </script>
 
 <template>
@@ -55,12 +71,6 @@ console.log(statuses)
             @click="$router.push({ name: 'status-addmodal' })"
           >
             Add Status
-          </button>
-          <button
-            class="itbkk-button-add top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
-            @click="$router.push({ name: 'status-transfermodal' })"
-          >
-            Tranfer Status
           </button>
         </div>
       </div>
@@ -98,7 +108,7 @@ console.log(statuses)
               <!-- Title -->
               <td class="itbkk-title text-left whitespace-normal">
                 <a href="#" class="px-6 py-4 font-medisum text-base text-blue-600 hover:underline">
-                  {{ statuses.name }}
+                  {{ formatStatusName(statuses.name) }}
                 </a>
               </td>
 
@@ -111,6 +121,7 @@ console.log(statuses)
 
               <td>
                 <button
+                  v-if="statuses.name !== 'NO_STATUS'"
                   class="itbkk-button-edite"
                   @click="$router.push({ name: 'status-editmodal', params: { id: statuses.id } })"
                 >
@@ -121,6 +132,7 @@ console.log(statuses)
               </td>
               <td>
                 <button
+                  v-if="statuses.name !== 'NO_STATUS'"
                   class="itbkk-button-action"
                   @click="$router.push({ name: 'status-deletemodal', params: { id: statuses.id } })"
                 >

@@ -9,7 +9,7 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 const saveStatus = async () => {
   const statusData = {
-    name: name.value.trim(), // ใช้ name แทน statuses[index].name
+    name: name.value.trim(),
     description: description.value.trim()
   }
   try {
@@ -81,21 +81,10 @@ const saveStatus = async () => {
           ></textarea>
         </div>
         <div class="flex mt-5 justify-center">
-          <!-- <button
-            id="itbkk-button-confirm"
-            type="submit"
-            v-if="title.trim().length > 0"
-            @click="toggleModal"
-            class="bg-green-400 border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
-          >
-            Save
-          </button> -->
-          <!-- :disabled="statuses.trim().length" -->
-          <!-- name.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
-              name.trim().length === 0 ? 'disabled' : '' -->
           <button
             id="itbkk-button-confirm"
             type="submit"
+            :disabled="name.trim().length === 0"
             @click="toggleModal"
             class="itbkk-button-confirm"
             :class="[
@@ -109,7 +98,9 @@ const saveStatus = async () => {
               'text-base',
               'text-white',
               'font-semibold',
-              'text-center'
+              'text-center',
+              name.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
+              name.trim().length === 0 ? 'disabled' : ''
             ]"
           >
             Save

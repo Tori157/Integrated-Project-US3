@@ -20,7 +20,7 @@ const router = createRouter({
           component: () => import('../views/TaskDetail.vue')
         },
         {
-          path: ':id/edite',
+          path: ':id/edit',
           name: 'task-edite',
           component: () => import('../components/EditeTask.vue')
         },
@@ -57,7 +57,7 @@ const router = createRouter({
           component: () => import('../components/AddStatus.vue')
         },
         {
-          path: ':id/edite',
+          path: ':id/edit',
           name: 'status-editmodal',
           component: () => import('../components/EditStatus.vue')
         },

@@ -18,6 +18,31 @@ async function fetchStatus() {
       throw new Error('Failed to fetch status')
     }
     const data = await response.json()
+
+    if (data.name === 'NO_STATUS') {
+      console.error('Cannot edit status named NO_STATUS.')
+      const toastDiv = document.createElement('div')
+      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
+      const alertSuccessDiv = document.createElement('div')
+      alertSuccessDiv.className = 'alert alert-success'
+      alertSuccessDiv.innerHTML =
+        '<span>This status is the default status and cannot be modified.</span>'
+      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
+      alertSuccessDiv.style.color = 'white' // สีข้อความ
+      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
+
+      toastDiv.appendChild(alertSuccessDiv)
+      document.body.appendChild(toastDiv)
+
+      router.push('/statuslist')
+      setTimeout(function () {
+        document.body.removeChild(toastDiv)
+        window.location.reload()
+      }, 2000)
+      return
+    }
+
     statuses.value = data
     originalStatus.value = { ...data }
   } catch (error) {
@@ -36,6 +61,7 @@ async function saveChanges() {
       },
       body: JSON.stringify(statuses.value)
     })
+
     if (response.ok) {
       router.push('/statuslist')
       console.log('status updated successfully')
@@ -99,6 +125,22 @@ const isModified = computed(() => {
     statuses.value.description !== originalStatus.value.description
   )
 })
+
+function formatStatusName(name) {
+  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
+  if (name === name.toLowerCase()) {
+    return name.replace(/_/g, ' ')
+  }
+
+  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
+  const formattedName = name
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+
+  // ตัดช่องว่างและเครื่องหมาย _ ออก
+  return formattedName.replace(/_/g, ' ').trim()
+}
 </script>
 
 <template>
@@ -116,7 +158,7 @@ const isModified = computed(() => {
           <input
             type="text"
             id="itbkk-status-name"
-            v-model="statuses.name"
+            :value="formatStatusName(statuses.name)"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
