@@ -1,23 +1,59 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
-const title = ref('')
-const description = ref('')
-const assignees = ref('')
-const status = ref('NO_STATUS')
+import { onMounted } from 'vue'
+
+const formData = reactive({
+  title: '',
+  description: '',
+  assignees: '',
+  selectedStatus: {}
+})
+
 const router = useRouter()
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
+onMounted(async () => {
+  await fetchStatuses()
+})
+const statuses = ref([])
+const selectedStatus = ref({})
+
+const fetchStatuses = async () => {
+  try {
+    const response = await fetch(SERVER_URL + '/v2/statuses')
+    if (response.ok) {
+      const data = await response.json()
+      statuses.value = data
+
+      // if (statuses.value.length > 0) {
+      //   selectedStatus.value = statuses.value
+      // }
+    } else {
+      console.error('Failed to fetch statuses:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Error fetching statuses:', error)
+  }
+}
+
+console.log(statuses)
+fetchStatuses()
+
 const saveTask = async () => {
   const taskData = {
-    title: title.value.trim(),
-    description: description.value.trim(),
-    assignees: assignees.value.trim(),
-    status: status.value
+    title: formData.title.trim(),
+    description: formData.description.trim(),
+    assignees: formData.assignees.trim(),
+    status: {
+      id: formData.selectedStatus,
+      name: formData.selectedStatus,
+      description: formData.selectedStatus
+    }
   }
   try {
-    const response = await fetch(SERVER_URL + `/v1/tasks`, {
+    const response = await fetch(SERVER_URL + `/v2/tasks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -26,6 +62,8 @@ const saveTask = async () => {
     })
     if (response.status === 201) {
       router.push('/task')
+      console.log(taskData)
+      console.log(selectedStatus)
       // Alert
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center z-50'
@@ -40,16 +78,34 @@ const saveTask = async () => {
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      // setTimeout(function () {
+      //   document.body.removeChild(toastDiv)
+      //   window.location.reload()
+      // }, 2000)
     } else {
       console.error('Failed to save task:', response.statusText)
+      console.log(taskData)
+      console.log(selectedStatus)
     }
   } catch (error) {
     console.error('Error saving task:', error)
   }
+}
+
+function formatStatusName(name) {
+  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
+  if (name === name.toLowerCase()) {
+    return name.replace(/_/g, ' ')
+  }
+
+  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
+  const formattedName = name
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+
+  // ตัดช่องว่างและเครื่องหมาย _ ออก
+  return formattedName.replace(/_/g, ' ').trim()
 }
 </script>
 
@@ -66,7 +122,7 @@ const saveTask = async () => {
           <input
             type="text"
             id="itbkk-title"
-            v-model="title"
+            v-model="formData.title"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
@@ -76,7 +132,7 @@ const saveTask = async () => {
           >
           <textarea
             id="itbkk-description"
-            v-model="description"
+            v-model="formData.description"
             class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           ></textarea>
         </div>
@@ -87,7 +143,7 @@ const saveTask = async () => {
           <input
             type="text"
             id="itbkk-assignees"
-            v-model="assignees"
+            v-model="formData.assignees"
             class="bg-white text-blue-600 mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
@@ -97,29 +153,19 @@ const saveTask = async () => {
           >
           <select
             id="itbkk-status"
-            v-model="status"
+            v-model="formData.selectedStatus"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option value="NO_STATUS">No Status</option>
-            <option value="TO_DO">To Do</option>
-            <option value="DOING">Doing</option>
-            <option value="DONE">Done</option>
+            <option v-for="status in statuses" :value="status.value" :key="status.value">
+              {{ formatStatusName(status.name) }}
+            </option>
           </select>
         </div>
         <div class="flex mt-5 justify-center">
-          <!-- <button
-            id="itbkk-button-confirm"
-            type="submit"
-            v-if="title.trim().length > 0"
-            @click="toggleModal"
-            class="bg-green-400 border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
-          >
-            Save
-          </button> -->
           <button
             id="itbkk-button-confirm"
             type="submit"
-            :disabled="title.trim().length === 0"
+            :disabled="formData.title.trim().length === 0"
             @click="toggleModal"
             class="itbkk-button-confirm"
             :class="[
@@ -134,8 +180,8 @@ const saveTask = async () => {
               'text-white',
               'font-semibold',
               'text-center',
-              title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
-              title.trim().length === 0 ? 'disabled' : ''
+              formData.title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
+              formData.title.trim().length === 0 ? 'disabled' : ''
             ]"
           >
             Save

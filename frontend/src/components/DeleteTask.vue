@@ -11,7 +11,7 @@ const taskTitle = ref('')
 
 onMounted(async () => {
   try {
-    const response = await fetch(SERVER_URL + `/v1/tasks`)
+    const response = await fetch(SERVER_URL + `/v2/tasks`)
     const data = await response.json()
     tasks.value = data
 
@@ -26,7 +26,7 @@ onMounted(async () => {
 
 async function deleteTask(taskId) {
   try {
-    const res = await fetch(SERVER_URL + `/v1/tasks/${taskId}`, {
+    const res = await fetch(SERVER_URL + `/v2/tasks/${taskId}`, {
       method: 'DELETE'
     })
 
@@ -78,25 +78,6 @@ async function deleteTask(taskId) {
         window.location.reload()
       }, 2000)
     }
-    // else {
-    //   console.error('Failed to delete task')
-    //   const toastDiv = document.createElement('div')
-    //   toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
-    //   const alertSuccessDiv = document.createElement('div')
-    //   alertSuccessDiv.className = 'alert alert-danger'
-    //   alertSuccessDiv.innerHTML = '<span>Failed to delete task.</span>'
-    //   alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
-    //   alertSuccessDiv.style.color = 'white' // สีข้อความ
-    //   toastDiv.appendChild(alertSuccessDiv)
-    //   document.body.appendChild(toastDiv)
-    //   setTimeout(function () {
-    //     window.location.reload()
-    //   }, 2000)
-    //   router.push('/task')
-    //   setTimeout(function () {
-    //     window.location.reload()
-    //   }, 2000)
-    // }
   } catch (error) {
     console.error('Error:', error)
   }

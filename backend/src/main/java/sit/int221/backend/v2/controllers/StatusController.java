@@ -1,15 +1,11 @@
-package sit.int221.backend.controllers;
+package sit.int221.backend.v2.controllers;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sit.int221.backend.dtos.AddEditTaskDTO;
-import sit.int221.backend.dtos.AllTaskDTO;
-import sit.int221.backend.entities.Status;
-import sit.int221.backend.service.ListMapper;
-import sit.int221.backend.service.StatusService;
+import sit.int221.backend.v2.services.StatusService;
+import sit.int221.backend.v2.entities.Status;
 
 import java.util.List;
 
@@ -27,7 +23,7 @@ public class StatusController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getStatusById(@PathVariable Integer id) {
-        Status status = statusService.getStatus(id);
+        Status status = statusService.getStatusById(id);
         return ResponseEntity.ok(status);
     }
 

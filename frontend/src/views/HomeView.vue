@@ -6,7 +6,7 @@ const tasks = ref([])
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 async function fetchData() {
-  const response = await fetch(SERVER_URL + `/v1/tasks`)
+  const response = await fetch(SERVER_URL + `/v2/tasks`)
 
   const data = await response.json()
   console.log(data)
@@ -18,31 +18,6 @@ onMounted(async () => {
   console.log(tasks.value.length)
 })
 
-function getStatusText(status) {
-  switch (status) {
-    case 'NO_STATUS':
-      return 'No Status'
-    case 'TO_DO':
-      return 'To Do'
-    case 'DOING':
-      return 'Doing'
-    case 'DONE':
-      return 'Done'
-    default:
-      return 'No Status'
-  }
-}
-// const showAlert = ref(false)
-// function toggleModal() {
-//   showAlert.value = !showAlert.value
-// }
-
-// watch(tasks.value.length, (newTasks, oldTasks) => {
-//   if (newTasks.value.length > oldTasks.value.length) {
-//     toggleModal()
-//     console.log(tasks.value.length)
-//   }
-// })
 const showAlert = ref(false)
 const toggleModal = () => {
   showAlert.value = !showAlert.value
@@ -61,6 +36,22 @@ onUnmounted(() => {
   // Cleanup event listener
   window.removeEventListener('taskAdded', handleTaskAdded)
 })
+
+function formatStatusName(name) {
+  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
+  if (name === name.toLowerCase()) {
+    return name.replace(/_/g, ' ')
+  }
+
+  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
+  const formattedName = name
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+
+  // ตัดช่องว่างและเครื่องหมาย _ ออก
+  return formattedName.replace(/_/g, ' ').trim()
+}
 </script>
 
 <template>
@@ -140,15 +131,9 @@ onUnmounted(() => {
               <td class="itbkk-status">
                 <div
                   div
-                  class="w-[115px] border-4 border-blue-100 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
-                  :class="{
-                    'bg-red-400': getStatusText(task.status) === 'No Status',
-                    'bg-purple-400': getStatusText(task.status) === 'To Do',
-                    'bg-yellow-400': getStatusText(task.status) === 'Doing',
-                    'bg-green-500': getStatusText(task.status) === 'Done'
-                  }"
+                  class="w-[115px] border-4 border-blue-100 bg-blue-300 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
                 >
-                  {{ getStatusText(task.status) }}
+                  {{ formatStatusName(task.status.name) }}
                 </div>
               </td>
               <td class="flex">

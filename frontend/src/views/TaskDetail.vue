@@ -8,7 +8,7 @@ const route = useRoute()
 const router = useRouter()
 async function fetchTask() {
   try {
-    const response = await fetch(SERVER_URL + `/v1/tasks/${route.params.id}`)
+    const response = await fetch(SERVER_URL + `/v2/tasks/${route.params.id}`)
     if (!response.ok) {
       throw new Error('Failed to fetch tasks')
     }
@@ -27,21 +27,6 @@ onMounted(async () => {
   console.log(tasks.value)
 })
 
-function getStatusText(status) {
-  switch (status) {
-    case 'NO_STATUS':
-      return 'No Status'
-    case 'TO_DO':
-      return 'To Do'
-    case 'DOING':
-      return 'Doing'
-    case 'DONE':
-      return 'Done'
-    default:
-      return 'No Status'
-  }
-}
-
 function formateDateTime(time) {
   const date = new Date(time)
   const formate = {
@@ -57,6 +42,22 @@ function formateDateTime(time) {
 }
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
+}
+
+function formatStatusName(name) {
+  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
+  if (name === name.toLowerCase()) {
+    return name.replace(/_/g, ' ')
+  }
+
+  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
+  const formattedName = name
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+
+  // ตัดช่องว่างและเครื่องหมาย _ ออก
+  return formattedName.replace(/_/g, ' ').trim()
 }
 </script>
 
@@ -101,7 +102,7 @@ function getTimezone() {
           <div
             class="itbkk-status break-words bg-white rounded-lg mt-2 h-max text-blue-600 text-center h-10 p-2 mb-8"
           >
-            {{ getStatusText(tasks.status) }}
+            {{ formatStatusName(tasks.status.name) }}
           </div>
 
           <div class="itbkk-timezone mt-6 mb-3 ml-2 text-sm text-blue-600 font-normal">

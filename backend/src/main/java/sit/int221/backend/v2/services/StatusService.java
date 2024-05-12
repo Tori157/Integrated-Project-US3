@@ -1,13 +1,12 @@
-package sit.int221.backend.service;
+package sit.int221.backend.v2.services;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sit.int221.backend.entities.Status;
 import sit.int221.backend.exceptions.ItemNotFoundException;
 import sit.int221.backend.exceptions.MethodNotAllowedException;
-import sit.int221.backend.repositories.StatusRepository;
+import sit.int221.backend.v2.entities.Status;
+import sit.int221.backend.v2.repositories.StatusRepository;
 
 import java.util.List;
 
@@ -15,16 +14,13 @@ import java.util.List;
 public class StatusService {
     @Autowired
     private StatusRepository statusRepository;
-//    @Autowired
-//    private ModelMapper modelMapper;
-//    @Autowired
-//    private ListMapper listMapper;
 
     public List<Status> getAllStatus() {
         return statusRepository.findAll();
     }
 
-    public Status getStatus(int id) {
+
+    public Status getStatusById(int id) {
         return statusRepository.findById(id).orElseThrow(
                 () -> new ItemNotFoundException("Status id " + id + "does not exit !!!")
         );
@@ -40,7 +36,7 @@ public class StatusService {
         Status status = statusRepository.findById(id).orElseThrow(
                 () -> new ItemNotFoundException("NOT FOUND")
         );
-        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equalsIgnoreCase("NO_STATUS")) {
+        if (status.getName().equals("No Status") || status.getName().equals("NO_STATUS")) {
             throw new MethodNotAllowedException("The " + status.getName() + " cannot be delete ");
         }
         statusRepository.delete(status);
@@ -51,10 +47,10 @@ public class StatusService {
         Status oldStatus = statusRepository.findById(id).orElseThrow(
                 () -> new ItemNotFoundException("NOT FOUND")
         );
-        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equalsIgnoreCase("NO_STATUS")) {
+        if (status.getName().equals("No Status") || status.getName().equals("NO_STATUS")) {
             throw new MethodNotAllowedException("The " + oldStatus.getName() + " cannot be edited ");
         }
-        if (!oldStatus.equals(status)) {
+        if (!oldStatus.getName().equals(status.getName())) {
             oldStatus.setName(status.getName());
             oldStatus.setDescription(status.getDescription());
             return statusRepository.save(oldStatus);
@@ -62,4 +58,34 @@ public class StatusService {
         return oldStatus;
     }
 
+//    @Transactional
+//    public List<Status> transferStatusAndDelete(Integer statusId, Integer newStatusId) {
+//        Status status = statusRepository.findById(statusId)
+//                .orElseThrow(() -> new ItemNotFoundException("Status with ID " + statusId + " not found"));
+//
+//        if ((status.getId() == 1)) {
+//            throw new BadRequestException("Cannot delete default status 'No Status'");
+//        }
+//
+//        Status newStatus = statusRepository.findById(newStatusId)
+//                .orElseThrow(() -> new ItemNotFoundException("Status with new ID " + newStatusId + " not found"));
+//
+//        List<Task> tasks = taskRepository.findByStatusId(statusID);
+//        List<StatusTransferDTO> transferTask = new ArrayList<>();
+//
+//        for (Task task : tasks) {
+//            task.setStatus(newStatus);
+//            taskRepository.save(task);
+//
+//            Status status = new Status();
+//            status.setTitle(task.getTitle());
+//            status.setTaskID(task.getId());
+//            status.setStatusID(task.getId());
+//            status.setNewStatusID(newStatus.getId());
+//            transferTask.add(status);
+//        }
+//
+//        statusRepository.deleteById(statusId);
+//
+//        return transferTask;
 }

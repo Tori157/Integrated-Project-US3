@@ -1,4 +1,4 @@
-package sit.int221.backend.entities;
+package sit.int221.backend.v2.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -37,5 +37,22 @@ public class TaskV2 {
     @Column(name = "updatedOn", nullable = false)
     private ZonedDateTime updatedOn;
 
+    public void setTitle(String title) {
+        if (title != null) {
+            this.title = title.trim();
+        }
+    }
+
+    public void setDescription(String description) {
+        if (description != null) {
+            this.description = description.trim();
+        }
+    }
+
+    public void setAssignees(String assignees) {
+        if (assignees != null) {
+            this.assignees = assignees.trim();
+        }
+    }
 
 }

@@ -7,6 +7,7 @@ const description = ref('')
 const router = useRouter()
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
+
 const saveStatus = async () => {
   const statusData = {
     name: name.value.trim(),

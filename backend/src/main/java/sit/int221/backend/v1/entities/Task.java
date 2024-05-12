@@ -1,4 +1,4 @@
-package sit.int221.backend.entities;
+package sit.int221.backend.v1.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -13,7 +13,7 @@ const router = useRouter()
 // Fetch task details
 async function fetchTask() {
   try {
-    const response = await fetch(SERVER_URL + `/v1/tasks/${route.params.id}`)
+    const response = await fetch(SERVER_URL + `/v2/tasks/${route.params.id}`)
     if (!response.ok) {
       throw new Error('Failed to fetch tasks')
     }
@@ -30,7 +30,7 @@ async function fetchTask() {
 // Save changes to task
 async function saveChanges() {
   try {
-    const response = await fetch(SERVER_URL + `/v1/tasks/${route.params.id}`, {
+    const response = await fetch(SERVER_URL + `/v2/tasks/${route.params.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -63,7 +63,7 @@ async function saveChanges() {
     if (response.status === 404) {
       console.log('The task does not exist.')
       console.error('Failed to update task')
-
+      
       // alert
       console.error('Failed to delete task')
       const toastDiv = document.createElement('div')

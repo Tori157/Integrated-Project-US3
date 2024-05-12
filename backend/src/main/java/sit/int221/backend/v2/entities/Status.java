@@ -1,4 +1,4 @@
-package sit.int221.backend.entities;
+package sit.int221.backend.v2.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -16,6 +16,7 @@ public class Status {
     @Column(name = "statusId", nullable = false)
     private int id;
 
+
     @Column(name = "name", nullable = false, unique = true, length = 50)
     private String name;
 
@@ -31,6 +32,8 @@ public class Status {
     }
 
     public void setDescription(String description) {
-        this.description = description.trim(); // ตัดช่องว่างที่เพิ่มเข้ามา
+        if (description != null ) {
+            this.description = description.trim(); // ตัดช่องว่างที่เพิ่มเข้ามา
+        }
     }
 }

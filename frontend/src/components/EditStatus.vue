@@ -65,7 +65,7 @@ async function saveChanges() {
     if (response.ok) {
       router.push('/statuslist')
       console.log('status updated successfully')
-
+      console.log(statuses.value)
       // Alert
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center z-50'
@@ -80,10 +80,10 @@ async function saveChanges() {
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      // setTimeout(function () {
+      //   document.body.removeChild(toastDiv)
+      //   window.location.reload()
+      // }, 2000)
     }
     if (response.status === 404) {
       console.log('The task does not exist.')
@@ -105,10 +105,11 @@ async function saveChanges() {
       document.body.appendChild(toastDiv)
 
       router.push('/task')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+
+      // setTimeout(function () {
+      //   document.body.removeChild(toastDiv)
+      //   window.location.reload()
+      // }, 2000)
     }
   } catch (error) {
     console.error('Error updating task:', error)
