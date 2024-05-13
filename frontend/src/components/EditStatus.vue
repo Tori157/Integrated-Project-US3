@@ -18,8 +18,8 @@ async function fetchStatus() {
     }
     const data = await response.json()
 
-    if (data.name === 'NO_STATUS') {
-      console.error('Cannot edit status named NO_STATUS.')
+    if (data.name === 'No Status') {
+      console.error('Cannot edit status named No Status.')
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
@@ -94,11 +94,12 @@ async function saveChanges() {
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
       alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>An error has occurred, the task does not exist.</span>'
+      alertSuccessDiv.innerHTML = '<span>An error has occurred, the status does not exist.</span>'
       alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
       alertSuccessDiv.style.color = 'white' // สีข้อความ
       alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
       alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
+      alertSuccessDiv.classList.add('itbkk-message')
 
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
@@ -135,7 +136,7 @@ const isModified = computed(() => {
       </h2>
 
       <form @submit.prevent="">
-        <div class="mb-6">
+        <div class="itbkk-item mb-6">
           <label for="status-name" class="text-rose-400 block text-sm font-medium text-gray-700"
             >Name</label
           >
@@ -144,6 +145,7 @@ const isModified = computed(() => {
             id="itbkk-status-name"
             v-model="statuses.name"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="50"
           />
         </div>
         <div class="mb-4">
@@ -156,6 +158,7 @@ const isModified = computed(() => {
             id="itbkk-status-description"
             v-model="statuses.description"
             class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="200"
           ></textarea>
         </div>
 

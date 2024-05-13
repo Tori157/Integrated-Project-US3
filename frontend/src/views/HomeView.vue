@@ -74,7 +74,7 @@ function formatStatusName(name) {
             Add Task
           </button>
           <button
-            class="itbkk-button-add top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+            class="itbkk-manage-status top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
             @click="$router.push({ name: 'statuslist' })"
           >
             Manage Status

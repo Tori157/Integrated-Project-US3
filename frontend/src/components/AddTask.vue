@@ -52,16 +52,16 @@ const saveTask = async () => {
       description: formData.selectedStatus[2]
     }
   }
-  // const taskData = {
-  //   title: formData.title.trim(),
-  //   description: formData.description.trim(),
-  //   assignees: formData.assignees.trim(),
-  //   status: {
-  //     id: formData.selectedStatus,
-  //     name: formData.selectedStatus,
-  //     description: formData.selectedStatus
-  //   }
-  // }
+  if (formData.selectedStatus && formData.selectedStatus.length > 0) {
+    taskData.status.id = formData.selectedStatus[0]
+    taskData.status.name = formData.selectedStatus[1]
+    taskData.status.description = formData.selectedStatus[2]
+  } else {
+    taskData.status.id = 1
+    taskData.status.name = 'No Status'
+    taskData.status.description = 'The default status'
+  }
+
   try {
     const response = await fetch(SERVER_URL + `/v2/tasks`, {
       method: 'POST',

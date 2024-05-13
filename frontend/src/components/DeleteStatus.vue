@@ -55,8 +55,8 @@ async function deleteStatus(statusId) {
     }
 
     // Prevent deletion of NO_STATUS
-    if (statusToDelete.name === 'NO_STATUS') {
-      console.error('Cannot delete status named NO_STATUS.')
+    if (statusToDelete.name === 'No Status') {
+      console.error('Cannot delete status named No Status.')
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')

@@ -121,6 +121,30 @@ function formateDateTime(time) {
   return date.toLocaleString('en-GB', formate)
 }
 
+// function formateDateTime(time) {
+//   let date
+//   if (typeof time === 'string' || typeof time === 'number') {
+//     date = new Date(time)
+//   } else if (time instanceof RegExp) {
+//     // Handle regular expression input (if needed)
+//     return 'Regular expression cannot be formatted as date and time'
+//   } else {
+//     throw new Error('Unsupported input type')
+//   }
+
+//   const formate = {
+//     day: '2-digit',
+//     month: '2-digit',
+//     year: 'numeric',
+//     hour: '2-digit',
+//     minute: '2-digit',
+//     second: '2-digit',
+//     hour12: false
+//   }
+
+//   return date.toLocaleString('en-GB', formate)
+// }
+
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }

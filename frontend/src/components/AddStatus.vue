@@ -7,7 +7,6 @@ const description = ref('')
 const router = useRouter()
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
-
 const saveStatus = async () => {
   const statusData = {
     name: name.value.trim(),
@@ -51,7 +50,9 @@ const saveStatus = async () => {
 </script>
 
 <template>
-  <div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+  <div
+    class="itbkk-modal-status fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
+  >
     <div class="bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
       <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">
         Add Status
@@ -66,13 +67,14 @@ const saveStatus = async () => {
             type="text"
             id="itbkk-status-name"
             v-model="name"
-            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="itbkk-status-name bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
         <div class="mb-4">
           <label
+            id="itbkk-status-description"
             for="status-description"
-            class="text-rose-400 block text-sm font-medium text-gray-700"
+            class="itbkk-status-description text-rose-400 block text-sm font-medium text-gray-700"
             >Description</label
           >
           <textarea
