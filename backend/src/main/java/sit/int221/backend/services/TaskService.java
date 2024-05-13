@@ -2,10 +2,10 @@ package sit.int221.backend.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+// import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
+// import org.springframework.web.client.HttpClientErrorException;
 import sit.int221.backend.dtos.AddEditTaskDTO;
 import sit.int221.backend.dtos.AllTaskDTO;
 import sit.int221.backend.entities.Task;
