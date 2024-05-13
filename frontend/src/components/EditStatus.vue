@@ -5,7 +5,6 @@ import { useRoute, useRouter } from 'vue-router'
 
 const statuses = ref({ name: '', description: '' })
 
-// const editedTask = ref({})
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 const route = useRoute()
 const router = useRouter()
