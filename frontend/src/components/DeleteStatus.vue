@@ -33,6 +33,24 @@ async function deleteStatus(statusId) {
     const statusToDelete = statuses.value.find((status) => status.id === statusId)
     if (!statusToDelete) {
       console.error('Status not found.')
+      const toastDiv = document.createElement('div')
+      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
+      const alertSuccessDiv = document.createElement('div')
+      alertSuccessDiv.className = 'alert alert-success'
+      alertSuccessDiv.innerHTML = '<span>An error has occurred, the status does not exist.</span>'
+      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
+      alertSuccessDiv.style.color = 'white' // สีข้อความ
+      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
+      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
+
+      toastDiv.appendChild(alertSuccessDiv)
+      document.body.appendChild(toastDiv)
+
+      router.push('/statuslist')
+      setTimeout(function () {
+        document.body.removeChild(toastDiv)
+        window.location.reload()
+      }, 2000)
       return
     }
 

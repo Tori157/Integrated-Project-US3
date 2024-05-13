@@ -47,7 +47,7 @@ async function fetchStatus() {
     originalStatus.value = { ...data }
   } catch (error) {
     console.error('Error fetching status:', error)
-    router.push('/editerror')
+    router.push('/editstatuserror')
   }
 }
 

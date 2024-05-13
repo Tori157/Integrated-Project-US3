@@ -47,6 +47,11 @@ const router = createRouter({
       component: () => import('../views/EditNotFound.vue')
     },
     {
+      path: '/editstatuserror',
+      name: 'statusedit-error',
+      component: () => import('../views/StatusNotFound.vue')
+    },
+    {
       path: '/statuslist',
       name: 'statuslist',
       component: () => import('../views/StatusList.vue'),
@@ -66,6 +71,7 @@ const router = createRouter({
           name: 'status-deletemodal',
           component: () => import('../components/DeleteStatus.vue')
         }
+        
       ]
     }
   ]

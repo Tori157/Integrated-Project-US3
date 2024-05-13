@@ -84,13 +84,11 @@ console.log(statuses)
       >
         <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide">Description</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
-              <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
-            </tr>
+            <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
+            <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
+            <th scope="col" class="px-6 py-3 text-center tracking-wide">Description</th>
+            <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
+            <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
           </thead>
 
           <tbody>
@@ -106,15 +104,16 @@ console.log(statuses)
               </th>
 
               <!-- Title -->
-              <td class="itbkk-title text-left whitespace-normal">
+              <td class="itbkk-status-name text-left whitespace-normal">
                 <a href="#" class="px-6 py-4 font-medisum text-base text-blue-600 hover:underline">
                   {{ statuses.name }}
                 </a>
               </td>
 
               <td
-                class="itbkk-assignees px-6 py-4 text-center text-base text-blue-600 font-medium"
+                class="itbkk-status-description px-6 py-4 text-center text-base text-blue-600 font-medium whitespace-normal"
                 :class="{ 'text-gray-500 italic': !statuses.description }"
+                style="word-wrap: break-word"
               >
                 {{ statuses.description || 'No description is provided.' }}
               </td>

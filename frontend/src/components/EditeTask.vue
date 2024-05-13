@@ -137,7 +137,10 @@ const handleStatusChange = (event) => {
     tasks.value.status.isModified = true
   }
 }
-
+// const handleStatusChange = (event) => {
+//   const selectedStatusId = event.target.value
+//   tasks.value.status.isModified = selectedStatusId !== originalTasks.value.status.id
+// }
 const isModified = computed(() => {
   return (
     JSON.stringify(tasks.value) !== JSON.stringify(originalTasks.value) ||
@@ -145,8 +148,16 @@ const isModified = computed(() => {
   )
 })
 
+// const isModified = computed(() => {
+//   return (
+//     JSON.stringify(tasks.value) !== JSON.stringify(originalTasks.value) ||
+//     (tasks.value.status && tasks.value.status.isModified) ||
+//     tasks.value.status.id !== originalTasks.value.status.id
+//   )
+// })
+
 const isStatusModified = computed(() => {
-  return tasks.value.status !== originalTasks.value.status
+  return tasks.value.status.id !== originalTasks.value.status.id
 })
 
 function formatStatusName(name) {
