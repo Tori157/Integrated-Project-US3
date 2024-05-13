@@ -124,16 +124,21 @@ function formateDateTime(time) {
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
-// Cancel editing and navigate back
+
 function cancelEditing() {
   router.back()
 }
-const handleStatusChange = () => {
-  tasks.value.status.isModified = true // Mark status as modified
+
+const handleStatusChange = (event) => {
+  const selectedStatusId = event.target.value
+  if (selectedStatusId === originalTasks.value.status.id) {
+    tasks.value.status.isModified = false
+  } else {
+    tasks.value.status.isModified = true
+  }
 }
 
 const isModified = computed(() => {
-  // Check if status or any other field is modified
   return (
     JSON.stringify(tasks.value) !== JSON.stringify(originalTasks.value) ||
     (tasks.value.status && tasks.value.status.isModified)
@@ -141,7 +146,7 @@ const isModified = computed(() => {
 })
 
 const isStatusModified = computed(() => {
-  return tasks.value.status.id !== originalTasks.value.status.id
+  return tasks.value.status !== originalTasks.value.status
 })
 
 function formatStatusName(name) {
@@ -232,6 +237,50 @@ function formatStatusName(name) {
 
           <div class="flex">
             <form method="dialog" class="flex">
+              <!-- <button
+                id="itbkk-button-edit"
+                :disabled="!isModified || tasks.title.trim().length === 0"
+                @click="saveChanges"
+                class="itbkk-button-edit btn text-white border-white mr-6 bg-green-500 hover:bg-green-600 border-4 hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
+                :class="
+                  (!isModified || tasks.title.trim().length === 0
+                    ? 'bg-gray-400'
+                    : 'bg-green-400',
+                  !isModified || tasks.title.trim().length === 0
+                    ? 'text-white'
+                    : '',
+                  !isModified || tasks.title.trim().length === 0
+                    ? 'border-white'
+                    : '',
+                  !isModified || tasks.title.trim().length === 0
+                    ? 'disabled'
+                    : '')
+                "
+              >
+                Save
+              </button> -->
+              <!-- <button
+                id="itbkk-button-edit"
+                :disabled="!isModified || tasks.title.trim().length === 0 || isStatusModified"
+                @click="saveChanges"
+                class="itbkk-button-edit btn text-white border-white mr-6 bg-green-500 hover:bg-green-600 border-4 hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
+                :class="
+                  (!isModified || tasks.title.trim().length === 0 || isStatusModified
+                    ? 'bg-gray-400'
+                    : 'bg-green-400',
+                  !isModified || tasks.title.trim().length === 0 || isStatusModified
+                    ? 'text-white'
+                    : '',
+                  !isModified || tasks.title.trim().length === 0 || isStatusModified
+                    ? 'border-white'
+                    : '',
+                  !isModified || tasks.title.trim().length === 0 || isStatusModified
+                    ? 'disabled'
+                    : '')
+                "
+              >
+                Save
+              </button> -->
               <button
                 id="itbkk-button-edit"
                 :disabled="!isModified || tasks.title.trim().length === 0 || isStatusModified"
