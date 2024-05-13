@@ -28,6 +28,9 @@ public class StatusService {
 
     @Transactional
     public Status createNewStatus(Status status) {
+            if (status.getDescription() != null) {
+            status.setDescription(status.getDescription());
+        }
         return statusRepository.save(status);
     }
 
@@ -36,7 +39,7 @@ public class StatusService {
         Status status = statusRepository.findById(id).orElseThrow(
                 () -> new ItemNotFoundException("NOT FOUND")
         );
-        if (status.getName().equals("No Status") || status.getName().equals("NO_STATUS")) {
+        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equals("NO_STATUS")) {
             throw new MethodNotAllowedException("The " + status.getName() + " cannot be delete ");
         }
         statusRepository.delete(status);
@@ -47,7 +50,7 @@ public class StatusService {
         Status oldStatus = statusRepository.findById(id).orElseThrow(
                 () -> new ItemNotFoundException("NOT FOUND")
         );
-        if (status.getName().equals("No Status") || status.getName().equals("NO_STATUS")) {
+        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equals("NO_STATUS")) {
             throw new MethodNotAllowedException("The " + oldStatus.getName() + " cannot be edited ");
         }
 

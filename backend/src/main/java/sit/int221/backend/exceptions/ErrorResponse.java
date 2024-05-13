@@ -3,7 +3,6 @@ package sit.int221.backend.exceptions;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
 @Data
