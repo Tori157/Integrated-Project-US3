@@ -183,17 +183,6 @@ const isModified = computed(() => {
 const isStatusModified = computed(() => {
   return tasks.value.status.id !== originalTasks.value.status.id
 })
-
-function formatStatusName(name) {
-  if (name === name.toLowerCase()) {
-    return name.replace(/_/g, ' ')
-  }
-  const formattedName = name
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
-  return formattedName.replace(/_/g, ' ').trim()
-}
 </script>
 
 <template>
@@ -251,7 +240,7 @@ function formatStatusName(name) {
             @change="handleStatusChange"
           >
             <option v-for="status in statuses" :value="status.id" :key="status.id">
-              {{ formatStatusName(status.name) }}
+              {{ status.name }}
             </option>
           </select>
 

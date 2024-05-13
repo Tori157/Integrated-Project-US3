@@ -102,17 +102,6 @@ const saveTask = async () => {
     console.error('Error saving task:', error)
   }
 }
-
-function formatStatusName(name) {
-  if (name === name.toLowerCase()) {
-    return name.replace(/_/g, ' ')
-  }
-  const formattedName = name
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
-  return formattedName.replace(/_/g, ' ').trim()
-}
 </script>
 
 <template>
@@ -167,7 +156,7 @@ function formatStatusName(name) {
               :value="[status.id, status.name, status.description]"
               :key="status.id"
             >
-              {{ formatStatusName(status.name) }}
+              {{ status.name }}
             </option>
           </select>
         </div>

@@ -37,21 +37,7 @@ onUnmounted(() => {
   window.removeEventListener('taskAdded', handleTaskAdded)
 })
 
-function formatStatusName(name) {
-  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
-  if (name === name.toLowerCase()) {
-    return name.replace(/_/g, ' ')
-  }
 
-  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
-  const formattedName = name
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
-
-  // ตัดช่องว่างและเครื่องหมาย _ ออก
-  return formattedName.replace(/_/g, ' ').trim()
-}
 </script>
 
 <template>
@@ -133,7 +119,7 @@ function formatStatusName(name) {
                   div
                   class="w-[115px] border-4 border-blue-100 bg-blue-300 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
                 >
-                  {{ formatStatusName(task.status.name) }}
+                  {{ task.status.name }}
                 </div>
               </td>
               <td class="flex">
