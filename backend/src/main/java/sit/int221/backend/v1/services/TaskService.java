@@ -1,17 +1,17 @@
-package sit.int221.backend.services;
+package sit.int221.backend.v1.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-// import org.springframework.web.client.HttpClientErrorException;
-import sit.int221.backend.dtos.AddEditTaskDTO;
-import sit.int221.backend.dtos.AllTaskDTO;
-import sit.int221.backend.entities.Task;
-import sit.int221.backend.entities.TaskStatus;
+import sit.int221.backend.v1.dtos.AddEditTaskDTO;
+import sit.int221.backend.v1.dtos.AllTaskDTO;
 import sit.int221.backend.exceptions.ItemNotFoundException;
-import sit.int221.backend.repositories.TaskRepository;
+import sit.int221.backend.v1.entities.Task;
+import sit.int221.backend.v1.entities.TaskStatus;
+import sit.int221.backend.v1.repositories.TaskRepository;
+import sit.int221.backend.service.ListMapper;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class TaskService {
     ListMapper listMapper;
 
     public List<AllTaskDTO> getAllTasks() {
-        return listMapper.mapList(repository.findAll(), AllTaskDTO.class, modelMapper);
+        return listMapper.mapList(repository.findAll(Sort.by("createdOn").ascending()), AllTaskDTO.class, modelMapper);
     }
 
 

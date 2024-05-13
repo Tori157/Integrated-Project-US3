@@ -54,7 +54,7 @@ describe(`TC-PBI5-EDIT-TASK-BASIC-1\n
     cy.get('.itbkk-title').contains("DevSecOps").parents(".itbkk-item").as("item")
     cy.get('@item').find('.itbkk-button-action').click().as('action')
     cy.get('@action').find('.itbkk-button-edit').click()
-
+    
     cy.wait(100)
     cy.get('.itbkk-title').clear()
     cy.get('.itbkk-button-cancel').contains('cancel',{matchCase: false}).as('cancel') ;

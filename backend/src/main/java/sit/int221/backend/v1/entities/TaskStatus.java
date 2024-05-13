@@ -1,4 +1,4 @@
-package sit.int221.backend.entities;
+package sit.int221.backend.v1.entities;
 
 public enum TaskStatus {
     NO_STATUS,

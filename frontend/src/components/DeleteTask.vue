@@ -4,14 +4,14 @@ import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-
+const SERVER_URL = import.meta.env.VITE_SERVER_URL
 const tasks = ref([])
 const taskId = parseInt(route.params.id)
 const taskTitle = ref('')
 
 onMounted(async () => {
   try {
-    const response = await fetch('http://ip23us3.sit.kmutt.ac.th:8080/v1/tasks')
+    const response = await fetch(SERVER_URL + `/v2/tasks`)
     const data = await response.json()
     tasks.value = data
 
@@ -26,7 +26,7 @@ onMounted(async () => {
 
 async function deleteTask(taskId) {
   try {
-    const res = await fetch(`http://ip23us3.sit.kmutt.ac.th:8080/v1/tasks/${taskId}`, {
+    const res = await fetch(SERVER_URL + `/v2/tasks/${taskId}`, {
       method: 'DELETE'
     })
 
@@ -35,7 +35,7 @@ async function deleteTask(taskId) {
       tasks.value = tasks.value.filter((task) => task.id !== taskId)
       router.push('/task')
       // alert
-      console.error('Failed to delete task')
+
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
@@ -58,18 +58,7 @@ async function deleteTask(taskId) {
     if (res.status === 404) {
       console.log('The task does not exist.')
       console.error('Failed to delete task')
-      // const toastDiv = document.createElement('div')
-      // toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
-      // const alertSuccessDiv = document.createElement('div')
-      // alertSuccessDiv.className = 'alert alert-success'
-      // alertSuccessDiv.innerHTML = '<span>The task does not exist.</span>'
-      // alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
-      // alertSuccessDiv.style.color = 'white' // สีข้อความ
-      // toastDiv.appendChild(alertSuccessDiv)
-      // document.body.appendChild(toastDiv)
-      // document.body.appendChild(toastDiv)
 
-      console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
@@ -89,25 +78,6 @@ async function deleteTask(taskId) {
         window.location.reload()
       }, 2000)
     }
-    // else {
-    //   console.error('Failed to delete task')
-    //   const toastDiv = document.createElement('div')
-    //   toastDiv.className = 'toast toast-top toast-end z-50' // ตำเเหน่ง
-    //   const alertSuccessDiv = document.createElement('div')
-    //   alertSuccessDiv.className = 'alert alert-danger'
-    //   alertSuccessDiv.innerHTML = '<span>Failed to delete task.</span>'
-    //   alertSuccessDiv.style.backgroundColor = 'red' // สีพื้นหลัง
-    //   alertSuccessDiv.style.color = 'white' // สีข้อความ
-    //   toastDiv.appendChild(alertSuccessDiv)
-    //   document.body.appendChild(toastDiv)
-    //   setTimeout(function () {
-    //     window.location.reload()
-    //   }, 2000)
-    //   router.push('/task')
-    //   setTimeout(function () {
-    //     window.location.reload()
-    //   }, 2000)
-    // }
   } catch (error) {
     console.error('Error:', error)
   }

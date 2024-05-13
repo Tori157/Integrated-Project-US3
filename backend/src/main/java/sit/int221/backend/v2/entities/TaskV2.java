@@ -1,20 +1,19 @@
-package sit.int221.backend.entities;
+package sit.int221.backend.v2.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
+@Data
 @Entity
-@Getter
-@Setter
-@Table(name = "tasks")
-public class Task {
+@Table(name = "tasksV2")
+public class TaskV2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "taskId", nullable = false)
     private Integer id;
 
     @Column(name = "title", nullable = false, length = 100)
@@ -26,9 +25,9 @@ public class Task {
     @Column(name = "assignees", length = 30)
     private String assignees;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private TaskStatus status;
+    @ManyToOne
+    @JoinColumn(name = "statusId")
+    private Status status;
 
     @CreationTimestamp
     @Column(name = "createdOn", nullable = false)
@@ -55,5 +54,5 @@ public class Task {
             this.assignees = assignees.trim();
         }
     }
-}
 
+}
