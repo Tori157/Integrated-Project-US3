@@ -66,7 +66,7 @@ async function deleteStatus(statusId) {
 
       router.push('/statuslist')
       // alert
-      console.error('Failed to delete task')
+
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')

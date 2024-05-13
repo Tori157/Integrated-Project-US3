@@ -28,7 +28,7 @@ const fetchStatuses = async () => {
       statuses.value = data
 
       // if (statuses.value.length > 0) {
-      //   selectedStatus.value = statuses.value
+      //   selectedStatus.value = statuses.value[0]
       // }
     } else {
       console.error('Failed to fetch statuses:', response.statusText)
@@ -47,11 +47,21 @@ const saveTask = async () => {
     description: formData.description.trim(),
     assignees: formData.assignees.trim(),
     status: {
-      id: formData.selectedStatus,
-      name: formData.selectedStatus,
-      description: formData.selectedStatus
+      id: formData.selectedStatus[0],
+      name: formData.selectedStatus[1],
+      description: formData.selectedStatus[2]
     }
   }
+  // const taskData = {
+  //   title: formData.title.trim(),
+  //   description: formData.description.trim(),
+  //   assignees: formData.assignees.trim(),
+  //   status: {
+  //     id: formData.selectedStatus,
+  //     name: formData.selectedStatus,
+  //     description: formData.selectedStatus
+  //   }
+  // }
   try {
     const response = await fetch(SERVER_URL + `/v2/tasks`, {
       method: 'POST',
@@ -62,8 +72,8 @@ const saveTask = async () => {
     })
     if (response.status === 201) {
       router.push('/task')
-      console.log(taskData)
-      console.log(selectedStatus)
+      // console.log(taskData)
+      console.log(formData.selectedStatus)
       // Alert
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center z-50'
@@ -78,13 +88,14 @@ const saveTask = async () => {
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
-      // setTimeout(function () {
-      //   document.body.removeChild(toastDiv)
-      //   window.location.reload()
-      // }, 2000)
+      setTimeout(function () {
+        document.body.removeChild(toastDiv)
+        window.location.reload()
+      }, 2000)
     } else {
       console.error('Failed to save task:', response.statusText)
       console.log(taskData)
+      console.log(formData.selectedStatus)
       console.log(selectedStatus)
     }
   } catch (error) {
@@ -93,18 +104,13 @@ const saveTask = async () => {
 }
 
 function formatStatusName(name) {
-  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
   if (name === name.toLowerCase()) {
     return name.replace(/_/g, ' ')
   }
-
-  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
   const formattedName = name
     .replace(/_/g, ' ')
     .toLowerCase()
     .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
-
-  // ตัดช่องว่างและเครื่องหมาย _ ออก
   return formattedName.replace(/_/g, ' ').trim()
 }
 </script>
@@ -156,13 +162,43 @@ function formatStatusName(name) {
             v-model="formData.selectedStatus"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option v-for="status in statuses" :value="status.value" :key="status.value">
+            <option
+              v-for="status in statuses"
+              :value="[status.id, status.name, status.description]"
+              :key="status.id"
+            >
               {{ formatStatusName(status.name) }}
             </option>
           </select>
         </div>
         <div class="flex mt-5 justify-center">
           <button
+            id="itbkk-button-confirm"
+            type="submit"
+            :disabled="formData.title.trim().length === 0 || !formData.selectedStatus"
+            @click="toggleModal"
+            class="itbkk-button-confirm"
+            :class="[
+              'border-4',
+              'border-white',
+              'rounded-3xl',
+              'mx-5',
+              'p-8',
+              'px-7',
+              'py-2',
+              'text-base',
+              'text-white',
+              'font-semibold',
+              'text-center',
+              formData.title.trim().length === 0 || !formData.selectedStatus
+                ? 'bg-gray-400'
+                : 'bg-green-400',
+              formData.title.trim().length === 0 || !formData.selectedStatus ? 'disabled' : ''
+            ]"
+          >
+            Save
+          </button>
+          <!-- <button
             id="itbkk-button-confirm"
             type="submit"
             :disabled="formData.title.trim().length === 0"
@@ -185,7 +221,7 @@ function formatStatusName(name) {
             ]"
           >
             Save
-          </button>
+          </button> -->
 
           <button
             id="itbkk-button-cancel"

@@ -2,11 +2,18 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const tasks = ref([])
-
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 const route = useRoute()
 const router = useRouter()
+
+const tasks = ref({})
+const originalTasks = ref({})
+const statuses = ref([])
+
+onMounted(async () => {
+  await fetchTask()
+  await fetchStatuses()
+})
 
 // Fetch task details
 async function fetchTask() {
@@ -16,12 +23,26 @@ async function fetchTask() {
       throw new Error('Failed to fetch tasks')
     }
     const data = await response.json()
-    tasks.value = data
-    originalTasks.value = { ...tasks.value }
+    tasks.value = { ...data }
+    originalTasks.value = { ...data }
     getTimezone()
   } catch (error) {
     console.error('Error fetching tasks:', error)
     router.push('/editerror')
+  }
+}
+
+// Fetch statuses
+async function fetchStatuses() {
+  try {
+    const response = await fetch(SERVER_URL + '/v2/statuses')
+    if (response.ok) {
+      statuses.value = await response.json()
+    } else {
+      console.error('Failed to fetch statuses:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Error fetching statuses:', error)
   }
 }
 
@@ -38,6 +59,7 @@ async function saveChanges() {
     if (response.ok) {
       router.push('/task')
       console.log('Task updated successfully')
+      console.log(tasks.value)
 
       // Alert
       const toastDiv = document.createElement('div')
@@ -57,13 +79,11 @@ async function saveChanges() {
         document.body.removeChild(toastDiv)
         window.location.reload()
       }, 2000)
-    }
-    if (response.status === 404) {
-      console.log('The task does not exist.')
+    } else {
       console.error('Failed to update task')
+      console.log(tasks.value)
 
       // alert
-      console.error('Failed to delete task')
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
@@ -77,19 +97,16 @@ async function saveChanges() {
       toastDiv.appendChild(alertSuccessDiv)
       document.body.appendChild(toastDiv)
 
-      router.push('/task')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      // router.push('/task')
+      // setTimeout(function () {
+      //   document.body.removeChild(toastDiv)
+      //   window.location.reload()
+      // }, 2000)
     }
   } catch (error) {
     console.error('Error updating task:', error)
   }
 }
-
-// Format functions and getTimezone function
-
 function formateDateTime(time) {
   const date = new Date(time)
   const formate = {
@@ -107,13 +124,36 @@ function formateDateTime(time) {
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
+// Cancel editing and navigate back
+function cancelEditing() {
+  router.back()
+}
+const handleStatusChange = () => {
+  tasks.value.status.isModified = true // Mark status as modified
+}
 
-onMounted(fetchTask)
-
-const originalTasks = ref({})
 const isModified = computed(() => {
-  return JSON.stringify(tasks.value) !== JSON.stringify(originalTasks.value)
+  // Check if status or any other field is modified
+  return (
+    JSON.stringify(tasks.value) !== JSON.stringify(originalTasks.value) ||
+    (tasks.value.status && tasks.value.status.isModified)
+  )
 })
+
+const isStatusModified = computed(() => {
+  return tasks.value.status.id !== originalTasks.value.status.id
+})
+
+function formatStatusName(name) {
+  if (name === name.toLowerCase()) {
+    return name.replace(/_/g, ' ')
+  }
+  const formattedName = name
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+  return formattedName.replace(/_/g, ' ').trim()
+}
 </script>
 
 <template>
@@ -165,16 +205,15 @@ const isModified = computed(() => {
           <div class="text-base text-rose-400 font-medium">Status:</div>
           <!-- Editable Status -->
           <select
-            v-model="tasks.status"
-            class="itbkk-status bg-white text-blue-600 mt-1 block h-9 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-left"
+            id="itbkk-status"
+            v-model="tasks.status.id"
+            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            @change="handleStatusChange"
           >
-            <option value="NO_STATUS">No Status</option>
-            <option value="TO_DO">To Do</option>
-            <option value="DOING">Doing</option>
-            <option value="DONE">Done</option>
+            <option v-for="status in statuses" :value="status.id" :key="status.id">
+              {{ formatStatusName(status.name) }}
+            </option>
           </select>
-
-          <!-- Display Timezone, Created On, and Updated On -->
 
           <div class="itbkk-timezone mt-6 mb-3 ml-2 text-sm text-blue-600 font-normal">
             <span class="text-base text-rose-400 font-medium">Timezone :</span>
@@ -195,22 +234,31 @@ const isModified = computed(() => {
             <form method="dialog" class="flex">
               <button
                 id="itbkk-button-edit"
-                :disabled="!isModified || tasks.title.trim().length === 0"
+                :disabled="!isModified || tasks.title.trim().length === 0 || isStatusModified"
                 @click="saveChanges"
                 class="itbkk-button-edit btn text-white border-white mr-6 bg-green-500 hover:bg-green-600 border-4 hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
                 :class="
-                  (!isModified || tasks.title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
-                  !isModified || tasks.title.trim().length === 0 ? 'text-white' : '',
-                  !isModified || tasks.title.trim().length === 0 ? 'border-white' : '',
-                  !isModified || tasks.title.trim().length === 0 ? 'disabled' : '')
+                  (!isModified || tasks.title.trim().length === 0 || isStatusModified
+                    ? 'bg-gray-400'
+                    : 'bg-green-400',
+                  !isModified || tasks.title.trim().length === 0 || isStatusModified
+                    ? 'text-white'
+                    : '',
+                  !isModified || tasks.title.trim().length === 0 || isStatusModified
+                    ? 'border-white'
+                    : '',
+                  !isModified || tasks.title.trim().length === 0 || isStatusModified
+                    ? 'disabled'
+                    : '')
                 "
               >
                 Save
               </button>
+
               <button
                 id="itbkk-button-cancel"
                 class="itbkk-button-cancel btn mr-6 bg-red-500 hover:bg-red-600 border-4 border-white hover:border-red-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
-                @click="() => router.back()"
+                @click="cancelEditing"
               >
                 Cancle
               </button>
