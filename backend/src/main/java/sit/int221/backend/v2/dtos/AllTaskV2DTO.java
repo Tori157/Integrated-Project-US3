@@ -8,5 +8,5 @@ public class AllTaskV2DTO {
     private Integer id;
     private String title;
     private String assignees;
-    private Status status;
+    private String statusName;
 }

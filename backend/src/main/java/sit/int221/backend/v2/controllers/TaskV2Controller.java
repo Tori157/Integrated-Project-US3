@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sit.int221.backend.service.ListMapper;
-import sit.int221.backend.v2.dtos.AddEditTaskV2DTO;
+import sit.int221.backend.v2.dtos.NewTaskV2DTO;
 import sit.int221.backend.v2.dtos.AllTaskV2DTO;
 import sit.int221.backend.v2.entities.TaskV2;
 import sit.int221.backend.v2.services.TaskV2Service;
@@ -36,14 +36,14 @@ public class TaskV2Controller {
     }
 
     @PostMapping("")
-    public ResponseEntity<AddEditTaskV2DTO> addNewTask(@RequestBody TaskV2 task) {
-        AddEditTaskV2DTO newTask = taskV2Service.createNewTask(task);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newTask);
+    public ResponseEntity<NewTaskV2DTO> addNewTask(@RequestBody NewTaskV2DTO newTask) {
+        NewTaskV2DTO task = taskV2Service.createNewTask(newTask);
+        return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
     @PutMapping("/{id}")
-    public AddEditTaskV2DTO updateTask(@PathVariable Integer id, @RequestBody TaskV2 task) {
-        return taskV2Service.updateTaskById(id, task);
+    public NewTaskV2DTO updateTask(@PathVariable Integer id, @RequestBody NewTaskV2DTO newTask) {
+        return taskV2Service.updateTaskById(id, newTask);
     }
 
     @DeleteMapping("/{id}")
