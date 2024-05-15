@@ -11,7 +11,7 @@ const formData = reactive({
 })
 
 const router = useRouter()
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 onMounted(async () => {
   await fetchStatuses()
@@ -20,7 +20,7 @@ const statuses = ref([])
 
 const fetchStatuses = async () => {
   try {
-    const response = await fetch(SERVER_URL + '/v2/statuses')
+    const response = await fetch(BASE_URL + '/v2/statuses')
     if (response.ok) {
       const data = await response.json()
       statuses.value = data
@@ -56,7 +56,7 @@ const saveTask = async () => {
   // }
 
   try {
-    const response = await fetch(SERVER_URL + `/v2/tasks`, {
+    const response = await fetch(BASE_URL + `/v2/tasks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

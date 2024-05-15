@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 const name = ref('')
 const description = ref('')
 const router = useRouter()
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const saveStatus = async () => {
   const statusData = {
@@ -13,7 +13,7 @@ const saveStatus = async () => {
     description: description.value.trim()
   }
   try {
-    const response = await fetch(SERVER_URL + `/v2/statuses`, {
+    const response = await fetch(BASE_URL + `/v2/statuses`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -3,12 +3,12 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const tasks = ref([])
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 const route = useRoute()
 const router = useRouter()
 async function fetchTask() {
   try {
-    const response = await fetch(SERVER_URL + `/v2/tasks/${route.params.id}`)
+    const response = await fetch(BASE_URL + `/v2/tasks/${route.params.id}`)
     if (!response.ok) {
       throw new Error('Failed to fetch tasks')
     }

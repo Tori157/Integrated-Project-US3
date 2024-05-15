@@ -5,14 +5,14 @@ import { useRoute, useRouter } from 'vue-router'
 
 const statuses = ref({ name: '', description: '' })
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 const route = useRoute()
 const router = useRouter()
 
 // Fetch status details
 async function fetchStatus() {
   try {
-    const response = await fetch(SERVER_URL + `/v2/statuses/${route.params.id}`)
+    const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`)
     if (!response.ok) {
       throw new Error('Failed to fetch status')
     }
@@ -39,7 +39,7 @@ async function saveChanges() {
     statuses.value.name = statuses.value.name.trim()
     statuses.value.description = statuses.value.description.trim()
 
-    const response = await fetch(SERVER_URL + `/v2/statuses/${route.params.id}`, {
+    const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

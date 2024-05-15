@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 const route = useRoute()
 const router = useRouter()
 
@@ -17,7 +17,7 @@ onMounted(async () => {
 
 async function fetchTask() {
   try {
-    const response = await fetch(`${SERVER_URL}/v2/tasks/${route.params.id}`)
+    const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`)
     if (!response.ok) {
       throw new Error('Failed to fetch tasks')
     }
@@ -34,7 +34,7 @@ async function fetchTask() {
 
 async function fetchStatuses() {
   try {
-    const response = await fetch(`${SERVER_URL}/v2/statuses`)
+    const response = await fetch(`${BASE_URL}/v2/statuses`)
     if (!response.ok) {
       throw new Error('Failed to fetch statuses')
     }
@@ -61,7 +61,7 @@ async function saveChanges() {
       // }
     }
 
-    const response = await fetch(`${SERVER_URL}/v2/tasks/${route.params.id}`, {
+    const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`, {
       method: `PUT`,
       headers: {
         'Content-Type': 'application/json'

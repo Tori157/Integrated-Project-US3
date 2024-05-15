@@ -2,10 +2,10 @@
 import { onMounted, ref, onUnmounted } from 'vue'
 
 const tasks = ref([])
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 async function fetchData() {
-  const response = await fetch(SERVER_URL + `/v2/tasks`)
+  const response = await fetch(BASE_URL + `/v2/tasks`)
 
   const data = await response.json()
   console.log(data)
