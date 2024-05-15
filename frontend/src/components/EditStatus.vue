@@ -21,7 +21,7 @@ async function fetchStatus() {
     if (data.name === 'No Status') {
       console.error('Cannot edit status named No Status.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-
+      router.push('/statuslist')
       return
     }
 

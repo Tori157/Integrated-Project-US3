@@ -28,58 +28,30 @@ onMounted(async () => {
 
 async function deleteStatus(statusId) {
   try {
+    if (statusId === 1) {
+      console.error('Cannot delete status named No Status.')
+      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
+      router.push('/statuslist')
+      return
+    }
+
     if (targetStatusId.value) {
       await transferTasks(statusId, targetStatusId.value)
     }
-    const res = await fetch(BASE_URL + `/v2/statuses/${statusId}`, {
+    const res = await fetch(BASE_URL + `/v2/statuses/${statusId}/${targetStatusId.value}`, {
       method: 'DELETE'
     })
     const statusToDelete = statuses.value.find((status) => status.id === statusId)
     if (!statusToDelete) {
       console.error('Status not found.')
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>An error has occurred, the status does not exist.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
+      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
       router.push('/statuslist')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
       return
     }
 
-    // Prevent deletion of NO_STATUS
     if (statusToDelete.name === 'No Status') {
       console.error('Cannot delete status named No Status.')
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML =
-        '<span>This status is the default status and cannot be modified.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      router.push('/statuslist')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
     }
 
     if (res.status === 200) {
@@ -102,6 +74,33 @@ async function deleteStatus(statusId) {
     console.error('Error:', error)
   }
 }
+
+async function transferTasks(fromStatusId, toStatusId) {
+  try {
+    // Fetch tasks associated with the status being deleted
+    const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
+    const tasks = await response.json()
+    console.log('Tasks transferred successfully')
+    const tasksToTransfer = tasks.filter((task) => task.statusId === fromStatusId)
+
+    // Update each task to set the new status
+    for (const task of tasksToTransfer) {
+      await fetch(BASE_URL + `/v2/tasks/${task.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...task,
+          statusId: toStatusId
+        })
+      })
+    }
+  } catch (error) {
+    console.error('Error transferring tasks:', error)
+    throw error // Propagate the error to the caller
+  }
+}
 // Show alert message
 function showAlert(message, backgroundColor) {
   const toastDiv = document.createElement('div')
@@ -119,7 +118,7 @@ function showAlert(message, backgroundColor) {
 
   setTimeout(() => {
     document.body.removeChild(toastDiv)
-    window.location.reload()
+    // window.location.reload()
   }, 2000)
 }
 
@@ -150,32 +149,6 @@ function formatStatusName(name) {
 
   // ตัดช่องว่างและเครื่องหมาย _ ออก
   return formattedName.replace(/_/g, ' ').trim()
-}
-async function transferTasks(fromStatusId, toStatusId) {
-  try {
-    // Fetch tasks associated with the status being deleted
-    const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
-    const tasks = await response.json()
-
-    // Update each task to set the new status
-    for (const task of tasks) {
-      await fetch(BASE_URL + `/v2/tasks/${task.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...task,
-          statusId: toStatusId
-        })
-      })
-    }
-
-    console.log('Tasks transferred successfully')
-  } catch (error) {
-    console.error('Error transferring tasks:', error)
-    throw error // Propagate the error to the caller
-  }
 }
 </script>
 
