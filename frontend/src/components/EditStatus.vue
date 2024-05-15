@@ -36,6 +36,9 @@ async function fetchStatus() {
 // Save changes to task
 async function saveChanges() {
   try {
+    statuses.value.name = statuses.value.name.trim()
+    statuses.value.description = statuses.value.description.trim()
+
     const response = await fetch(SERVER_URL + `/v2/statuses/${route.params.id}`, {
       method: 'PUT',
       headers: {

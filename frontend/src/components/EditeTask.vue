@@ -49,9 +49,9 @@ async function saveChanges() {
   try {
     const updatedTask = {
       id: tasks.value.id,
-      title: tasks.value.title,
-      description: tasks.value.description,
-      assignees: tasks.value.assignees,
+      title: tasks.value.title.trim(),
+      description: tasks.value.description.trim(),
+      assignees: tasks.value.assignees.trim(),
       statusId: tasks.value.status.id
 
       // statusId: {
