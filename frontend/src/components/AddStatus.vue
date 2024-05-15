@@ -77,6 +77,7 @@ function showAlert(message, backgroundColor) {
             id="itbkk-status-name"
             v-model="name"
             class="itbkk-status-name bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="50"
           />
         </div>
         <div class="mb-4">
@@ -89,6 +90,7 @@ function showAlert(message, backgroundColor) {
             id="status-description"
             v-model="description"
             class="itbkk-status-description bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="200"
           ></textarea>
         </div>
         <div class="flex mt-5 justify-center">
