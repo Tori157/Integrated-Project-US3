@@ -28,12 +28,23 @@ public class Status {
     private Set<TaskV2> taskV2s = new HashSet<>();
 
     public void setName(String name) {
-        this.name = name.trim(); // ตัดช่องว่างที่เพิ่มเข้ามา
+        if (name == null) {
+            return;
+        }
+        this.name = name.trim();
+        if (this.name.isEmpty()) {
+            this.name = null;
+        }
     }
 
     public void setDescription(String description) {
-        if (description != null ) {
-            this.description = description.trim(); // ตัดช่องว่างที่เพิ่มเข้ามา
+        if (description == null) {
+            return;
+        }
+        this.description = description.trim();
+        if (this.description.isEmpty()) {
+            this.description = null;
         }
     }
+
 }

@@ -49,7 +49,7 @@ public class TaskService {
             task.setAssignees(task.getAssignees());
             task.setStatus(task.getStatus());
         }
-        return modelMapper.map(repository.save(task), AddEditTaskDTO.class);
+        return modelMapper.map  (repository.save(task), AddEditTaskDTO.class);
     }
 
     @Transactional

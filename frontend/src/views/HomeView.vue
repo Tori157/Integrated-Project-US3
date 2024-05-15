@@ -1,5 +1,4 @@
 <script setup>
-// import { onMounted, ref } from 'vue'
 import { onMounted, ref, onUnmounted } from 'vue'
 
 const tasks = ref([])
@@ -26,18 +25,14 @@ const toggleModal = () => {
 const handleTaskAdded = () => {
   toggleModal()
 }
-// Listen for taskAdded event from Add Task component
+
 onMounted(() => {
-  // Listen for taskAdded event
   window.addEventListener('taskAdded', handleTaskAdded)
 })
 
 onUnmounted(() => {
-  // Cleanup event listener
   window.removeEventListener('taskAdded', handleTaskAdded)
 })
-
-
 </script>
 
 <template>
@@ -119,7 +114,7 @@ onUnmounted(() => {
                   div
                   class="w-[115px] border-4 border-blue-100 bg-blue-300 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
                 >
-                  {{ task.status.name }}
+                  {{ task.statusName }}
                 </div>
               </td>
               <td class="flex">

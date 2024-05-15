@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const name = ref('') // เพิ่ม ref สำหรับเก็บชื่อสถานะ
+const name = ref('')
 const description = ref('')
 const router = useRouter()
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
@@ -72,15 +72,14 @@ const saveStatus = async () => {
         </div>
         <div class="mb-4">
           <label
-            id="itbkk-status-description"
             for="status-description"
-            class="itbkk-status-description text-rose-400 block text-sm font-medium text-gray-700"
+            class="text-rose-400 block text-sm font-medium text-gray-700"
             >Description</label
           >
           <textarea
-            id="itbkk-status-description"
+            id="status-description"
             v-model="description"
-            class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="itbkk-status-description bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           ></textarea>
         </div>
         <div class="flex mt-5 justify-center">

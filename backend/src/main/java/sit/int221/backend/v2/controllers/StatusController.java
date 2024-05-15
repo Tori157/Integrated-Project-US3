@@ -43,5 +43,10 @@ public class StatusController {
         statusService.removeStatus(id);
     }
 
+    @DeleteMapping("/{id}/{newId}")
+    public void removeStatusTransfer(@PathVariable Integer id, @PathVariable Integer newId) {
+        statusService.removeStatusTransfer(id, newId);
+    }
+
 }
 

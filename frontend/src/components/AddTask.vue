@@ -1,14 +1,13 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-
 import { onMounted } from 'vue'
 
 const formData = reactive({
   title: '',
   description: '',
   assignees: '',
-  selectedStatus: {}
+  statusId: null
 })
 
 const router = useRouter()
@@ -18,7 +17,6 @@ onMounted(async () => {
   await fetchStatuses()
 })
 const statuses = ref([])
-const selectedStatus = ref({})
 
 const fetchStatuses = async () => {
   try {
@@ -42,25 +40,20 @@ console.log(statuses)
 fetchStatuses()
 
 const saveTask = async () => {
+  if (!formData.statusId) {
+    formData.statusId = 1
+  }
   const taskData = {
     title: formData.title.trim(),
     description: formData.description.trim(),
     assignees: formData.assignees.trim(),
-    status: {
-      id: formData.selectedStatus[0],
-      name: formData.selectedStatus[1],
-      description: formData.selectedStatus[2]
-    }
+    statusId: formData.statusId
   }
-  if (formData.selectedStatus && formData.selectedStatus.length > 0) {
-    taskData.status.id = formData.selectedStatus[0]
-    taskData.status.name = formData.selectedStatus[1]
-    taskData.status.description = formData.selectedStatus[2]
-  } else {
-    taskData.status.id = 1
-    taskData.status.name = 'No Status'
-    taskData.status.description = 'The default status'
-  }
+  // if (formData.selectedStatusId && formData.selectedStatusId.length > 0) {
+  //   taskData.status.id = formData.selectedStatusId
+  // } else {
+  //   taskData.status.id = 1
+  // }
 
   try {
     const response = await fetch(SERVER_URL + `/v2/tasks`, {
@@ -73,7 +66,8 @@ const saveTask = async () => {
     if (response.status === 201) {
       router.push('/task')
       // console.log(taskData)
-      console.log(formData.selectedStatus)
+      // console.log(formData.statusId)
+
       // Alert
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center z-50'
@@ -95,8 +89,7 @@ const saveTask = async () => {
     } else {
       console.error('Failed to save task:', response.statusText)
       console.log(taskData)
-      console.log(formData.selectedStatus)
-      console.log(selectedStatus)
+      console.log(formData.statusId)
     }
   } catch (error) {
     console.error('Error saving task:', error)
@@ -105,7 +98,9 @@ const saveTask = async () => {
 </script>
 
 <template>
-  <div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+  <div
+    class="itbkk-modal-task fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
+  >
     <div class="bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
       <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">Add Task</h2>
 
@@ -119,6 +114,7 @@ const saveTask = async () => {
             id="itbkk-title"
             v-model="formData.title"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="100"
           />
         </div>
         <div class="mb-4">
@@ -129,6 +125,7 @@ const saveTask = async () => {
             id="itbkk-description"
             v-model="formData.description"
             class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="500"
           ></textarea>
         </div>
         <div class="mb-4">
@@ -140,6 +137,7 @@ const saveTask = async () => {
             id="itbkk-assignees"
             v-model="formData.assignees"
             class="bg-white text-blue-600 mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="30"
           />
         </div>
         <div class="mb-4">
@@ -148,14 +146,10 @@ const saveTask = async () => {
           >
           <select
             id="itbkk-status"
-            v-model="formData.selectedStatus"
+            v-model="formData.statusId"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option
-              v-for="status in statuses"
-              :value="[status.id, status.name, status.description]"
-              :key="status.id"
-            >
+            <option v-for="status in statuses" :value="status.id" :key="status.id">
               {{ status.name }}
             </option>
           </select>
@@ -164,7 +158,7 @@ const saveTask = async () => {
           <button
             id="itbkk-button-confirm"
             type="submit"
-            :disabled="formData.title.trim().length === 0 || !formData.selectedStatus"
+            :disabled="formData.title.trim().length === 0"
             @click="toggleModal"
             class="itbkk-button-confirm"
             :class="[
@@ -179,10 +173,8 @@ const saveTask = async () => {
               'text-white',
               'font-semibold',
               'text-center',
-              formData.title.trim().length === 0 || !formData.selectedStatus
-                ? 'bg-gray-400'
-                : 'bg-green-400',
-              formData.title.trim().length === 0 || !formData.selectedStatus ? 'disabled' : ''
+              formData.title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
+              formData.title.trim().length === 0 ? 'disabled' : ''
             ]"
           >
             Save

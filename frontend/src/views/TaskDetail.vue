@@ -68,7 +68,7 @@ function getTimezone() {
               class="itbkk-description break-words bg-white rounded-xl mt-2 text-sm p-5 mb-10 w-96 h-64"
               :class="!tasks.description ? 'text-[grey] italic' : 'text-blue-600'"
             >
-              {{ tasks.description.trim() || 'No Description Provided' }}
+              {{ tasks.description || 'No Description Provided' }}
             </div>
           </div>
         </div>

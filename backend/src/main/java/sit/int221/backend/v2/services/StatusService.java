@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sit.int221.backend.exceptions.ItemNotFoundException;
-import sit.int221.backend.exceptions.MethodNotAllowedException;
+import sit.int221.backend.exceptions.BadRequestException;
 import sit.int221.backend.v2.entities.Status;
+import sit.int221.backend.v2.entities.TaskV2;
 import sit.int221.backend.v2.repositories.StatusRepository;
+import sit.int221.backend.v2.repositories.TaskV2Repository;
 
 import java.util.List;
 
@@ -14,6 +16,8 @@ import java.util.List;
 public class StatusService {
     @Autowired
     private StatusRepository statusRepository;
+    @Autowired
+    private TaskV2Repository taskV2Repository;
 
     public List<Status> getAllStatus() {
         return statusRepository.findAll();
@@ -22,72 +26,58 @@ public class StatusService {
 
     public Status getStatusById(int id) {
         return statusRepository.findById(id).orElseThrow(
-                () -> new ItemNotFoundException("Status id " + id + "does not exit !!!")
+                () -> new ItemNotFoundException("NOT FOUND")
         );
     }
 
     @Transactional
     public Status createNewStatus(Status status) {
-            if (status.getDescription() != null) {
+        if (status.getDescription() != null) {
             status.setDescription(status.getDescription());
+
         }
         return statusRepository.save(status);
     }
 
     @Transactional
     public void removeStatus(int id) {
+        if (id == 1) {
+            throw new BadRequestException("The 'No Status' cannot be delete");
+        }
         Status status = statusRepository.findById(id).orElseThrow(
                 () -> new ItemNotFoundException("NOT FOUND")
         );
-        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equals("NO_STATUS")) {
-            throw new MethodNotAllowedException("The " + status.getName() + " cannot be delete ");
-        }
+
         statusRepository.delete(status);
     }
 
     @Transactional
-    public Status updateStatus(int id, Status status) {
+    public void removeStatusTransfer(int id, int newId) {
         Status oldStatus = statusRepository.findById(id).orElseThrow(
                 () -> new ItemNotFoundException("NOT FOUND")
         );
-        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equals("NO_STATUS")) {
-            throw new MethodNotAllowedException("The " + oldStatus.getName() + " cannot be edited ");
+        Status newStatus = statusRepository.findById(newId).orElseThrow(
+                () -> new ItemNotFoundException("NOT FOUND")
+        );
+
+        List<TaskV2> tasks = taskV2Repository.findAllByStatus(oldStatus);
+
+        for (TaskV2 task : tasks) {
+            task.setStatus(newStatus);
         }
-
-            oldStatus.setName(status.getName());
-            oldStatus.setDescription(status.getDescription());
-            return statusRepository.save(oldStatus);
-
+        taskV2Repository.saveAll(tasks);
+        statusRepository.delete(oldStatus);
     }
 
-//    @Transactional
-//    public List<Status> transferStatusAndDelete(Integer statusId, Integer newStatusId) {
-//        Status status = statusRepository.findById(statusId)
-//                .orElseThrow(() -> new ItemNotFoundException("Status with ID " + statusId + " not found"));
-//
-//        if ((status.getId() == 1)) {
-//            throw new BadRequestException("Cannot delete default status 'No Status'");
-//        }
-//
-//        Status newStatus = statusRepository.findById(newStatusId)
-//                .orElseThrow(() -> new ItemNotFoundException("Status with new ID " + newStatusId + " not found"));
-//
-//        List<Task> tasks = taskRepository.findByStatusId(statusID);
-//        List<StatusTransferDTO> transferTask = new ArrayList<>();
-//
-//        for (Task task : tasks) {
-//            task.setStatus(newStatus);
-//            taskRepository.save(task);
-//
-//            Status status = new Status();
-//            status.setTitle(task.getTitle());
-//            status.setTaskID(task.getId());
-//            status.setStatusID(task.getId());
-//            status.setNewStatusID(newStatus.getId());
-//            transferTask.add(status);
-//        }
-//
-//        statusRepository.deleteById(statusId);
-//
-//        return transferTask;
+    @Transactional
+    public Status updateStatus(int id, Status status) {
+        if( id == 1) {
+            throw new BadRequestException("The 'No Status' cannot be edited");
+        }
+        statusRepository.findById(id).orElseThrow(
+                () -> new ItemNotFoundException("NOT FOUND")
+        );
+        return statusRepository.save(status);
+
+    }
 }

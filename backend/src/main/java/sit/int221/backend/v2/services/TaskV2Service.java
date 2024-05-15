@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sit.int221.backend.exceptions.ItemNotFoundException;
 import sit.int221.backend.service.ListMapper;
-import sit.int221.backend.v2.dtos.AddEditTaskV2DTO;
+import sit.int221.backend.v2.dtos.NewTaskV2DTO;
 import sit.int221.backend.v2.dtos.AllTaskV2DTO;
 import sit.int221.backend.v2.entities.Status;
 import sit.int221.backend.v2.entities.TaskV2;
@@ -40,21 +40,12 @@ public class TaskV2Service {
     }
 
     @Transactional
-    public AddEditTaskV2DTO createNewTask(TaskV2 task) {
-        if (task.getStatus() == null) {
-            Status noStatus = new Status();
-            noStatus.setName("NO_STATUS");
-            task.setStatus(noStatus);
-        }
-
-        if (task.getTitle() != null && task.getDescription() != null && task.getAssignees() != null) {
-            task.setTitle(task.getTitle());
-            task.setDescription(task.getDescription());
-            task.setAssignees(task.getAssignees());
-            Status taskStatus = statusService.getStatusById(task.getStatus().getId());
-            task.setStatus(taskStatus);
-        }
-        return modelMapper.map(taskV2Repository.save(task), AddEditTaskV2DTO.class);
+    public NewTaskV2DTO createNewTask(NewTaskV2DTO newTask) {
+        Status status = statusService.getStatusById(newTask.getStatusId());
+        TaskV2 task = modelMapper.map(newTask, TaskV2.class);
+        System.out.println(task);
+        task.setStatus(status);
+        return modelMapper.map(taskV2Repository.save(task), NewTaskV2DTO.class);
     }
 
     @Transactional
@@ -66,21 +57,20 @@ public class TaskV2Service {
         return modelMapper.map(task, AllTaskV2DTO.class);
     }
 
-
     @Transactional
-    public AddEditTaskV2DTO updateTaskById(Integer id, TaskV2 task) {
+    public NewTaskV2DTO updateTaskById(Integer id,  NewTaskV2DTO newTask) {
 
-        TaskV2 existngTask = taskV2Repository.findById(id).orElseThrow(
-                () -> new ItemNotFoundException("Task id " + id + " dose not exist !!!")
+        TaskV2 task = taskV2Repository.findById(id).orElseThrow(
+                () -> new ItemNotFoundException("NOT FOUND")
         );
+        task.setTitle(newTask.getTitle());
+        task.setDescription(newTask.getDescription());
+        task.setAssignees(newTask.getAssignees());
+        Status status = statusService.getStatusById(newTask.getStatusId());
+        task.setStatus(status);
 
-        existngTask.setTitle((task.getTitle()));
-        existngTask.setDescription(task.getDescription());
-        existngTask.setAssignees(task.getAssignees());
-        Status taskStatus = statusService.getStatusById(task.getStatus().getId());
-        existngTask.setStatus(taskStatus);
-
-        return modelMapper.map(taskV2Repository.save(existngTask), AddEditTaskV2DTO.class);
+        return modelMapper.map(taskV2Repository.save(task), NewTaskV2DTO.class);
     }
 }
+
 
