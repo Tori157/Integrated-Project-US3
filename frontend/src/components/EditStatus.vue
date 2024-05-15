@@ -18,27 +18,10 @@ async function fetchStatus() {
     }
     const data = await response.json()
 
-    if (data.name === 'NO_STATUS') {
-      console.error('Cannot edit status named NO_STATUS.')
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML =
-        '<span>This status is the default status and cannot be modified.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
+    if (data.name === 'No Status') {
+      console.error('Cannot edit status named No Status.')
+      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
 
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      router.push('/statuslist')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
       return
     }
 
@@ -53,6 +36,9 @@ async function fetchStatus() {
 // Save changes to task
 async function saveChanges() {
   try {
+    statuses.value.name = statuses.value.name.trim()
+    statuses.value.description = statuses.value.description.trim()
+
     const response = await fetch(SERVER_URL + `/v2/statuses/${route.params.id}`, {
       method: 'PUT',
       headers: {
@@ -66,53 +52,39 @@ async function saveChanges() {
       console.log('status updated successfully')
       console.log(statuses.value)
       // Alert
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center z-50'
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The task has been updated</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(34 197 94)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('The task has been updated.', 'rgb(34 197 94)')
     }
     if (response.status === 404) {
       console.log('The task does not exist.')
       console.error('Failed to update task')
 
       // alert
-      console.error('Failed to delete task')
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>An error has occurred, the task does not exist.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      router.push('/task')
-
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error updating task:', error)
   }
+}
+
+// Show alert message
+function showAlert(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
+    window.location.reload()
+  }, 2000)
 }
 
 onMounted(fetchStatus)
@@ -135,7 +107,7 @@ const isModified = computed(() => {
       </h2>
 
       <form @submit.prevent="">
-        <div class="mb-6">
+        <div class="itbkk-item mb-6">
           <label for="status-name" class="text-rose-400 block text-sm font-medium text-gray-700"
             >Name</label
           >
@@ -144,6 +116,7 @@ const isModified = computed(() => {
             id="itbkk-status-name"
             v-model="statuses.name"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="50"
           />
         </div>
         <div class="mb-4">
@@ -156,6 +129,7 @@ const isModified = computed(() => {
             id="itbkk-status-description"
             v-model="statuses.description"
             class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="200"
           ></textarea>
         </div>
 

@@ -1,14 +1,13 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-
 import { onMounted } from 'vue'
 
 const formData = reactive({
   title: '',
   description: '',
   assignees: '',
-  selectedStatus: {}
+  statusId: null
 })
 
 const router = useRouter()
@@ -18,7 +17,6 @@ onMounted(async () => {
   await fetchStatuses()
 })
 const statuses = ref([])
-const selectedStatus = ref({})
 
 const fetchStatuses = async () => {
   try {
@@ -42,26 +40,21 @@ console.log(statuses)
 fetchStatuses()
 
 const saveTask = async () => {
+  if (!formData.statusId) {
+    formData.statusId = 1
+  }
   const taskData = {
     title: formData.title.trim(),
     description: formData.description.trim(),
     assignees: formData.assignees.trim(),
-    status: {
-      id: formData.selectedStatus[0],
-      name: formData.selectedStatus[1],
-      description: formData.selectedStatus[2]
-    }
+    statusId: formData.statusId
   }
-  // const taskData = {
-  //   title: formData.title.trim(),
-  //   description: formData.description.trim(),
-  //   assignees: formData.assignees.trim(),
-  //   status: {
-  //     id: formData.selectedStatus,
-  //     name: formData.selectedStatus,
-  //     description: formData.selectedStatus
-  //   }
+  // if (formData.selectedStatusId && formData.selectedStatusId.length > 0) {
+  //   taskData.status.id = formData.selectedStatusId
+  // } else {
+  //   taskData.status.id = 1
   // }
+
   try {
     const response = await fetch(SERVER_URL + `/v2/tasks`, {
       method: 'POST',
@@ -73,50 +66,46 @@ const saveTask = async () => {
     if (response.status === 201) {
       router.push('/task')
       // console.log(taskData)
-      console.log(formData.selectedStatus)
+      // console.log(formData.statusId)
       // Alert
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center z-50'
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The task has been successfully added.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(34 197 94)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('The task has been successfully added.', 'rgb(34 197 94)')
     } else {
+      router.push('/task')
       console.error('Failed to save task:', response.statusText)
+      showAlert('An error has occurred, the task Cant Add.', 'rgb(251 146 60)')
       console.log(taskData)
-      console.log(formData.selectedStatus)
-      console.log(selectedStatus)
+      console.log(formData.statusId)
     }
   } catch (error) {
     console.error('Error saving task:', error)
   }
 }
 
-function formatStatusName(name) {
-  if (name === name.toLowerCase()) {
-    return name.replace(/_/g, ' ')
-  }
-  const formattedName = name
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
-  return formattedName.replace(/_/g, ' ').trim()
+function showAlert(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
+    window.location.reload()
+  }, 2000)
 }
 </script>
 
 <template>
-  <div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+  <div
+    class="itbkk-modal-task fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
+  >
     <div class="bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
       <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">Add Task</h2>
 
@@ -130,6 +119,7 @@ function formatStatusName(name) {
             id="itbkk-title"
             v-model="formData.title"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="100"
           />
         </div>
         <div class="mb-4">
@@ -140,6 +130,7 @@ function formatStatusName(name) {
             id="itbkk-description"
             v-model="formData.description"
             class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="500"
           ></textarea>
         </div>
         <div class="mb-4">
@@ -151,6 +142,7 @@ function formatStatusName(name) {
             id="itbkk-assignees"
             v-model="formData.assignees"
             class="bg-white text-blue-600 mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="30"
           />
         </div>
         <div class="mb-4">
@@ -159,15 +151,11 @@ function formatStatusName(name) {
           >
           <select
             id="itbkk-status"
-            v-model="formData.selectedStatus"
+            v-model="formData.statusId"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option
-              v-for="status in statuses"
-              :value="[status.id, status.name, status.description]"
-              :key="status.id"
-            >
-              {{ formatStatusName(status.name) }}
+            <option v-for="status in statuses" :value="status.id" :key="status.id">
+              {{ status.name }}
             </option>
           </select>
         </div>
@@ -175,7 +163,7 @@ function formatStatusName(name) {
           <button
             id="itbkk-button-confirm"
             type="submit"
-            :disabled="formData.title.trim().length === 0 || !formData.selectedStatus"
+            :disabled="formData.title.trim().length === 0"
             @click="toggleModal"
             class="itbkk-button-confirm"
             :class="[
@@ -190,10 +178,8 @@ function formatStatusName(name) {
               'text-white',
               'font-semibold',
               'text-center',
-              formData.title.trim().length === 0 || !formData.selectedStatus
-                ? 'bg-gray-400'
-                : 'bg-green-400',
-              formData.title.trim().length === 0 || !formData.selectedStatus ? 'disabled' : ''
+              formData.title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
+              formData.title.trim().length === 0 ? 'disabled' : ''
             ]"
           >
             Save

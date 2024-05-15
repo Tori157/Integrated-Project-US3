@@ -35,53 +35,41 @@ async function deleteTask(taskId) {
       tasks.value = tasks.value.filter((task) => task.id !== taskId)
       router.push('/task')
       // alert
-
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The task has been deleted.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(244 63 94)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      // reload
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('The task has been deleted.', 'rgb(244 63 94)')
     }
     if (res.status === 404) {
+      router.push('/task')
       console.log('The task does not exist.')
       console.error('Failed to delete task')
 
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>An error has occurred, the task does not exist.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      router.push('/task')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      // Alert
+      showAlert('An error has occurred, the task does not exist.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error:', error)
   }
 }
+// Show alert message
+function showAlert(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
+    window.location.reload()
+  }, 2000)
+}
+
 function findIndexById(taskId) {
   for (let i = 0; i < tasks.value.length; i++) {
     if (tasks.value[i].id === taskId) {

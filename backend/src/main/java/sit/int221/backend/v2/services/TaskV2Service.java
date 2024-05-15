@@ -60,17 +60,18 @@ public class TaskV2Service {
     @Transactional
     public NewTaskV2DTO updateTaskById(Integer id,  NewTaskV2DTO newTask) {
 
-        TaskV2 existngTask = taskV2Repository.findById(id).orElseThrow(
-                () -> new ItemNotFoundException("Task id " + id + " dose not exist !!!")
+        TaskV2 task = taskV2Repository.findById(id).orElseThrow(
+                () -> new ItemNotFoundException("NOT FOUND")
         );
+        task.setTitle(newTask.getTitle());
+        task.setDescription(newTask.getDescription());
+        task.setAssignees(newTask.getAssignees());
+        Status status = statusService.getStatusById(newTask.getStatusId());
+        task.setStatus(status);
 
-        existngTask.setTitle((newTask.getTitle()));
-        existngTask.setDescription(newTask.getDescription());
-        existngTask.setAssignees(newTask.getAssignees());
-        Status taskStatus = statusService.getStatusById(newTask.getId());
-        existngTask.setStatus(taskStatus);
+        return modelMapper.map(taskV2Repository.save(task), NewTaskV2DTO.class);
 
-        return modelMapper.map(taskV2Repository.save(existngTask), NewTaskV2DTO.class);
     }
 }
+
 

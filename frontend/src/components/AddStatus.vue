@@ -2,11 +2,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const name = ref('') // เพิ่ม ref สำหรับเก็บชื่อสถานะ
+const name = ref('')
 const description = ref('')
 const router = useRouter()
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
-
 
 const saveStatus = async () => {
   const statusData = {
@@ -24,34 +23,45 @@ const saveStatus = async () => {
     if (response.status === 201) {
       router.push('/statuslist')
       // Alert
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center z-50'
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The Status has been successfully added.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(34 197 94)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('The task has been updated', 'rgb(34 197 94)')
     } else {
       console.error('Failed to save task:', response.statusText)
+      router.push('/statuslist')
+      showAlert('An error has occurred, Status Cant Add.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error saving task:', error)
+    router.push('/statuslist')
+    showAlert('An error has occurred, Status Cant Add.', 'rgb(251 146 60)')
   }
+}
+
+// Show alert message
+function showAlert(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
+    window.location.reload()
+  }, 2000)
 }
 </script>
 
 <template>
-  <div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+  <div
+    class="itbkk-modal-status fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
+  >
     <div class="bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
       <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">
         Add Status
@@ -66,7 +76,8 @@ const saveStatus = async () => {
             type="text"
             id="itbkk-status-name"
             v-model="name"
-            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="itbkk-status-name bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="50"
           />
         </div>
         <div class="mb-4">
@@ -76,9 +87,10 @@ const saveStatus = async () => {
             >Description</label
           >
           <textarea
-            id="itbkk-status-description"
+            id="status-description"
             v-model="description"
-            class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="itbkk-status-description bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            maxlength="200"
           ></textarea>
         </div>
         <div class="flex mt-5 justify-center">

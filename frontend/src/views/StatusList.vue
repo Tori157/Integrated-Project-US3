@@ -75,7 +75,7 @@ console.log(statuses)
         </div>
       </div>
       <h1
-        class="mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r to-emerald-400 from-sky-400"
+        class="itbkk-button-home mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r to-emerald-400 from-sky-400"
       >
         <a href="#" class="hover:underline" @click="router.push('/task')">Home</a> >>> StatusList
       </h1>
@@ -85,9 +85,9 @@ console.log(statuses)
         <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
-            <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
+            <th scope="col" class="px-6 py-3 text-center tracking-wide">Name</th>
             <th scope="col" class="px-6 py-3 text-center tracking-wide">Description</th>
-            <th scope="col" class="px-6 py-3 text-center tracking-wide"></th>
+            <th scope="col" class="px-6 py-3 text-center tracking-wide">Action</th>
             <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
           </thead>
 
@@ -118,10 +118,11 @@ console.log(statuses)
                 {{ statuses.description || 'No description is provided.' }}
               </td>
 
-              <td>
+              <td class="itbkk-button-edit">
                 <button
-                  v-if="statuses.name !== 'NO_STATUS'"
-                  class="itbkk-button-edite"
+                  id="itbkk-button-edit"
+                  v-if="statuses.name !== 'No Status'"
+                  class="itbkk-button-edit"
                   @click="$router.push({ name: 'status-editmodal', params: { id: statuses.id } })"
                 >
                   <router-link :to="{ name: 'status-editmodal', params: { id: statuses.id } }">
@@ -131,8 +132,9 @@ console.log(statuses)
               </td>
               <td>
                 <button
-                  v-if="statuses.name !== 'NO_STATUS'"
-                  class="itbkk-button-action"
+                  id="itbkk-button-delete"
+                  v-if="statuses.name !== 'No Status'"
+                  class="itbkk-button-delete"
                   @click="$router.push({ name: 'status-deletemodal', params: { id: statuses.id } })"
                 >
                   <router-link :to="{ name: 'status-deletemodal', params: { id: statuses.id } }">

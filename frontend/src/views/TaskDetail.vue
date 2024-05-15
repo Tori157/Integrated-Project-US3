@@ -43,22 +43,6 @@ function formateDateTime(time) {
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
-
-function formatStatusName(name) {
-  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
-  if (name === name.toLowerCase()) {
-    return name.replace(/_/g, ' ')
-  }
-
-  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
-  const formattedName = name
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
-
-  // ตัดช่องว่างและเครื่องหมาย _ ออก
-  return formattedName.replace(/_/g, ' ').trim()
-}
 </script>
 
 <template>
@@ -84,7 +68,7 @@ function formatStatusName(name) {
               class="itbkk-description break-words bg-white rounded-xl mt-2 text-sm p-5 mb-10 w-96 h-64"
               :class="!tasks.description ? 'text-[grey] italic' : 'text-blue-600'"
             >
-              {{ tasks.description.trim() || 'No Description Provided' }}
+              {{ tasks.description || 'No Description Provided' }}
             </div>
           </div>
         </div>
@@ -102,7 +86,7 @@ function formatStatusName(name) {
           <div
             class="itbkk-status break-words bg-white rounded-lg mt-2 h-max text-blue-600 text-center h-10 p-2 mb-8"
           >
-            {{ formatStatusName(tasks.status.name) }}
+            {{ tasks.status.name }}
           </div>
 
           <div class="itbkk-timezone mt-6 mb-3 ml-2 text-sm text-blue-600 font-normal">

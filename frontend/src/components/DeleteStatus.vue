@@ -9,6 +9,7 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL
 const statuses = ref([])
 const statusId = parseInt(route.params.id)
 const statusesname = ref('')
+const targetStatusId = ref(null)
 
 onMounted(async () => {
   try {
@@ -27,6 +28,9 @@ onMounted(async () => {
 
 async function deleteStatus(statusId) {
   try {
+    if (targetStatusId.value) {
+      await transferTasks(statusId, targetStatusId.value)
+    }
     const res = await fetch(SERVER_URL + `/v2/statuses/${statusId}`, {
       method: 'DELETE'
     })
@@ -55,8 +59,8 @@ async function deleteStatus(statusId) {
     }
 
     // Prevent deletion of NO_STATUS
-    if (statusToDelete.name === 'NO_STATUS') {
-      console.error('Cannot delete status named NO_STATUS.')
+    if (statusToDelete.name === 'No Status') {
+      console.error('Cannot delete status named No Status.')
       const toastDiv = document.createElement('div')
       toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
       const alertSuccessDiv = document.createElement('div')
@@ -80,57 +84,45 @@ async function deleteStatus(statusId) {
 
     if (res.status === 200) {
       console.log('Status deleted successfully')
-      statuses.value = statuses.value.filter((status) => status.id !== statusId)
 
+      statuses.value = statuses.value.filter((status) => status.id !== statusId)
+      if (targetStatusId.value) {
+        await transferTasks(statusId, targetStatusId.value)
+      }
       router.push('/statuslist')
       // alert
-
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The Status has been deleted.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(244 63 94)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      // reload
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('The Status has been deleted.', 'rgb(34 197 94)')
     }
     if (res.status === 404) {
       console.log('Status not found.')
       console.error('Failed to delete status')
-
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>An error has occurred, the status does not exist.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      router.push('/statuslist')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error:', error)
   }
 }
+// Show alert message
+function showAlert(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
+    window.location.reload()
+  }, 2000)
+}
+
 function findIndexById(statusId) {
   for (let i = 0; i < statuses.value.length; i++) {
     if (statuses.value[i].id === statusId) {
@@ -159,6 +151,32 @@ function formatStatusName(name) {
   // ตัดช่องว่างและเครื่องหมาย _ ออก
   return formattedName.replace(/_/g, ' ').trim()
 }
+async function transferTasks(fromStatusId, toStatusId) {
+  try {
+    // Fetch tasks associated with the status being deleted
+    const response = await fetch(SERVER_URL + `/v2/tasks?statusId=${fromStatusId}`)
+    const tasks = await response.json()
+
+    // Update each task to set the new status
+    for (const task of tasks) {
+      await fetch(SERVER_URL + `/v2/tasks/${task.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...task,
+          statusId: toStatusId
+        })
+      })
+    }
+
+    console.log('Tasks transferred successfully')
+  } catch (error) {
+    console.error('Error transferring tasks:', error)
+    throw error // Propagate the error to the caller
+  }
+}
 </script>
 
 <template>
@@ -176,6 +194,21 @@ function formatStatusName(name) {
           Do you want to delete the {{ findIndexById(statusId) + 1 }} -
           {{ formatStatusName(statusesname) }} status?
         </h3>
+
+        <select
+          v-model="targetStatusId"
+          class="itbkk-select mb-3 bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        >
+          <option value="" disabled>Select a status to transfer tasks</option>
+          <option
+            v-for="status in statuses"
+            :key="status.id"
+            :value="status.id"
+            :disabled="status.id === statusId"
+          >
+            Transfer tasks to {{ status.name }}
+          </option>
+        </select>
 
         <button
           @click="deleteStatus(statusId)"
