@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const statuses = ref([])
 const statusId = parseInt(route.params.id)
@@ -13,7 +13,7 @@ const targetStatusId = ref(null)
 
 onMounted(async () => {
   try {
-    const response = await fetch(SERVER_URL + `/v2/statuses`)
+    const response = await fetch(BASE_URL + `/v2/statuses`)
     const data = await response.json()
     statuses.value = data
 
@@ -31,7 +31,7 @@ async function deleteStatus(statusId) {
     if (targetStatusId.value) {
       await transferTasks(statusId, targetStatusId.value)
     }
-    const res = await fetch(SERVER_URL + `/v2/statuses/${statusId}`, {
+    const res = await fetch(BASE_URL + `/v2/statuses/${statusId}`, {
       method: 'DELETE'
     })
     const statusToDelete = statuses.value.find((status) => status.id === statusId)
@@ -154,12 +154,12 @@ function formatStatusName(name) {
 async function transferTasks(fromStatusId, toStatusId) {
   try {
     // Fetch tasks associated with the status being deleted
-    const response = await fetch(SERVER_URL + `/v2/tasks?statusId=${fromStatusId}`)
+    const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
     const tasks = await response.json()
 
     // Update each task to set the new status
     for (const task of tasks) {
-      await fetch(SERVER_URL + `/v2/tasks/${task.id}`, {
+      await fetch(BASE_URL + `/v2/tasks/${task.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

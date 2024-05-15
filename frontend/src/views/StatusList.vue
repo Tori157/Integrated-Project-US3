@@ -4,10 +4,10 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const statuses = ref([])
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 async function fetchData() {
-  const response = await fetch(SERVER_URL + `/v2/statuses`)
+  const response = await fetch(BASE_URL + `/v2/statuses`)
 
   const data = await response.json()
   console.log(data)

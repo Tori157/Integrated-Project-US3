@@ -4,14 +4,14 @@ import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-const SERVER_URL = import.meta.env.VITE_SERVER_URL
+const BASE_URL = import.meta.env.VITE_BASE_URL
 const tasks = ref([])
 const taskId = parseInt(route.params.id)
 const taskTitle = ref('')
 
 onMounted(async () => {
   try {
-    const response = await fetch(SERVER_URL + `/v2/tasks`)
+    const response = await fetch(BASE_URL + `/v2/tasks`)
     const data = await response.json()
     tasks.value = data
 
@@ -26,7 +26,7 @@ onMounted(async () => {
 
 async function deleteTask(taskId) {
   try {
-    const res = await fetch(SERVER_URL + `/v2/tasks/${taskId}`, {
+    const res = await fetch(BASE_URL + `/v2/tasks/${taskId}`, {
       method: 'DELETE'
     })
 
