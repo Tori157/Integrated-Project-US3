@@ -20,25 +20,8 @@ async function fetchStatus() {
 
     if (data.name === 'No Status') {
       console.error('Cannot edit status named No Status.')
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML =
-        '<span>This status is the default status and cannot be modified.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
+      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
 
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      router.push('/statuslist')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
       return
     }
 
@@ -66,54 +49,39 @@ async function saveChanges() {
       console.log('status updated successfully')
       console.log(statuses.value)
       // Alert
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center z-50'
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The task has been updated</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(34 197 94)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('The task has been updated.', 'rgb(34 197 94)')
     }
     if (response.status === 404) {
       console.log('The task does not exist.')
       console.error('Failed to update task')
 
       // alert
-      console.error('Failed to delete task')
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>An error has occurred, the status does not exist.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-      alertSuccessDiv.classList.add('itbkk-message')
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      router.push('/task')
-
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error updating task:', error)
   }
+}
+
+// Show alert message
+function showAlert(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
+    window.location.reload()
+  }, 2000)
 }
 
 onMounted(fetchStatus)

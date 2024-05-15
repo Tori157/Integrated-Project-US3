@@ -23,29 +23,38 @@ const saveStatus = async () => {
     if (response.status === 201) {
       router.push('/statuslist')
       // Alert
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center z-50'
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>The Status has been successfully added.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(34 197 94)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('The task has been updated', 'rgb(34 197 94)')
     } else {
       console.error('Failed to save task:', response.statusText)
+      router.push('/statuslist')
+      showAlert('An error has occurred, Status Cant Add.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error saving task:', error)
+    router.push('/statuslist')
+    showAlert('An error has occurred, Status Cant Add.', 'rgb(251 146 60)')
   }
+}
+
+// Show alert message
+function showAlert(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
+    window.location.reload()
+  }, 2000)
 }
 </script>
 

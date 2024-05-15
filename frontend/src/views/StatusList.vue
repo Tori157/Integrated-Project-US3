@@ -118,7 +118,7 @@ console.log(statuses)
                 {{ statuses.description || 'No description is provided.' }}
               </td>
 
-              <td>
+              <td class="itbkk-button-edit">
                 <button
                   id="itbkk-button-edit"
                   v-if="statuses.name !== 'No Status'"
