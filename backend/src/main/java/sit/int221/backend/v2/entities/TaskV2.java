@@ -44,15 +44,13 @@ public class TaskV2 {
     }
 
     public void setDescription(String description) {
-        if (description != null) {
-            this.description = description.trim();
-        }
+        String trimmedDescription = (description != null) ? description.trim() : null;
+        this.description = (trimmedDescription != null && !trimmedDescription.isEmpty()) ? trimmedDescription : null;
     }
 
     public void setAssignees(String assignees) {
-        if (assignees != null) {
-            this.assignees = assignees.trim();
-        }
+        String trimmedAssignees = (assignees != null) ? assignees.trim() : null;
+        this.assignees = (trimmedAssignees != null && !trimmedAssignees.isEmpty()) ? trimmedAssignees : null;
     }
 
 }

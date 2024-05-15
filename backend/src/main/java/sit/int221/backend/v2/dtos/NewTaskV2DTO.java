@@ -1,6 +1,7 @@
 package sit.int221.backend.v2.dtos;
 
 import lombok.Data;
+import sit.int221.backend.v2.entities.Status;
 
 @Data
 public class NewTaskV2DTO {
@@ -21,4 +22,5 @@ public class NewTaskV2DTO {
         String trimmedAssignees = (assignees != null) ? assignees.trim() : null;
         this.assignees = (trimmedAssignees != null && !trimmedAssignees.isEmpty()) ? trimmedAssignees : null;
     }
+
 }

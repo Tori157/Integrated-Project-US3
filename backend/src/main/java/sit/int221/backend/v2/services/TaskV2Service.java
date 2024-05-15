@@ -43,7 +43,6 @@ public class TaskV2Service {
     public NewTaskV2DTO createNewTask(NewTaskV2DTO newTask) {
         Status status = statusService.getStatusById(newTask.getStatusId());
         TaskV2 task = modelMapper.map(newTask, TaskV2.class);
-        System.out.println(task);
         task.setStatus(status);
         return modelMapper.map(taskV2Repository.save(task), NewTaskV2DTO.class);
     }
@@ -73,5 +72,4 @@ public class TaskV2Service {
 
     }
 }
-
 
