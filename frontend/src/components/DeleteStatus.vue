@@ -45,17 +45,11 @@ async function deleteStatus(statusId) {
       router.push('/statuslist')
       return
     }
-    //
-    // if (tasksCount.value > 0 && !targetStatusId.value) {
-    //   console.error('Target status ID is required for transferring tasks.')
-    //   showAlert('Please select a status to transfer tasks.', 'rgb(251 146 60)')
-    //   return
-    // }
-
-    // if (tasksCount.value > 0) {
-    //   await transferTasks(statusId, targetStatusId.value)
-    // }
-    //
+    if (!targetStatusId.value) {
+      console.error('Target status ID is required for transferring tasks.')
+      showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
+      return
+    }
 
     if (targetStatusId.value) {
       await transferTasks(statusId, targetStatusId.value)
@@ -141,6 +135,25 @@ function showAlert(message, backgroundColor) {
   setTimeout(() => {
     document.body.removeChild(toastDiv)
     window.location.reload()
+  }, 2000)
+}
+
+function showAlert2(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
   }, 2000)
 }
 
