@@ -2,6 +2,7 @@
 import { onMounted, ref, onUnmounted } from 'vue'
 
 const tasks = ref([])
+const originalTasks = ref([])
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 async function fetchData() {
@@ -14,6 +15,7 @@ async function fetchData() {
 onMounted(async () => {
   const data = await fetchData()
   tasks.value = data
+  originalTasks.value = [...data]
   console.log(tasks.value.length)
 })
 
@@ -33,6 +35,22 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('taskAdded', handleTaskAdded)
 })
+
+const sortState = ref(0) // Initial state for the sort icon
+
+const toggleSortIcon = () => {
+  sortState.value = (sortState.value + 1) % 3 // Cycle through 0, 1, 2
+
+  if (sortState.value === 1) {
+    // Sort tasks by title A-Z
+    tasks.value.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (sortState.value === 2) {
+    // Sort tasks by title Z-A
+    tasks.value.sort((a, b) => b.title.localeCompare(a.title))
+  } else {
+    tasks.value = [...originalTasks.value]
+  }
+}
 </script>
 
 <template>
@@ -73,7 +91,23 @@ onUnmounted(() => {
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Id</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Title</th>
               <th scope="col" class="px-6 py-3 text-center tracking-wide">Assignees</th>
-              <th scope="col" class="px-6 py-3 text-center tracking-wide">Status</th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-center tracking-wide flex justify-between items-center"
+              >
+                <span>Status</span>
+                <img
+                  :src="
+                    sortState === 0
+                      ? '/image/ico/default-alphabetical-sorting-svgrepo-com.svg'
+                      : sortState === 1
+                        ? '/image/ico/alphabetical-sorting-svgrepo-com.svg'
+                        : '/image/ico/alphabetical-sorting-2-svgrepo-com.svg'
+                  "
+                  class="itbkk-button-delete h-7 w-10 mt-0.5 cursor-pointer"
+                  @click="toggleSortIcon"
+                />
+              </th>
               <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
               <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
             </tr>

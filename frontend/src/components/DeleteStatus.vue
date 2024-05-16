@@ -63,7 +63,7 @@ async function deleteStatus(statusId) {
       }
       router.push('/statuslist')
       // alert
-      showAlert('The Status has been deleted.', 'rgb(34 197 94)')
+      showAlert('The Status has been deleted.And Task has been tranfer status', 'rgb(34 197 94)')
     }
     if (res.status === 404) {
       console.log('Status not found.')
