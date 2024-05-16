@@ -7,6 +7,9 @@ const route = useRoute()
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const statuses = ref([])
+//
+const tasksCount = ref(0)
+//
 const statusId = parseInt(route.params.id)
 const statusesname = ref('')
 const targetStatusId = ref(null)
@@ -21,6 +24,14 @@ onMounted(async () => {
     if (status) {
       statusesname.value = status.name
     }
+    // นับจำนวน Task ที่ใช้ Status นั้นอยู่
+    const Taskresponse = await fetch(BASE_URL + `/v2/tasks`)
+    const tasksData = await Taskresponse.json()
+    const tasksInStatus = tasksData.filter((task) => task.statusName === statusesname.value)
+    tasksCount.value = tasksInStatus.length
+    console.log(tasksCount.value)
+    console.log(tasksInStatus.length)
+    //
   } catch (error) {
     console.error('Error fetching tasks:', error)
   }
@@ -34,6 +45,17 @@ async function deleteStatus(statusId) {
       router.push('/statuslist')
       return
     }
+    //
+    // if (tasksCount.value > 0 && !targetStatusId.value) {
+    //   console.error('Target status ID is required for transferring tasks.')
+    //   showAlert('Please select a status to transfer tasks.', 'rgb(251 146 60)')
+    //   return
+    // }
+
+    // if (tasksCount.value > 0) {
+    //   await transferTasks(statusId, targetStatusId.value)
+    // }
+    //
 
     if (targetStatusId.value) {
       await transferTasks(statusId, targetStatusId.value)
@@ -118,17 +140,8 @@ function showAlert(message, backgroundColor) {
 
   setTimeout(() => {
     document.body.removeChild(toastDiv)
-    // window.location.reload()
+    window.location.reload()
   }, 2000)
-}
-
-function findIndexById(statusId) {
-  for (let i = 0; i < statuses.value.length; i++) {
-    if (statuses.value[i].id === statusId) {
-      return i
-    }
-  }
-  return null
 }
 
 function cancel() {
@@ -161,27 +174,38 @@ function formatStatusName(name) {
       <div class="mt-5 mb-5 p-6 pt-0 text-center bg-blue-100">
         <img src="/image/ico/alert-2-svgrepo-com.svg" class="w-20 h-20 mx-auto" />
 
-        <h3
-          class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
-        >
-          Do you want to delete the {{ findIndexById(statusId) + 1 }} -
-          {{ formatStatusName(statusesname) }} status?
-        </h3>
-
-        <select
-          v-model="targetStatusId"
-          class="itbkk-select mb-3 bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="" disabled>Select a status to transfer tasks</option>
-          <option
-            v-for="status in statuses"
-            :key="status.id"
-            :value="status.id"
-            :disabled="status.id === statusId"
+        <template v-if="tasksCount > 0">
+          <h3
+            class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
           >
-            Transfer tasks to {{ status.name }}
-          </option>
-        </select>
+            There are {{ tasksCount }} tasks in {{ formatStatusName(statusesname) }} status. In
+            order to delete this status, the system must transfer tasks in this status to existing
+            status. Transfer tasks to
+          </h3>
+
+          <select
+            v-model="targetStatusId"
+            class="itbkk-select mb-3 bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="" disabled>Transfer to status</option>
+            <option
+              v-for="status in statuses"
+              :key="status.id"
+              :value="status.id"
+              :disabled="status.id === statusId"
+            >
+              {{ status.name }}
+            </option>
+          </select>
+        </template>
+
+        <template v-else>
+          <h3
+            class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
+          >
+            Do you want to delete {{ formatStatusName(statusesname) }} status?
+          </h3>
+        </template>
 
         <button
           @click="deleteStatus(statusId)"

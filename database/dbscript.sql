@@ -65,5 +65,5 @@ VALUES (TRIM('TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTi
 SELECT * FROM tasksV2 order by createdOn;
 SELECT * FROM statuses;
 
-SELECT t.taskId, t.title, t.description, t.assignees, s.statusName, t.createdOn, t.updatedOn
+SELECT t.taskId, t.title, t.description, t.assignees, s.name, t.createdOn, t.updatedOn
 FROM tasksV2 t join statuses s on t.statusId = s.statusId;
