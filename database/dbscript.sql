@@ -4,6 +4,7 @@ CREATE DATABASE IF NOT EXISTS `itb-kk`;
 USE `itb-kk`;
 
 -- drop table
+DROP TABLE tasksV2;
 DROP TABLE statuses;
 DROP TABLE tasks;
 

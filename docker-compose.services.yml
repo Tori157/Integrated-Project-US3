@@ -1,0 +1,25 @@
+services:
+  proxy: 
+    image: 
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - backend-db-network
+    
+  frontend:
+    image: frontend:v5
+    ports:
+      - 3000:3000
+    networks:
+      - backend-db-network
+
+  backend:
+    image: backend:V10
+    ports:
+      - 8080:8080
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PASSWORD=int221@SIT
+    networks:
+      - backend-db-network    
