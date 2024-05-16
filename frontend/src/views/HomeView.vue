@@ -104,7 +104,7 @@ const toggleSortIcon = () => {
                         ? '/image/ico/alphabetical-sorting-svgrepo-com.svg'
                         : '/image/ico/alphabetical-sorting-2-svgrepo-com.svg'
                   "
-                  class="itbkk-button-delete h-7 w-10 mt-0.5 cursor-pointer"
+                  class="itbkk-status-sort h-7 w-10 mt-0.5 cursor-pointer"
                   @click="toggleSortIcon"
                 />
               </th>
