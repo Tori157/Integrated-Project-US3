@@ -43,10 +43,10 @@ const toggleSortIcon = () => {
 
   if (sortState.value === 1) {
     // Sort tasks by title A-Z
-    tasks.value.sort((a, b) => a.title.localeCompare(b.title))
+    tasks.value.sort((a, b) => a.statusName.localeCompare(b.statusName))
   } else if (sortState.value === 2) {
     // Sort tasks by title Z-A
-    tasks.value.sort((a, b) => b.title.localeCompare(a.title))
+    tasks.value.sort((a, b) => b.statusName.localeCompare(a.statusName))
   } else {
     tasks.value = [...originalTasks.value]
   }
