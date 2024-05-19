@@ -7,11 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import sit.int221.backend.exceptions.BadRequestException;
 import sit.int221.backend.exceptions.ErrorResponse;
 import sit.int221.backend.exceptions.ItemNotFoundException;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 
 @RestControllerAdvice
@@ -20,9 +19,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ItemNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleItemNotFoundException(ItemNotFoundException ex, HttpServletRequest request) {
-//        ErrorResponse error = new ErrorResponse(Timestamp.from(Instant.now()), HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI());
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-
         ErrorResponse errorResponse = new ErrorResponse(
                 ZonedDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -30,6 +26,18 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(ItemNotFoundException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                ZonedDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
 }

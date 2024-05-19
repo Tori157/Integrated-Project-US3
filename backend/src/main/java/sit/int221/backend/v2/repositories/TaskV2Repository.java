@@ -14,4 +14,7 @@ public interface TaskV2Repository extends JpaRepository<TaskV2, Integer> {
 
     @Query("SELECT t FROM TaskV2 t WHERE t.status.name IN :names")
     List<TaskV2> findAllByStatusName(@Param("names") List<String> names, Sort sort);
+
+    @Query("SELECT t FROM TaskV2 t WHERE t.status.id IN :id")
+    List<TaskV2> findAllByStatusId(@Param("id") List<Integer> statusId, Sort sort);
 }

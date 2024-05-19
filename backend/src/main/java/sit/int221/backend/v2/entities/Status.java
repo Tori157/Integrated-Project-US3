@@ -28,7 +28,13 @@ public class Status {
     private Set<TaskV2> taskV2s = new HashSet<>();
 
     public void setName(String name) {
+        if (name == null) {
+            return;
+        }
         this.name = name.trim();
+        if (this.name.isEmpty()) {
+            this.name = null;
+        }
     }
 
     public void setDescription(String description) {

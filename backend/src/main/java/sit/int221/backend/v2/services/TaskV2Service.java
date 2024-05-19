@@ -81,5 +81,15 @@ public class TaskV2Service {
         return listMapper.mapList(taskV2Repository.findAllByStatusName(filterStatuses, sort), AllTaskV2DTO.class, modelMapper);
     }
 
+    @Transactional
+    public List<AllTaskV2DTO> sortTasksByStatusId(List<Integer> statusId, String[] sortBy, String[] direction) {
+        Sort sort = Sort.by(Sort.Direction.fromString(direction[0]), sortBy[0]);
+
+        if (statusId == null || statusId.isEmpty())
+            return listMapper.mapList(taskV2Repository.findAll(sort), AllTaskV2DTO.class, modelMapper);
+
+        return listMapper.mapList(taskV2Repository.findAllByStatusId(statusId, sort), AllTaskV2DTO.class, modelMapper);
+    }
+
 }
 
