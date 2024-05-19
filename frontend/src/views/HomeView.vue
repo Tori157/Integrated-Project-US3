@@ -1,14 +1,20 @@
 <script setup>
-import { onMounted, ref, onUnmounted } from 'vue'
+import { onMounted, ref, onUnmounted, computed } from 'vue'
 
 const tasks = ref([])
 const originalTasks = ref([])
 const BASE_URL = import.meta.env.VITE_BASE_URL
+const statuses = ref([])
+const searchStatus = ref('')
+const showStatusDropdown = ref(false)
+const selectedStatuses = ref([])
 
 async function fetchData() {
   const response = await fetch(BASE_URL + `/v2/tasks`)
 
   const data = await response.json()
+  tasks.value = data
+  originalTasks.value = [...data]
   console.log(data)
   return data
 }
@@ -36,6 +42,10 @@ onUnmounted(() => {
   window.removeEventListener('taskAdded', handleTaskAdded)
 })
 
+onMounted(async () => {
+  await fetchStatuses()
+})
+
 const sortState = ref(0) // Initial state for the sort icon
 
 const toggleSortIcon = () => {
@@ -51,7 +61,99 @@ const toggleSortIcon = () => {
     tasks.value = [...originalTasks.value]
   }
 }
+
+const fetchStatuses = async () => {
+  try {
+    const response = await fetch(BASE_URL + '/v2/statuses')
+    if (response.ok) {
+      const data = await response.json()
+      statuses.value = data
+    } else {
+      console.error('Failed to fetch statuses:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Error fetching statuses:', error)
+  }
+}
+
+const redirectToFilteredTasks = async () => {
+  if (searchStatus.value.trim() !== '') {
+    const selectedStatuses = searchStatus.value.split(' | ').map((status) => status.trim())
+    const filterStatus = encodeURIComponent(selectedStatuses.join(', '))
+    const filteredTasksUrl = `${BASE_URL}/v2/tasks?filterStatus=${filterStatus}`
+
+    try {
+      const response = await fetch(filteredTasksUrl)
+      if (response.ok) {
+        const data = await response.json()
+        tasks.value = data
+        originalTasks.value = [...data]
+      } else {
+        console.error('Failed to fetch filtered tasks:', response.statusText)
+      }
+    } catch (error) {
+      console.error('Error fetching filtered tasks:', error)
+    }
+  } else {
+    await fetchData()
+  }
+}
+
+const selectStatus = (status) => {
+  if (!selectedStatuses.value.includes(status)) {
+    selectedStatuses.value.push(status)
+    searchStatus.value += `${searchStatus.value ? ' | ' : ''}${status.name}`
+    showStatusDropdown.value = false
+    redirectToFilteredTasks()
+  }
+}
+
+const removeSelectedStatus = (index) => {
+  selectedStatuses.value.splice(index, 1)
+  const selectedStatusNames = selectedStatuses.value.map((status) => status.name)
+  searchStatus.value = selectedStatusNames.join(' | ')
+  redirectToFilteredTasks()
+}
+
+const isSelected = (status) => {
+  return selectedStatuses.value.includes(status)
+}
+
+const handleDocumentClick = (event) => {
+  const isClickInsideDropdown = event.target.closest('.itbkk-status-filter') !== null
+  if (!isClickInsideDropdown) {
+    showStatusDropdown.value = false
+  }
+}
+
+onMounted(() => {
+  document.body.addEventListener('click', handleDocumentClick)
+})
+
+onUnmounted(() => {
+  document.body.removeEventListener('click', handleDocumentClick)
+})
+
+const clearFilter = async () => {
+  selectedStatuses.value = []
+  searchStatus.value = ''
+  await fetchData()
+}
+
+const showClearFilterButton = computed(() => {
+  return selectedStatuses.value.length > 0
+})
+const filteredStatuses = computed(() => {
+  return statuses.value.filter((status) => !selectedStatuses.value.includes(status))
+})
 </script>
+
+<style>
+.table {
+  width: 100%;
+  table-layout: fixed;
+}
+</style>
 
 <template>
   <div class="p-10 w-screen h-screen bg-gray-800">
@@ -81,10 +183,53 @@ const toggleSortIcon = () => {
         </div>
       </div>
 
+      <div class="itbkk-status-filter mb-5 flex flex-row">
+        <input
+          v-model="searchStatus"
+          @focus="showStatusDropdown = true"
+          readonly
+          class="bg-white text-transparent px-2 mt-1 block h-9 w-1/4 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Filter by status(es)"
+        />
+        <div class="absolute flex mx-1 mt-2">
+          <span
+            v-for="(status, index) in selectedStatuses"
+            :key="index"
+            class="itbkk-filter-item px-2 py-1 bg-gray-200 rounded-full text-sm flex items-center hover:bg-red-500"
+            style="user-select: none"
+          >
+            {{ status.name }}
+            <button @click="removeSelectedStatus(index)" class="itbkk-filter-item-clear ml-1">
+              &times;
+            </button>
+          </span>
+        </div>
+        <ul
+          v-show="showStatusDropdown"
+          class="absolute z-10 bg-white border border-gray-300 mt-11 w-1/4 rounded-md shadow-sm"
+        >
+          <li
+            v-for="status in filteredStatuses"
+            :key="status.id"
+            @click="selectStatus(status)"
+            :class="{ 'cursor-not-allowed': isSelected(status) }"
+            class="px-2 py-1 cursor-pointer hover:bg-gray-100"
+          >
+            {{ status.name }}
+          </li>
+        </ul>
+        <button
+          v-if="showClearFilterButton"
+          @click="clearFilter"
+          class="itbkk-filter-clear px-2 my-1 rounded-md bg-red-500 text-white"
+        >
+          X
+        </button>
+      </div>
+
       <div
         class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-22"
       >
-        <!-- table-fixed break-words border border-separate border-spacing-y-2 mb-16 -->
         <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <tr>
@@ -121,7 +266,6 @@ const toggleSortIcon = () => {
             >
               <!-- id -->
               <th class="itbkk-id px-6 py-4 text-base text-blue-600 font-medium">
-                <!-- {{ task.id }} -->
                 {{ index + 1 }}
               </th>
 
