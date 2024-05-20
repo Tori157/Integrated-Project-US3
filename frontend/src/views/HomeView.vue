@@ -248,10 +248,10 @@ const filteredStatuses = computed(() => {
                 <img
                   :src="
                     sortState === 0
-                      ? '/image/ico/default-alphabetical-sorting-svgrepo-com.svg'
+                      ? '/public/image/ico/default-alphabetical-sorting-svgrepo-com.svg'
                       : sortState === 1
-                        ? '/image/ico/alphabetical-sorting-svgrepo-com.svg'
-                        : '/image/ico/alphabetical-sorting-2-svgrepo-com.svg'
+                        ? '/public/image/ico/alphabetical-sorting-svgrepo-com.svg'
+                        : '/public/image/ico/alphabetical-sorting-2-svgrepo-com.svg'
                   "
                   class="itbkk-status-sort h-7 w-10 mt-0.5 cursor-pointer"
                   @click="toggleSortIcon"
@@ -312,7 +312,7 @@ const filteredStatuses = computed(() => {
                   >
                     <router-link :to="{ name: 'task-edite', params: { id: task.id } }">
                       <img
-                        src="/image/ico/edit-3-svgrepo-com.svg"
+                        src="/public/image/ico/edit-3-svgrepo-com.svg"
                         class="itbkk-button-edite h-8 li-3 w-36"
                       />
                     </router-link>
@@ -325,7 +325,7 @@ const filteredStatuses = computed(() => {
                   >
                     <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
                       <img
-                        src="/image/ico/delete-svgrepo-com.svg"
+                        src="/public/image/ico/delete-svgrepo-com.svg"
                         class="itbkk-button-delete h-7 w-36 mt-0.5"
                       />
                     </router-link>

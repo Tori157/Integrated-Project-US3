@@ -124,7 +124,10 @@ console.log(statuses)
                   @click="$router.push({ name: 'status-editmodal', params: { id: statuses.id } })"
                 >
                   <router-link :to="{ name: 'status-editmodal', params: { id: statuses.id } }">
-                    <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-3" />
+                    <img
+                      src="/public/image/ico/edit-3-svgrepo-com.svg"
+                      class="h-8 li-3 w-36 mt-3"
+                    />
                   </router-link>
                 </button>
                 <button
@@ -134,7 +137,7 @@ console.log(statuses)
                   @click="$router.push({ name: 'status-deletemodal', params: { id: statuses.id } })"
                 >
                   <router-link :to="{ name: 'status-deletemodal', params: { id: statuses.id } }">
-                    <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-3.5" />
+                    <img src="/public/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-3.5" />
                   </router-link>
                 </button>
               </td>
