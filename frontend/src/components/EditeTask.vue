@@ -49,16 +49,10 @@ async function saveChanges() {
   try {
     const updatedTask = {
       id: tasks.value.id,
-      title: tasks.value.title.trim(),
-      description: tasks.value.description.trim(),
-      assignees: tasks.value.assignees.trim(),
+      title: tasks.value.title,
+      description: tasks.value.description,
+      assignees: tasks.value.assignees,
       statusId: tasks.value.status.id
-
-      // statusId: {
-      //   id: tasks.value.status.id,
-      //   name: tasks.value.status.name,
-      //   description: tasks.value.status.description
-      // }
     }
 
     const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`, {

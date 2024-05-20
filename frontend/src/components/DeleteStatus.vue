@@ -7,16 +7,14 @@ const route = useRoute()
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const statuses = ref([])
-//
 const tasksCount = ref(0)
-//
 const statusId = parseInt(route.params.id)
 const statusesname = ref('')
 const targetStatusId = ref(null)
 
 onMounted(async () => {
   try {
-    const response = await fetch(BASE_URL + `/v2/statuses`)
+    const response = await fetch(`${BASE_URL}/v2/statuses`)
     const data = await response.json()
     statuses.value = data
 
@@ -25,7 +23,7 @@ onMounted(async () => {
       statusesname.value = status.name
     }
     // นับจำนวน Task ที่ใช้ Status นั้นอยู่
-    const Taskresponse = await fetch(BASE_URL + `/v2/tasks`)
+    const Taskresponse = await fetch(`${BASE_URL}/v2/tasks`)
     const tasksData = await Taskresponse.json()
     const tasksInStatus = tasksData.filter((task) => task.statusName === statusesname.value)
     tasksCount.value = tasksInStatus.length
@@ -45,16 +43,28 @@ async function deleteStatus(statusId) {
       router.push('/statuslist')
       return
     }
-    if (!targetStatusId.value) {
-      console.error('Target status ID is required for transferring tasks.')
-      showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
-      return
-    }
 
-    if (targetStatusId.value) {
+    // if (!targetStatusId.value) {
+    //   console.error('Target status ID is required for transferring tasks.')
+    //   showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
+    //   return
+    // }
+
+    if (tasksCount.value > 0) {
+      if (!targetStatusId.value) {
+        console.error('Target status ID is required for transferring tasks.')
+        showAlert('Please select a status to transfer tasks.', 'rgb(251 146 60)')
+        return
+      }
       await transferTasks(statusId, targetStatusId.value)
     }
-    const res = await fetch(BASE_URL + `/v2/statuses/${statusId}/${targetStatusId.value}`, {
+
+    const url =
+      tasksCount.value > 0
+        ? `${BASE_URL}/v2/statuses/${statusId}/${targetStatusId.value}`
+        : `${BASE_URL}/v2/statuses/${statusId}`
+
+    const res = await fetch(url, {
       method: 'DELETE'
     })
     const statusToDelete = statuses.value.find((status) => status.id === statusId)
@@ -79,7 +89,12 @@ async function deleteStatus(statusId) {
       }
       router.push('/statuslist')
       // alert
-      showAlert('The Status has been deleted.And Task has been tranfer status', 'rgb(34 197 94)')
+      const message =
+        tasksCount.value > 0
+          ? 'The Status has been deleted. And Task has been transferred status'
+          : 'The Status has been deleted.'
+
+      showAlert(message, 'rgb(34 197 94)')
     }
     if (res.status === 404) {
       console.log('Status not found.')
@@ -94,6 +109,7 @@ async function deleteStatus(statusId) {
 async function transferTasks(fromStatusId, toStatusId) {
   try {
     // Fetch tasks associated with the status being deleted
+    // `/v2/statuses/${statusId}/${targetStatusId.value}`
     const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
     const tasks = await response.json()
     console.log('Tasks transferred successfully')
@@ -138,24 +154,24 @@ function showAlert(message, backgroundColor) {
   }, 2000)
 }
 
-function showAlert2(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
+// function showAlert2(message, backgroundColor) {
+//   const toastDiv = document.createElement('div')
+//   toastDiv.className = 'toast toast-top toast-center z-50'
+//   const alertDiv = document.createElement('div')
+//   alertDiv.className = 'alert alert-success'
+//   alertDiv.innerHTML = `<span>${message}</span>`
+//   alertDiv.style.backgroundColor = backgroundColor
+//   alertDiv.style.color = 'white'
+//   alertDiv.style.textAlign = 'center'
+//   alertDiv.style.display = 'flex'
 
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
+//   toastDiv.appendChild(alertDiv)
+//   document.body.appendChild(toastDiv)
 
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-  }, 2000)
-}
+//   setTimeout(() => {
+//     document.body.removeChild(toastDiv)
+//   }, 2000)
+// }
 
 function cancel() {
   router.push('/statuslist')
@@ -216,7 +232,7 @@ function formatStatusName(name) {
           <h3
             class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
           >
-            Do you want to delete {{ formatStatusName(statusesname) }} status?
+            Do you want to delete {{ statusesname }} status?
           </h3>
         </template>
 

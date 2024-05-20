@@ -78,9 +78,10 @@ const fetchStatuses = async () => {
 
 const redirectToFilteredTasks = async () => {
   if (searchStatus.value.trim() !== '') {
-    const selectedStatuses = searchStatus.value.split(' | ').map((status) => status.trim())
-    const filterStatus = encodeURIComponent(selectedStatuses.join(', '))
-    const filteredTasksUrl = `${BASE_URL}/v2/tasks?filterStatus=${filterStatus}`
+    const selectedStatusIds = selectedStatuses.value.map((status) => status.id)
+    const filterStatus = encodeURIComponent(selectedStatusIds.join(','))
+    const filteredTasksUrl = `${BASE_URL}/v2/tasks?statusId=${filterStatus}`
+    // console.log(filteredTasksUrl)
 
     try {
       const response = await fetch(filteredTasksUrl)
@@ -188,18 +189,21 @@ const filteredStatuses = computed(() => {
           v-model="searchStatus"
           @focus="showStatusDropdown = true"
           readonly
-          class="bg-white text-transparent px-2 mt-1 block h-9 w-1/4 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          class="bg-white text-transparent px-2 mt-1 block h-12 w-3/4 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           placeholder="Filter by status(es)"
         />
-        <div class="absolute flex mx-1 mt-2">
+        <div class="absolute flex justify-center items-center mx-1 mt-2">
           <span
             v-for="(status, index) in selectedStatuses"
             :key="index"
-            class="itbkk-filter-item px-2 py-1 bg-gray-200 rounded-full text-sm flex items-center hover:bg-red-500"
+            class="itbkk-filter-item px-2 mr-1.5 py-1 bg-gray-200 rounded-full text-sm flex items-center hover:bg-red-500"
             style="user-select: none"
           >
             {{ status.name }}
-            <button @click="removeSelectedStatus(index)" class="itbkk-filter-item-clear ml-1">
+            <button
+              @click="removeSelectedStatus(index)"
+              class="itbkk-filter-item-clear mb-1 ml-2 text-xl"
+            >
               &times;
             </button>
           </span>
@@ -221,9 +225,9 @@ const filteredStatuses = computed(() => {
         <button
           v-if="showClearFilterButton"
           @click="clearFilter"
-          class="itbkk-filter-clear px-2 my-1 rounded-md bg-red-500 text-white"
+          class="itbkk-filter-clear px-2 my-1 ml-3 mt-2 rounded-md bg-red-500 text-white"
         >
-          X
+          Clear Filter
         </button>
       </div>
 

@@ -35,8 +35,8 @@ async function fetchStatus() {
 // Save changes to task
 async function saveChanges() {
   try {
-    statuses.value.name = statuses.value.name.trim()
-    statuses.value.description = statuses.value.description.trim()
+    // statuses.value.name = statuses.value.name.trim()
+    // statuses.value.description = statuses.value.description.trim()
 
     const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`, {
       method: 'PUT',
@@ -51,7 +51,7 @@ async function saveChanges() {
       console.log('status updated successfully')
       console.log(statuses.value)
       // Alert
-      showAlert('The task has been updated.', 'rgb(34 197 94)')
+      showAlert('The task has been Add.', 'rgb(34 197 94)')
     }
     if (response.status === 404) {
       console.log('The task does not exist.')

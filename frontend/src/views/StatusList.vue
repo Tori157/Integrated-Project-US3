@@ -88,7 +88,7 @@ console.log(statuses)
             <th scope="col" class="px-6 py-3 text-center tracking-wide">Name</th>
             <th scope="col" class="px-6 py-3 text-center tracking-wide">Description</th>
             <th scope="col" class="px-6 py-3 text-center tracking-wide">Action</th>
-            <th scope="col" class="px-0 py-0 text-center tracking-wide"></th>
+            <th scope="col" class="px-0 py-0 text-center tracking-wide">Edit</th>
           </thead>
 
           <tbody>
@@ -113,7 +113,7 @@ console.log(statuses)
               <td
                 class="itbkk-status-description px-6 py-4 text-center text-base text-blue-600 font-medium whitespace-normal"
                 :class="{ 'text-gray-500 italic': !statuses.description }"
-                style="word-wrap: break-word"
+                style="word-wrap: break-word; white-space: pre-wrap"
               >
                 {{ statuses.description || 'No description is provided.' }}
               </td>
