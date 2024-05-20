@@ -246,13 +246,20 @@ const filteredStatuses = computed(() => {
               >
                 <span>Status</span>
                 <img
-                  :src="
-                    sortState === 0
-                      ? '/public/image/ico/default-alphabetical-sorting-svgrepo-com.svg'
-                      : sortState === 1
-                        ? '/public/image/ico/alphabetical-sorting-svgrepo-com.svg'
-                        : '/public/image/ico/alphabetical-sorting-2-svgrepo-com.svg'
-                  "
+                  v-if="sortState === 0"
+                  src="/public/image/ico/default-alphabetical-sorting-svgrepo-com.svg"
+                  class="itbkk-status-sort h-7 w-10 mt-0.5 cursor-pointer"
+                  @click="toggleSortIcon"
+                />
+                <img
+                  v-else-if="sortState === 1"
+                  src="/public/image/ico/alphabetical-sorting-svgrepo-com.svg"
+                  class="itbkk-status-sort h-7 w-10 mt-0.5 cursor-pointer"
+                  @click="toggleSortIcon"
+                />
+                <img
+                  v-else
+                  src="/public/image/ico/alphabetical-sorting-2-svgrepo-com.svg"
                   class="itbkk-status-sort h-7 w-10 mt-0.5 cursor-pointer"
                   @click="toggleSortIcon"
                 />
