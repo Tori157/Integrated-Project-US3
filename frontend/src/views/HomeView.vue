@@ -157,8 +157,8 @@ const filteredStatuses = computed(() => {
 </style>
 
 <template>
-  <div class="p-10 w-screen h-screen bg-gray-800">
-    <div class="itbkk-us3 container mx-auto w-full max-w-screen-xl ml-40">
+  <div class="p-10 w-full bg-gray-800">
+    <div class="itbkk-us3 w-full">
       <div class="flex justify-between items-center mb-4">
         <h1
           class="mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r to-emerald-400 from-sky-400"
@@ -167,7 +167,7 @@ const filteredStatuses = computed(() => {
         </h1>
       </div>
 
-      <div class="flex justify-between items-center mx-auto max-w-lg">
+      <div class="flex justify-between items-center mx-auto">
         <div class="">
           <button
             class="itbkk-button-add top-10 right-60 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
@@ -189,20 +189,22 @@ const filteredStatuses = computed(() => {
           v-model="searchStatus"
           @focus="showStatusDropdown = true"
           readonly
-          class="bg-white text-transparent px-2 mt-1 block h-12 w-3/4 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          class="bg-white text-transparent px-2 mt-1 block h-12 w-[360px] border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           placeholder="Filter by status(es)"
         />
-        <div class="absolute flex justify-center items-center mx-1 mt-2">
+        <div
+          class="absolute overflow-auto no-scrollbar w-[360px] flex items-center px-1 mt-2"
+          @click="showStatusDropdown = true"
+        >
           <span
             v-for="(status, index) in selectedStatuses"
             :key="index"
-            class="itbkk-filter-item px-2 mr-1.5 py-1 bg-gray-200 rounded-full text-sm flex items-center hover:bg-red-500"
-            style="user-select: none"
+            class="itbkk-filter-item select-none pointer-events-none px-2 mr-1.5 py-1 bg-gray-300 hover:bg-gray-400 rounded-full flex items-center text-black text-base text-nowrap"
           >
             {{ status.name }}
             <button
               @click="removeSelectedStatus(index)"
-              class="itbkk-filter-item-clear mb-1 ml-2 text-xl"
+              class="itbkk-filter-item-clear pointer-events-auto mb-1 ml-2 text-xl"
             >
               &times;
             </button>
@@ -210,14 +212,14 @@ const filteredStatuses = computed(() => {
         </div>
         <ul
           v-show="showStatusDropdown"
-          class="absolute z-10 bg-white border border-gray-300 mt-11 w-1/4 rounded-md shadow-sm"
+          class="absolute z-10 bg-white mt-16 w-[360px] rounded-md shadow-sm"
         >
           <li
             v-for="status in filteredStatuses"
             :key="status.id"
             @click="selectStatus(status)"
             :class="{ 'cursor-not-allowed': isSelected(status) }"
-            class="px-2 py-1 cursor-pointer hover:bg-gray-100"
+            class="px-2 py-1 cursor-pointer text-black text-base rounded-md hover:bg-blue-200"
           >
             {{ status.name }}
           </li>
@@ -231,9 +233,7 @@ const filteredStatuses = computed(() => {
         </button>
       </div>
 
-      <div
-        class="relative overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg h-full w-[1600px] mx-auto my-auto right-22"
-      >
+      <div class="overflow-x-auto overflow-y-auto shadow-md sm:rounded-lg mx-auto my-auto right-22">
         <table class="md:w-full table-auto text-sm text-left rtl:text-right border-blue-300">
           <thead class="text-lg text-white bg-blue-500 border-b border-blue-300">
             <tr>
@@ -274,8 +274,11 @@ const filteredStatuses = computed(() => {
               </th>
 
               <!-- Title -->
-              <td class="itbkk-title text-left whitespace-normal">
-                <a href="#" class="px-6 py-4 font-medium text-base text-blue-600 hover:underline">
+              <td class="itbkk-title text-left break-words">
+                <a
+                  href="#"
+                  class="px-6 py-4 font-medium text-base text-blue-600 hover:underline break-words"
+                >
                   <router-link :to="{ name: 'task-modaldetail', params: { id: task.id } }">
                     {{ task.title.trim() }}
                   </router-link>
@@ -348,3 +351,16 @@ const filteredStatuses = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+</style>
