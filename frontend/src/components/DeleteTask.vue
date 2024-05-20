@@ -91,7 +91,7 @@ function cancel() {
   >
     <div class="relative mx-auto shadow-xl rounded-md max-w-md bg-blue-100 mb-52">
       <div class="mt-5 mb-5 p-6 pt-0 text-center bg-blue-100">
-        <img src="/image/ico/alert-2-svgrepo-com.svg" class="w-20 h-20 mx-auto" />
+        <img src="/public/image/ico/alert-2-svgrepo-com.svg" class="w-20 h-20 mx-auto" />
 
         <h3
           class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
