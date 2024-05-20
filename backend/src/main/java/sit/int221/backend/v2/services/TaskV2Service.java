@@ -57,7 +57,7 @@ public class TaskV2Service {
     }
 
     @Transactional
-    public NewTaskV2DTO updateTaskById(Integer id,  NewTaskV2DTO newTask) {
+    public NewTaskV2DTO updateTaskById(Integer id, NewTaskV2DTO newTask) {
 
         TaskV2 task = taskV2Repository.findById(id).orElseThrow(
                 () -> new ItemNotFoundException("NOT FOUND")
@@ -71,5 +71,26 @@ public class TaskV2Service {
         return modelMapper.map(taskV2Repository.save(task), NewTaskV2DTO.class);
 
     }
+
+    @Transactional
+    public List<AllTaskV2DTO> sortTasksByStatusName(List<String> filterStatuses, String[] sortBy, String[] direction) {
+        Sort sort = Sort.by(Sort.Direction.fromString(direction[0]), sortBy[0]);
+
+        if (filterStatuses == null || filterStatuses.isEmpty())
+            return listMapper.mapList(taskV2Repository.findAll(sort), AllTaskV2DTO.class, modelMapper);
+
+        return listMapper.mapList(taskV2Repository.findAllByStatusName(filterStatuses, sort), AllTaskV2DTO.class, modelMapper);
+    }
+
+    @Transactional
+    public List<AllTaskV2DTO> sortTasksByStatusId(List<Integer> statusId, String[] sortBy, String[] direction) {
+        Sort sort = Sort.by(Sort.Direction.fromString(direction[0]), sortBy[0]);
+
+        if (statusId == null || statusId.isEmpty())
+            return listMapper.mapList(taskV2Repository.findAll(sort), AllTaskV2DTO.class, modelMapper);
+
+        return listMapper.mapList(taskV2Repository.findAllByStatusId(statusId, sort), AllTaskV2DTO.class, modelMapper);
+    }
+
 }
 

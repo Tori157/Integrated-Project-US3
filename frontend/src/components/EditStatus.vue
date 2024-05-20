@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-// import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const statuses = ref({ name: '', description: '' })
@@ -21,7 +20,7 @@ async function fetchStatus() {
     if (data.name === 'No Status') {
       console.error('Cannot edit status named No Status.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-
+      router.push('/statuslist')
       return
     }
 
@@ -36,8 +35,8 @@ async function fetchStatus() {
 // Save changes to task
 async function saveChanges() {
   try {
-    statuses.value.name = statuses.value.name.trim()
-    statuses.value.description = statuses.value.description.trim()
+    statuses.value.name = statuses.value.name ? statuses.value.name.trim() : ''
+    statuses.value.description = statuses.value.description ? statuses.value.description.trim() : ''
 
     const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`, {
       method: 'PUT',
@@ -52,7 +51,7 @@ async function saveChanges() {
       console.log('status updated successfully')
       console.log(statuses.value)
       // Alert
-      showAlert('The task has been updated.', 'rgb(34 197 94)')
+      showAlert('The task has been Add.', 'rgb(34 197 94)')
     }
     if (response.status === 404) {
       console.log('The task does not exist.')

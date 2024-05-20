@@ -7,13 +7,14 @@ const route = useRoute()
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const statuses = ref([])
+const tasksCount = ref(0)
 const statusId = parseInt(route.params.id)
 const statusesname = ref('')
 const targetStatusId = ref(null)
 
 onMounted(async () => {
   try {
-    const response = await fetch(BASE_URL + `/v2/statuses`)
+    const response = await fetch(`${BASE_URL}/v2/statuses`)
     const data = await response.json()
     statuses.value = data
 
@@ -21,6 +22,14 @@ onMounted(async () => {
     if (status) {
       statusesname.value = status.name
     }
+    // นับจำนวน Task ที่ใช้ Status นั้นอยู่
+    const Taskresponse = await fetch(`${BASE_URL}/v2/tasks`)
+    const tasksData = await Taskresponse.json()
+    const tasksInStatus = tasksData.filter((task) => task.statusName === statusesname.value)
+    tasksCount.value = tasksInStatus.length
+    console.log(tasksCount.value)
+    console.log(tasksInStatus.length)
+    //
   } catch (error) {
     console.error('Error fetching tasks:', error)
   }
@@ -28,58 +37,47 @@ onMounted(async () => {
 
 async function deleteStatus(statusId) {
   try {
-    if (targetStatusId.value) {
+    if (statusId === 1) {
+      console.error('Cannot delete status named No Status.')
+      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
+      router.push('/statuslist')
+      return
+    }
+
+    // if (!targetStatusId.value) {
+    //   console.error('Target status ID is required for transferring tasks.')
+    //   showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
+    //   return
+    // }
+
+    if (tasksCount.value > 0) {
+      if (!targetStatusId.value) {
+        console.error('Target status ID is required for transferring tasks.')
+        showAlert('Please select a status to transfer tasks.', 'rgb(251 146 60)')
+        return
+      }
       await transferTasks(statusId, targetStatusId.value)
     }
-    const res = await fetch(BASE_URL + `/v2/statuses/${statusId}`, {
+
+    const url =
+      tasksCount.value > 0
+        ? `${BASE_URL}/v2/statuses/${statusId}/${targetStatusId.value}`
+        : `${BASE_URL}/v2/statuses/${statusId}`
+
+    const res = await fetch(url, {
       method: 'DELETE'
     })
     const statusToDelete = statuses.value.find((status) => status.id === statusId)
     if (!statusToDelete) {
       console.error('Status not found.')
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML = '<span>An error has occurred, the status does not exist.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
+      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
       router.push('/statuslist')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
       return
     }
 
-    // Prevent deletion of NO_STATUS
     if (statusToDelete.name === 'No Status') {
       console.error('Cannot delete status named No Status.')
-      const toastDiv = document.createElement('div')
-      toastDiv.className = 'toast toast-top toast-center' // ตำเเหน่ง
-      const alertSuccessDiv = document.createElement('div')
-      alertSuccessDiv.className = 'alert alert-success'
-      alertSuccessDiv.innerHTML =
-        '<span>This status is the default status and cannot be modified.</span>'
-      alertSuccessDiv.style.backgroundColor = 'rgb(251 146 60)' // สีพื้นหลัง
-      alertSuccessDiv.style.color = 'white' // สีข้อความ
-      alertSuccessDiv.style.textAlign = 'center' // ตรงกลาง
-      alertSuccessDiv.style.display = 'flex' // ให้เนื้อหาอยู่ตรงกลาง
-
-      toastDiv.appendChild(alertSuccessDiv)
-      document.body.appendChild(toastDiv)
-
-      router.push('/statuslist')
-      setTimeout(function () {
-        document.body.removeChild(toastDiv)
-        window.location.reload()
-      }, 2000)
+      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
     }
 
     if (res.status === 200) {
@@ -91,7 +89,12 @@ async function deleteStatus(statusId) {
       }
       router.push('/statuslist')
       // alert
-      showAlert('The Status has been deleted.', 'rgb(34 197 94)')
+      const message =
+        tasksCount.value > 0
+          ? 'The Status has been deleted. And Task has been transferred status'
+          : 'The Status has been deleted.'
+
+      showAlert(message, 'rgb(34 197 94)')
     }
     if (res.status === 404) {
       console.log('Status not found.')
@@ -100,6 +103,34 @@ async function deleteStatus(statusId) {
     }
   } catch (error) {
     console.error('Error:', error)
+  }
+}
+
+async function transferTasks(fromStatusId, toStatusId) {
+  try {
+    // Fetch tasks associated with the status being deleted
+    // `/v2/statuses/${statusId}/${targetStatusId.value}`
+    const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
+    const tasks = await response.json()
+    console.log('Tasks transferred successfully')
+    const tasksToTransfer = tasks.filter((task) => task.statusId === fromStatusId)
+
+    // Update each task to set the new status
+    for (const task of tasksToTransfer) {
+      await fetch(BASE_URL + `/v2/tasks/${task.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...task,
+          statusId: toStatusId
+        })
+      })
+    }
+  } catch (error) {
+    console.error('Error transferring tasks:', error)
+    throw error // Propagate the error to the caller
   }
 }
 // Show alert message
@@ -123,14 +154,24 @@ function showAlert(message, backgroundColor) {
   }, 2000)
 }
 
-function findIndexById(statusId) {
-  for (let i = 0; i < statuses.value.length; i++) {
-    if (statuses.value[i].id === statusId) {
-      return i
-    }
-  }
-  return null
-}
+// function showAlert2(message, backgroundColor) {
+//   const toastDiv = document.createElement('div')
+//   toastDiv.className = 'toast toast-top toast-center z-50'
+//   const alertDiv = document.createElement('div')
+//   alertDiv.className = 'alert alert-success'
+//   alertDiv.innerHTML = `<span>${message}</span>`
+//   alertDiv.style.backgroundColor = backgroundColor
+//   alertDiv.style.color = 'white'
+//   alertDiv.style.textAlign = 'center'
+//   alertDiv.style.display = 'flex'
+
+//   toastDiv.appendChild(alertDiv)
+//   document.body.appendChild(toastDiv)
+
+//   setTimeout(() => {
+//     document.body.removeChild(toastDiv)
+//   }, 2000)
+// }
 
 function cancel() {
   router.push('/statuslist')
@@ -151,32 +192,6 @@ function formatStatusName(name) {
   // ตัดช่องว่างและเครื่องหมาย _ ออก
   return formattedName.replace(/_/g, ' ').trim()
 }
-async function transferTasks(fromStatusId, toStatusId) {
-  try {
-    // Fetch tasks associated with the status being deleted
-    const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
-    const tasks = await response.json()
-
-    // Update each task to set the new status
-    for (const task of tasks) {
-      await fetch(BASE_URL + `/v2/tasks/${task.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...task,
-          statusId: toStatusId
-        })
-      })
-    }
-
-    console.log('Tasks transferred successfully')
-  } catch (error) {
-    console.error('Error transferring tasks:', error)
-    throw error // Propagate the error to the caller
-  }
-}
 </script>
 
 <template>
@@ -188,27 +203,38 @@ async function transferTasks(fromStatusId, toStatusId) {
       <div class="mt-5 mb-5 p-6 pt-0 text-center bg-blue-100">
         <img src="/image/ico/alert-2-svgrepo-com.svg" class="w-20 h-20 mx-auto" />
 
-        <h3
-          class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
-        >
-          Do you want to delete the {{ findIndexById(statusId) + 1 }} -
-          {{ formatStatusName(statusesname) }} status?
-        </h3>
-
-        <select
-          v-model="targetStatusId"
-          class="itbkk-select mb-3 bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="" disabled>Select a status to transfer tasks</option>
-          <option
-            v-for="status in statuses"
-            :key="status.id"
-            :value="status.id"
-            :disabled="status.id === statusId"
+        <template v-if="tasksCount > 0">
+          <h3
+            class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
           >
-            Transfer tasks to {{ status.name }}
-          </option>
-        </select>
+            There are {{ tasksCount }} tasks in {{ formatStatusName(statusesname) }} status. In
+            order to delete this status, the system must transfer tasks in this status to existing
+            status. Transfer tasks to
+          </h3>
+
+          <select
+            v-model="targetStatusId"
+            class="itbkk-select mb-3 bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="" disabled>Transfer to status</option>
+            <option
+              v-for="status in statuses"
+              :key="status.id"
+              :value="status.id"
+              :disabled="status.id === statusId"
+            >
+              {{ status.name }}
+            </option>
+          </select>
+        </template>
+
+        <template v-else>
+          <h3
+            class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
+          >
+            Do you want to delete {{ statusesname }} status?
+          </h3>
+        </template>
 
         <button
           @click="deleteStatus(statusId)"

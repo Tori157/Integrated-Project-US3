@@ -5,13 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sit.int221.backend.exceptions.BadRequestException;
 import sit.int221.backend.service.ListMapper;
 import sit.int221.backend.v2.dtos.NewTaskV2DTO;
 import sit.int221.backend.v2.dtos.AllTaskV2DTO;
 import sit.int221.backend.v2.entities.TaskV2;
 import sit.int221.backend.v2.services.TaskV2Service;
 
+import java.lang.reflect.Array;
+import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 // @CrossOrigin(origins = {"http://localhost:5173","http://ip23us3.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th/us3/"})
@@ -25,12 +30,18 @@ public class TaskV2Controller {
     ListMapper listMapper;
 
     @GetMapping("")
-    public List<AllTaskV2DTO> getAllTasks() {
-        return taskV2Service.getAllTasks();
+    public ResponseEntity<List<AllTaskV2DTO>> getAllTasks(
+            @RequestParam(required = false) List<Integer> statusId,
+//            @RequestParam(required = false) List<String> filterStatus,
+            @RequestParam(defaultValue = "createdOn") String[] sortBy,
+            @RequestParam(defaultValue = "ASC") String[] direction,
+            @RequestParam Map<String, String> allParameters) {
+        validateGetAllTasksParameters(allParameters);
+        return ResponseEntity.ok(taskV2Service.sortTasksByStatusId(statusId, sortBy, direction));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getTaskById(@PathVariable Integer id) {
+    public ResponseEntity<TaskV2> getTaskById(@PathVariable Integer id) {
         TaskV2 task = taskV2Service.getTaskById(id);
         return ResponseEntity.ok(task);
     }
@@ -42,12 +53,21 @@ public class TaskV2Controller {
     }
 
     @PutMapping("/{id}")
-    public NewTaskV2DTO updateTask(@PathVariable Integer id, @RequestBody NewTaskV2DTO newTask) {
-        return taskV2Service.updateTaskById(id, newTask);
+    public ResponseEntity<NewTaskV2DTO> updateTask(@PathVariable Integer id, @RequestBody NewTaskV2DTO newTask) {
+        return ResponseEntity.ok(taskV2Service.updateTaskById(id, newTask));
     }
 
     @DeleteMapping("/{id}")
-    public AllTaskV2DTO removeTask(@PathVariable Integer id) {
-        return taskV2Service.removeTaskById(id);
+    public ResponseEntity<AllTaskV2DTO> removeTask(@PathVariable Integer id) {
+        return ResponseEntity.ok(taskV2Service.removeTaskById(id));
+    }
+
+    public void validateGetAllTasksParameters(Map<String, String> allParameters) {
+        List<String> validParams = Arrays.asList("statusId", "sortBy", "direction");
+        for (String param : allParameters.keySet()) {
+            if (!validParams.contains(param)) {
+                throw new BadRequestException("Invalid filter parameter");
+            }
+        }
     }
 }

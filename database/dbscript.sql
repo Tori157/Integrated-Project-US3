@@ -67,4 +67,3 @@ SELECT * FROM statuses;
 
 SELECT t.taskId, t.title, t.description, t.assignees, s.name, t.createdOn, t.updatedOn
 FROM tasksV2 t join statuses s on t.statusId = s.statusId;
-
