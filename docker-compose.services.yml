@@ -1,0 +1,37 @@
+services:
+  proxy:
+    image: nginx:alpine
+    volumes:
+      - ./proxy/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+    networks:
+      - proxy-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks:
+      - proxy-network
+
+  backend:
+    build:
+      context: ./backend 
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PASSWORD=int221@SIT
+    networks:
+      - proxy-network
+      - backend-db-network
+
+networks:
+  proxy-network:
+    name: proxy-network
+  backend-db-network:
+    name: backend-db-network
+    external: true
+  

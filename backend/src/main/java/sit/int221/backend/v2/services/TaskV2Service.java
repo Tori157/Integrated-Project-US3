@@ -69,6 +69,7 @@ public class TaskV2Service {
         task.setStatus(status);
 
         return modelMapper.map(taskV2Repository.save(task), NewTaskV2DTO.class);
+
     }
 
     @Transactional
