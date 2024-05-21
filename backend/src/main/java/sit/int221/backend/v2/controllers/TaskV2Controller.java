@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173", "http://ip23us3.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th/us3/"})
+// @CrossOrigin(origins = {"http://localhost:5173", "http://ip23us3.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th/us3/"})
 @RequestMapping("/v2/tasks")
 public class TaskV2Controller {
     @Autowired
@@ -36,7 +36,7 @@ public class TaskV2Controller {
             @RequestParam(defaultValue = "createdOn") String[] sortBy,
             @RequestParam(defaultValue = "ASC") String[] direction,
             @RequestParam Map<String, String> allParameters) {
-//        validateGetAllTasksParameters(allParameters);
+        validateGetAllTasksParameters(allParameters);
 //        return ResponseEntity.ok(taskV2Service.sortTasksByStatusId(statusId, sortBy, direction));
         return ResponseEntity.ok(taskV2Service.sortTasksByStatusName(filterStatuses, sortBy, direction));
     }
@@ -64,7 +64,7 @@ public class TaskV2Controller {
     }
 
     public void validateGetAllTasksParameters(Map<String, String> allParameters) {
-        List<String> validParams = Arrays.asList("statusId", "sortBy", "direction");
+        List<String> validParams = Arrays.asList("filterStatuses", "sortBy", "direction");
         for (String param : allParameters.keySet()) {
             if (!validParams.contains(param)) {
                 throw new BadRequestException("Invalid filter parameter");
