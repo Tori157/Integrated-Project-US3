@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+// import { useRouter } from 'vue-router'
+// const router = useRouter()
 
 const statuses = ref([])
 const BASE_URL = import.meta.env.VITE_BASE_URL
@@ -55,7 +55,7 @@ console.log(statuses)
 </script>
 
 <template>
-  <div class="p-10 w-full bg-gray-800">
+  <div class="p-10 w-full">
     <div class="itbkk-us3 w-full">
       <div class="flex justify-between items-center mb-4">
         <h1
