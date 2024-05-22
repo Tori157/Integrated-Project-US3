@@ -11,7 +11,6 @@ const selectedStatuses = ref([])
 
 async function fetchData() {
   const response = await fetch(BASE_URL + `/v2/tasks`)
-
   const data = await response.json()
   tasks.value = data
   originalTasks.value = [...data]
@@ -52,11 +51,11 @@ const toggleSortIcon = () => {
   sortState.value = (sortState.value + 1) % 3 // Cycle through 0, 1, 2
 
   if (sortState.value === 1) {
-    // Sort tasks by title A-Z
-    tasks.value.sort((a, b) => a.statusName.localeCompare(b.statusName))
+    // Sort tasks by statusName A-Z
+    tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name))
   } else if (sortState.value === 2) {
-    // Sort tasks by title Z-A
-    tasks.value.sort((a, b) => b.statusName.localeCompare(a.statusName))
+    // Sort tasks by statusName Z-A
+    tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name))
   } else {
     tasks.value = [...originalTasks.value]
   }
@@ -77,11 +76,10 @@ const fetchStatuses = async () => {
 }
 
 const redirectToFilteredTasks = async () => {
-  if (searchStatus.value.trim() !== '') {
-    const selectedStatusIds = selectedStatuses.value.map((status) => status.id)
-    const filterStatus = encodeURIComponent(selectedStatusIds.join(','))
-    const filteredTasksUrl = `${BASE_URL}/v2/tasks?statusId=${filterStatus}`
-    // console.log(filteredTasksUrl)
+  if (selectedStatuses.value.length > 0) {
+    const selectedStatusNames = selectedStatuses.value.map((status) => status.name)
+    const filterStatus = encodeURIComponent(selectedStatusNames.join(','))
+    const filteredTasksUrl = `${BASE_URL}/v2/tasks?filterStatuses=${filterStatus}`
 
     try {
       const response = await fetch(filteredTasksUrl)
@@ -157,7 +155,7 @@ const filteredStatuses = computed(() => {
 </style>
 
 <template>
-  <div class="p-10 w-full bg-gray-800">
+  <div class="p-10 w-full">
     <div class="itbkk-us3 w-full">
       <div class="flex justify-between items-center mb-4">
         <h1
@@ -189,11 +187,11 @@ const filteredStatuses = computed(() => {
           v-model="searchStatus"
           @focus="showStatusDropdown = true"
           readonly
-          class="bg-white text-transparent px-2 mt-1 block h-12 w-[360px] border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          class="bg-white text-transparent px-2 mt-1 block h-12 w-[580px] border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           placeholder="Filter by status(es)"
         />
         <div
-          class="absolute overflow-auto no-scrollbar w-[360px] flex items-center px-1 mt-2"
+          class="absolute overflow-auto no-scrollbar w-[580px] flex items-center px-1 mt-2"
           @click="showStatusDropdown = true"
         >
           <span
@@ -212,7 +210,7 @@ const filteredStatuses = computed(() => {
         </div>
         <ul
           v-show="showStatusDropdown"
-          class="absolute z-10 bg-white mt-16 w-[360px] rounded-md shadow-sm"
+          class="absolute z-10 bg-white mt-16 w-[580px] rounded-md shadow-sm"
         >
           <li
             v-for="status in filteredStatuses"
@@ -306,7 +304,7 @@ const filteredStatuses = computed(() => {
                   div
                   class="w-[115px] border-4 border-blue-100 bg-blue-300 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
                 >
-                  {{ task.statusName }}
+                  {{ task.status.name }}
                 </div>
               </td>
               <td class="flex">
