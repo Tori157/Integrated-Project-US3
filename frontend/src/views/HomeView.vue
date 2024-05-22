@@ -51,11 +51,11 @@ const toggleSortIcon = () => {
   sortState.value = (sortState.value + 1) % 3 // Cycle through 0, 1, 2
 
   if (sortState.value === 1) {
-    // Sort tasks by title A-Z
-    tasks.value.sort((a, b) => a.statusName.localeCompare(b.statusName))
+    // Sort tasks by statusName A-Z
+    tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name))
   } else if (sortState.value === 2) {
-    // Sort tasks by title Z-A
-    tasks.value.sort((a, b) => b.statusName.localeCompare(a.statusName))
+    // Sort tasks by statusName Z-A
+    tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name))
   } else {
     tasks.value = [...originalTasks.value]
   }
