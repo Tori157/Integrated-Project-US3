@@ -25,10 +25,11 @@ onMounted(async () => {
     // นับจำนวน Task ที่ใช้ Status นั้นอยู่
     const Taskresponse = await fetch(`${BASE_URL}/v2/tasks`)
     const tasksData = await Taskresponse.json()
-    const tasksInStatus = tasksData.filter((task) => task.statusName === statusesname.value)
+    const tasksInStatus = tasksData.filter((task) => task.status.id === statusId)
     tasksCount.value = tasksInStatus.length
     console.log(tasksCount.value)
     console.log(tasksInStatus.length)
+    console.log(tasksData)
     //
   } catch (error) {
     console.error('Error fetching tasks:', error)
@@ -43,12 +44,6 @@ async function deleteStatus(statusId) {
       router.push('/statuslist')
       return
     }
-
-    // if (!targetStatusId.value) {
-    //   console.error('Target status ID is required for transferring tasks.')
-    //   showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
-    //   return
-    // }
 
     if (tasksCount.value > 0) {
       if (!targetStatusId.value) {
@@ -109,8 +104,8 @@ async function deleteStatus(statusId) {
 async function transferTasks(fromStatusId, toStatusId) {
   try {
     // Fetch tasks associated with the status being deleted
-    // `/v2/statuses/${statusId}/${targetStatusId.value}`
-    const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
+    const response = await fetch(`${BASE_URL}/v2/tasks?filterStatuses=${statusId}`)
+    // const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
     const tasks = await response.json()
     console.log('Tasks transferred successfully')
     const tasksToTransfer = tasks.filter((task) => task.statusId === fromStatusId)
@@ -153,25 +148,6 @@ function showAlert(message, backgroundColor) {
     window.location.reload()
   }, 2000)
 }
-
-// function showAlert2(message, backgroundColor) {
-//   const toastDiv = document.createElement('div')
-//   toastDiv.className = 'toast toast-top toast-center z-50'
-//   const alertDiv = document.createElement('div')
-//   alertDiv.className = 'alert alert-success'
-//   alertDiv.innerHTML = `<span>${message}</span>`
-//   alertDiv.style.backgroundColor = backgroundColor
-//   alertDiv.style.color = 'white'
-//   alertDiv.style.textAlign = 'center'
-//   alertDiv.style.display = 'flex'
-
-//   toastDiv.appendChild(alertDiv)
-//   document.body.appendChild(toastDiv)
-
-//   setTimeout(() => {
-//     document.body.removeChild(toastDiv)
-//   }, 2000)
-// }
 
 function cancel() {
   router.push('/statuslist')

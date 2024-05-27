@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-// @CrossOrigin(origins = {"http://localhost:5173", "http://ip23us3.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th/us3/"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://ip23us3.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th/us3/"})
 @RequestMapping("/v2/tasks")
 public class TaskV2Controller {
     @Autowired
