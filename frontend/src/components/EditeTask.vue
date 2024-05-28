@@ -99,7 +99,7 @@ function showAlert(message, backgroundColor) {
 
   setTimeout(() => {
     document.body.removeChild(toastDiv)
-    // window.location.reload()
+    window.location.reload()
   }, 2000)
 }
 
@@ -140,6 +140,44 @@ const isModified = computed(() => {
 const isStatusModified = computed(() => {
   return tasks.value.status && tasks.value.status.id !== originalTasks.value.status.id
 })
+
+const maxLengths = {
+  title: 100,
+  description: 500,
+  assignees: 30
+}
+
+const checkMaxLength = (field) => {
+  if (tasks.value[field].length >= maxLengths[field]) {
+    showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
+  }
+}
+
+function showAlert2(message, backgroundColor) {
+  const existingAlert = document.querySelector('.alert-success')
+  if (existingAlert) {
+    existingAlert.parentElement.removeChild(existingAlert)
+  }
+
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    if (toastDiv.parentElement) {
+      toastDiv.parentElement.removeChild(toastDiv)
+    }
+  }, 2000)
+}
 </script>
 
 <template>
@@ -161,6 +199,7 @@ const isStatusModified = computed(() => {
               type="text"
               class="w-full"
               style="background-color: white"
+              @input="checkMaxLength('title')"
               maxlength="100"
             />
           </div>
@@ -169,6 +208,7 @@ const isStatusModified = computed(() => {
             <textarea
               v-model="tasks.description"
               class="itbkk-description break-words text-blue-600 bg-white rounded-xl mt-2 text-sm p-5 mb-10 w-96 h-64"
+              @input="checkMaxLength('description')"
               maxlength="500"
             ></textarea>
           </div>
@@ -179,6 +219,7 @@ const isStatusModified = computed(() => {
             v-model="tasks.assignees"
             type="text"
             class="itbkk-assignees break-words text-blue-600 bg-white rounded-xl mt-2 text-sm p-4 mb-8 w-96"
+            @input="checkMaxLength('assignees')"
             maxlength="30"
           />
           <div class="text-base text-rose-400 font-medium">Status:</div>

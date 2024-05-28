@@ -99,6 +99,43 @@ function showAlert(message, backgroundColor) {
     window.location.reload()
   }, 2000)
 }
+const maxLengths = {
+  title: 100,
+  description: 500,
+  assignees: 30
+}
+
+const checkMaxLength = (field) => {
+  if (formData[field].length >= maxLengths[field]) {
+    showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
+  }
+}
+
+function showAlert2(message, backgroundColor) {
+  const existingAlert = document.querySelector('.alert-success')
+  if (existingAlert) {
+    existingAlert.parentElement.removeChild(existingAlert)
+  }
+
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    if (toastDiv.parentElement) {
+      toastDiv.parentElement.removeChild(toastDiv)
+    }
+  }, 2000)
+}
 </script>
 
 <template>
@@ -117,6 +154,7 @@ function showAlert(message, backgroundColor) {
             type="text"
             id="itbkk-title"
             v-model="formData.title"
+            @input="checkMaxLength('title')"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             maxlength="100"
           />
@@ -128,6 +166,7 @@ function showAlert(message, backgroundColor) {
           <textarea
             id="itbkk-description"
             v-model="formData.description"
+            @input="checkMaxLength('description')"
             class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             maxlength="500"
           ></textarea>
@@ -140,6 +179,7 @@ function showAlert(message, backgroundColor) {
             type="text"
             id="itbkk-assignees"
             v-model="formData.assignees"
+            @input="checkMaxLength('assignees')"
             class="bg-white text-blue-600 mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             maxlength="30"
           />
