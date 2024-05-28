@@ -48,7 +48,7 @@ async function deleteStatus(statusId) {
     if (tasksCount.value > 0) {
       if (!targetStatusId.value) {
         console.error('Target status ID is required for transferring tasks.')
-        showAlert('Please select a status to transfer tasks.', 'rgb(251 146 60)')
+        showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
         return
       }
       await transferTasks(statusId, targetStatusId.value)
@@ -89,7 +89,7 @@ async function deleteStatus(statusId) {
           ? 'The Status has been deleted. And Task has been transferred status'
           : 'The Status has been deleted.'
 
-      showAlert(message, 'rgb(34 197 94)')
+      showAlert(message, 'rgb(244 63 94)')
     }
     if (res.status === 404) {
       console.log('Status not found.')
@@ -130,6 +130,26 @@ async function transferTasks(fromStatusId, toStatusId) {
 }
 // Show alert message
 function showAlert(message, backgroundColor) {
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    document.body.removeChild(toastDiv)
+    window.location.reload()
+  }, 2000)
+}
+
+function showAlert2(message, backgroundColor) {
   const toastDiv = document.createElement('div')
   toastDiv.className = 'toast toast-top toast-center z-50'
   const alertDiv = document.createElement('div')
