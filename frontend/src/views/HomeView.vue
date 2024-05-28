@@ -191,13 +191,13 @@ const filteredStatuses = computed(() => {
           placeholder="Filter by status(es)"
         />
         <div
-          class="absolute overflow-auto no-scrollbar w-[580px] flex items-center px-1 mt-2"
+          class="itbkk-status-choice absolute overflow-auto no-scrollbar w-[580px] flex items-center px-1 mt-2"
           @click="showStatusDropdown = true"
         >
           <span
             v-for="(status, index) in selectedStatuses"
             :key="index"
-            class="itbkk-filter-item select-none pointer-events-none px-2 mr-1.5 py-1 bg-gray-300 hover:bg-gray-400 rounded-full flex items-center text-black text-base text-nowrap"
+            class="itbkk-status-choice select-none pointer-events-none px-2 mr-1.5 py-1 bg-gray-300 hover:bg-gray-400 rounded-full flex items-center text-black text-base text-nowrap"
           >
             {{ status.name }}
             <button

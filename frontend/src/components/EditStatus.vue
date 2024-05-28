@@ -51,17 +51,22 @@ async function saveChanges() {
       console.log('status updated successfully')
       console.log(statuses.value)
       // Alert
-      showAlert('The task has been Add.', 'rgb(34 197 94)')
+      showAlert('The status has been update.', 'rgb(34 197 94)')
     }
     if (response.status === 404) {
-      console.log('The task does not exist.')
-      console.error('Failed to update task')
+      console.log('The status does not exist.')
+      console.error('Failed to update status')
 
       // alert
       showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
     }
+    if (response.status === 500) {
+      console.error('Failed to update status')
+      router.push('/statuslist')
+      showAlert('Status name must be uniques, please choose another name.', 'rgb(251 146 60)')
+    }
   } catch (error) {
-    console.error('Error updating task:', error)
+    console.error('Failed to update Status:', error)
   }
 }
 

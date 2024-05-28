@@ -86,8 +86,8 @@ async function deleteStatus(statusId) {
       // alert
       const message =
         tasksCount.value > 0
-          ? 'The Status has been deleted. And Task has been transferred status'
-          : 'The Status has been deleted.'
+          ? 'The status has been deleted. And Task has been transferred status'
+          : 'The status has been deleted.'
 
       showAlert(message, 'rgb(244 63 94)')
     }
