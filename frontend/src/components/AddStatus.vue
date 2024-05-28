@@ -56,6 +56,43 @@ function showAlert(message, backgroundColor) {
     window.location.reload()
   }, 2000)
 }
+
+const maxLengths = {
+  name: 50,
+  description: 200
+}
+
+const checkMaxLength = (field, value) => {
+  if (value.length >= maxLengths[field]) {
+    showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
+  }
+}
+
+function showAlert2(message, backgroundColor) {
+  const existingAlert = document.querySelector('.alert-success')
+  if (existingAlert) {
+    existingAlert.parentElement.removeChild(existingAlert)
+  }
+
+  const toastDiv = document.createElement('div')
+  toastDiv.className = 'toast toast-top toast-center z-50'
+  const alertDiv = document.createElement('div')
+  alertDiv.className = 'alert alert-success'
+  alertDiv.innerHTML = `<span>${message}</span>`
+  alertDiv.style.backgroundColor = backgroundColor
+  alertDiv.style.color = 'white'
+  alertDiv.style.textAlign = 'center'
+  alertDiv.style.display = 'flex'
+
+  toastDiv.appendChild(alertDiv)
+  document.body.appendChild(toastDiv)
+
+  setTimeout(() => {
+    if (toastDiv.parentElement) {
+      toastDiv.parentElement.removeChild(toastDiv)
+    }
+  }, 2000)
+}
 </script>
 
 <template>
@@ -77,6 +114,7 @@ function showAlert(message, backgroundColor) {
             id="itbkk-status-name"
             v-model="name"
             class="itbkk-status-name bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            @input="checkMaxLength('name', $event.target.value)"
             maxlength="50"
           />
         </div>
@@ -90,6 +128,7 @@ function showAlert(message, backgroundColor) {
             id="status-description"
             v-model="description"
             class="itbkk-status-description bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            @input="checkMaxLength('description', $event.target.value)"
             maxlength="200"
           ></textarea>
         </div>
