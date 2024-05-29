@@ -1,7 +1,7 @@
 <template>
   <div class="bg-blue-100 px-2 text-center">
     <div class="itbkk-message h-screen flex flex-col justify-center items-center">
-      <img src="/public/image/ico/error-16-svgrepo-com.svg" class="h-30 w-36 mt-1.5" />
+      <img src="/image/ico/error-16-svgrepo-com.svg" class="h-30 w-36 mt-1.5" />
       <h1 class="text-8xl font-extrabold text-red-500">404</h1>
       <p class="text-4xl font-medium text-gray-800">
         An error has occurred, the status does not exist
@@ -30,7 +30,7 @@ export default {
         } else {
           clearInterval(interval)
           // Redirect back to HomeView.vue
-          this.$router.push('/task')
+          this.$router.push('/statuslist')
         }
       }, 1000)
     }

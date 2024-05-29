@@ -262,20 +262,6 @@ function showAlert2(message, backgroundColor) {
               >
                 Save
               </button>
-              <!-- <button
-                id="itbkk-button-edit"
-                :disabled="!isModified || tasks.title.trim().length === 0"
-                @click="saveChanges"
-                class="itbkk-button-edit btn text-white border-white mr-6 bg-green-500 hover:bg-green-600 border-4 hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
-                :class="{
-                  'bg-gray-400': !isModified || tasks.title.trim().length === 0,
-                  'text-white': !isModified || tasks.title.trim().length === 0,
-                  'border-white': !isModified || tasks.title.trim().length === 0,
-                  disabled: !isModified || tasks.title.trim().length === 0
-                }"
-              >
-                Save
-              </button> -->
               <button
                 id="itbkk-button-cancel"
                 class="itbkk-button-cancel btn mr-6 bg-red-500 hover:bg-red-600 border-4 border-white hover:border-red-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
