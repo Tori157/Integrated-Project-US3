@@ -17,6 +17,7 @@ async function fetchData() {
   console.log(data)
   return data
 }
+
 onMounted(async () => {
   const data = await fetchData()
   tasks.value = data

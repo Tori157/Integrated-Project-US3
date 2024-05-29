@@ -58,7 +58,7 @@ async function deleteStatus(statusId) {
       tasksCount.value > 0
         ? `${BASE_URL}/v2/statuses/${statusId}/${targetStatusId.value}`
         : `${BASE_URL}/v2/statuses/${statusId}`
-
+                                                                                            
     const res = await fetch(url, {
       method: 'DELETE'
     })
