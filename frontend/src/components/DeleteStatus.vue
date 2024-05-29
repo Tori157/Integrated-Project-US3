@@ -173,21 +173,6 @@ function cancel() {
   router.push('/statuslist')
 }
 
-function formatStatusName(name) {
-  // ถ้าชื่อทุกตัวเป็นตัวพิมพ์เล็กทั้งหมด ให้คืนค่าเป็นชื่อเดิม
-  if (name === name.toLowerCase()) {
-    return name.replace(/_/g, ' ')
-  }
-
-  // ทำตัวพิมพ์ใหญ่เฉพาะตัวอักษรต้นคำ
-  const formattedName = name
-    .replace(/_/g, ' ')
-    .toLowerCase()
-    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
-
-  // ตัดช่องว่างและเครื่องหมาย _ ออก
-  return formattedName.replace(/_/g, ' ').trim()
-}
 </script>
 
 <template>
@@ -203,7 +188,7 @@ function formatStatusName(name) {
           <h3
             class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
           >
-            There are {{ tasksCount }} tasks in {{ formatStatusName(statusesname) }} status. In
+            There are {{ tasksCount }} tasks in {{ statusesname }} status. In
             order to delete this status, the system must transfer tasks in this status to existing
             status. Transfer tasks to
           </h3>
