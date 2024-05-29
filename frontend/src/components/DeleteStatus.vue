@@ -94,7 +94,7 @@ async function deleteStatus(statusId) {
     if (res.status === 404) {
       console.log('Status not found.')
       console.error('Failed to delete status')
-      showAlert2('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
+      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error:', error)
