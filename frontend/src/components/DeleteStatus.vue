@@ -58,7 +58,7 @@ async function deleteStatus(statusId) {
       tasksCount.value > 0
         ? `${BASE_URL}/v2/statuses/${statusId}/${targetStatusId.value}`
         : `${BASE_URL}/v2/statuses/${statusId}`
-                                                                                            
+
     const res = await fetch(url, {
       method: 'DELETE'
     })
@@ -94,7 +94,7 @@ async function deleteStatus(statusId) {
     if (res.status === 404) {
       console.log('Status not found.')
       console.error('Failed to delete status')
-      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
+      showAlert2('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error:', error)
@@ -172,7 +172,6 @@ function showAlert2(message, backgroundColor) {
 function cancel() {
   router.push('/statuslist')
 }
-
 </script>
 
 <template>
@@ -188,9 +187,9 @@ function cancel() {
           <h3
             class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
           >
-            There are {{ tasksCount }} tasks in {{ statusesname }} status. In
-            order to delete this status, the system must transfer tasks in this status to existing
-            status. Transfer tasks to
+            There are {{ tasksCount }} tasks in {{ statusesname }} status. In order to delete this
+            status, the system must transfer tasks in this status to existing status. Transfer tasks
+            to
           </h3>
 
           <select
