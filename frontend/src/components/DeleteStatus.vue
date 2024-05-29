@@ -165,7 +165,6 @@ function showAlert2(message, backgroundColor) {
 
   setTimeout(() => {
     document.body.removeChild(toastDiv)
-    window.location.reload()
   }, 2000)
 }
 
