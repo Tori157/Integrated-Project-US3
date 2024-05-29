@@ -223,31 +223,6 @@ function showAlert2(message, backgroundColor) {
           >
             Save
           </button>
-          <!-- <button
-            id="itbkk-button-confirm"
-            type="submit"
-            :disabled="formData.title.trim().length === 0"
-            @click="toggleModal"
-            class="itbkk-button-confirm"
-            :class="[
-              'border-4',
-              'border-white',
-              'rounded-3xl',
-              'mx-5',
-              'p-8',
-              'px-7',
-              'py-2',
-              'text-base',
-              'text-white',
-              'font-semibold',
-              'text-center',
-              formData.title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
-              formData.title.trim().length === 0 ? 'disabled' : ''
-            ]"
-          >
-            Save
-          </button> -->
-
           <button
             id="itbkk-button-cancel"
             type="button"

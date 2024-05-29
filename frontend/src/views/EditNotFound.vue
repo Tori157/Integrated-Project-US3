@@ -1,7 +1,7 @@
 <template>
   <div class="bg-blue-100 px-2 text-center">
     <div class="h-screen flex flex-col justify-center items-center">
-      <img src="/public/image/ico/error-16-svgrepo-com.svg" class="h-30 w-36 mt-1.5" />
+      <img src="/image/ico/error-16-svgrepo-com.svg" class="h-30 w-36 mt-1.5" />
       <h1 class="text-8xl font-extrabold text-red-500">404</h1>
       <p class="text-4xl font-medium text-gray-800">The task does not exist</p>
       <p class="text-xl text-gray-800 mt-4">The page you are looking for could not be found.</p>
