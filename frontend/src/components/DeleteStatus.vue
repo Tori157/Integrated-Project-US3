@@ -58,7 +58,7 @@ async function deleteStatus(statusId) {
       tasksCount.value > 0
         ? `${BASE_URL}/v2/statuses/${statusId}/${targetStatusId.value}`
         : `${BASE_URL}/v2/statuses/${statusId}`
-                                                                                            
+
     const res = await fetch(url, {
       method: 'DELETE'
     })
@@ -182,7 +182,7 @@ function cancel() {
   >
     <div class="relative mx-auto shadow-xl rounded-md max-w-md bg-blue-100 mb-52">
       <div class="mt-5 mb-5 p-6 pt-0 text-center bg-blue-100">
-        <img src="/public/image/ico/alert-2-svgrepo-com.svg" class="w-20 h-20 mx-auto" />
+        <img src="/image/ico/alert-2-svgrepo-com.svg" class="w-20 h-20 mx-auto" />
 
         <template v-if="tasksCount > 0">
           <h3
