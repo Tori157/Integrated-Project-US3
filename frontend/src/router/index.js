@@ -10,6 +10,10 @@ const router = createRouter({
       component: '/task'
     },
     {
+      path: '/',
+      redirect: '/task'
+    },
+    {
       path: '/task',
       name: 'tasks',
       component: () => import('../views/HomeView.vue'),
