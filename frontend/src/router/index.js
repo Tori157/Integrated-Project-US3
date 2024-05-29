@@ -4,14 +4,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // {
+    //   path: '/',
+    //   name: 'home',
+    //   component: '/task'
+    // },
     {
       path: '/',
-      name: 'home',
-      component: '/task'
-    },
-    {
-      path: '/',
-      redirect: 'task'
+      redirect: '/task'
     },
     {
       path: '/task',
