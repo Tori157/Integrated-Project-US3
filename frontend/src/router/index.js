@@ -11,7 +11,7 @@ const router = createRouter({
     },
     {
       path: '/',
-      redirect: '/task'
+      redirect: 'task'
     },
     {
       path: '/task',
