@@ -17,7 +17,7 @@ async function fetchStatus() {
     }
     const data = await response.json()
 
-    if (data.name === 'No Status') {
+    if (data.name === 'No Status' || data.name === 'Done') {
       console.error('Cannot edit status named No Status.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
       router.push('/statuslist')

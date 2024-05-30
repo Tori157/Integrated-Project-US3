@@ -70,11 +70,11 @@ async function deleteStatus(statusId) {
       return
     }
 
-    if (statusToDelete.name === 'No Status') {
+    if (statusToDelete.name === 'No Status' || statusToDelete.name === 'Done') {
       console.error('Cannot delete status named No Status.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
     }
-
+    
     if (res.status === 200) {
       console.log('Status deleted successfully')
 
