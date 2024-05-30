@@ -23,7 +23,6 @@ async function fetchStatus() {
       router.push('/statuslist')
       return
     }
-
     statuses.value = data
     originalStatus.value = { ...data }
   } catch (error) {

@@ -104,7 +104,7 @@ console.log(statuses)
               <td class="flex">
                 <button
                   id="itbkk-button-edit"
-                  v-if="statuses.name !== 'No Status'"
+                  v-if="statuses.name !== 'No Status' && statuses.name !== 'Done'"
                   class="itbkk-button-edit"
                   @click="$router.push({ name: 'status-editmodal', params: { id: statuses.id } })"
                 >
@@ -114,7 +114,7 @@ console.log(statuses)
                 </button>
                 <button
                   id="itbkk-button-delete"
-                  v-if="statuses.name !== 'No Status'"
+                  v-if="statuses.name !== 'No Status' && statuses.name !== 'Done'"
                   class="itbkk-button-delete"
                   @click="$router.push({ name: 'status-deletemodal', params: { id: statuses.id } })"
                 >
