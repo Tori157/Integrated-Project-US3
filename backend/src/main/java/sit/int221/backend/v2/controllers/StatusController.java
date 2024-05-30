@@ -10,7 +10,7 @@ import sit.int221.backend.v2.entities.Status;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173", "http://ip23us3.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th/us3/"})
+//@CrossOrigin(origins = {"http://localhost:5173", "http://ip23us3.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th/us3/"})
 @RequestMapping("/v2/statuses")
 public class StatusController {
     @Autowired
