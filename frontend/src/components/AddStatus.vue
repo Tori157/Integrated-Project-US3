@@ -24,9 +24,11 @@ const saveStatus = async () => {
       router.push('/statuslist')
       // Alert
       showAlert('The status has been added', 'rgb(34 197 94)')
-    } else {
-      console.error('Failed to save Status:', response.statusText)
+    } 
+    if (response.status === 500) {
       router.push('/statuslist')
+      console.error('Failed to save Status:', response.statusText)
+      // Alert
       showAlert('Status name must be uniques, please choose another name.', 'rgb(251 146 60)')
     }
   } catch (error) {
