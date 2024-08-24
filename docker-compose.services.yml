@@ -8,28 +8,29 @@ services:
     networks:
       - proxy-network
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    networks:
-      - proxy-network
-
   backend:
     build:
       context: ./backend 
-      dockerfile: Dockerfile
+      dockerfile: backend.Dockerfile
     ports:
       - 8080:8080
     environment:
       - MYSQL_HOST=db
       - MYSQL_PASSWORD=int221@SIT
+      - PUBLIC_URL=https://intproj23.sit.kmutt.ac.th/us3/
     networks:
       - proxy-network
       - backend-db-network
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: front.Dockerfile
+    networks:
+      - proxy-network
+
 networks:
-  proxy-network:
+  proxy-network: 
     name: proxy-network
   backend-db-network:
     name: backend-db-network
