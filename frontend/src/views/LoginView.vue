@@ -16,7 +16,6 @@ const toggleShowPassword = () => {
 
 async function login() {
   if (!isLoginButtonDisabled.value) {
-    console.log('Login button clicked!')
     const response = await fetch(BASE_URL + '/login', {
       method: 'POST',
       headers: {
@@ -27,7 +26,6 @@ async function login() {
 
     if (response.ok) {
       const { access_token } = await response.json()
-      // localStorage.setItem('access_token', access_token)
       document.cookie = `access_token=${access_token}; path=/; secure; SameSite=None;`
       router.push({ name: 'tasks' })
     } else if ([400, 401].includes(response.status)) {
