@@ -18,9 +18,12 @@
     "frontend": "vite --host ip23us3.sit.kmutt.ac.th"
   },
   "dependencies": {
+    "@vueuse/integrations": "^11.0.1",
     "init": "^0.1.2",
     "json-server": "^1.0.0-alpha.23",
-    "npx": "^10.2.2",
+    "jwt-decode": "^4.0.0",
+    "node-fetch": "^2.6.1",
+    "npx": "^3.0.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
@@ -40,7 +43,7 @@
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
     "start-server-and-test": "^2.0.3",
-    "tailwindcss": "^3.4.3",
+    "tailwindcss": "^3.2.0",
     "vite": "^5.2.8"
   }
 }

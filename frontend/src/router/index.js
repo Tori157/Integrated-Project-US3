@@ -14,6 +14,11 @@ const router = createRouter({
       redirect: '/task'
     },
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue')
+    },
+    {
       path: '/task',
       name: 'tasks',
       component: () => import('../views/HomeView.vue'),
@@ -79,6 +84,15 @@ const router = createRouter({
       ]
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const accessToken = document.cookie.match(/access_token=([^;]*)/);
+  if (!accessToken && to.path !== '/login') {
+    next({ name: 'login' });
+  } else {
+    next();
+  }
 })
 
 export default router

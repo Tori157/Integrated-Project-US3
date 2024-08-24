@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref, onUnmounted, computed } from 'vue'
+import { useJwt } from '@vueuse/integrations/useJwt'
 
 const tasks = ref([])
 const originalTasks = ref([])
@@ -8,6 +9,8 @@ const statuses = ref([])
 const searchStatus = ref('')
 const showStatusDropdown = ref(false)
 const selectedStatuses = ref([])
+const access_token = ref(null)
+const name = ref('')
 
 async function fetchData() {
   const response = await fetch(BASE_URL + `/v2/tasks`)
@@ -19,6 +22,13 @@ async function fetchData() {
 }
 
 onMounted(async () => {
+  const accessToken = document.cookie.match(/access_token=([^;]*)/);
+  if (accessToken) {
+    access_token.value = accessToken[1]
+  }
+  const { payload } = useJwt(access_token)
+  name.value = payload.value.name
+
   const data = await fetchData()
   tasks.value = data
   originalTasks.value = [...data]
@@ -156,6 +166,9 @@ const filteredStatuses = computed(() => {
 </style>
 
 <template>
+  <div class="bg-blue-500 text-white p-4 flex justify-end items-center">
+    <h2 class="itbkk-fullname font-bold">Welcome, {{ name }}!</h2>
+  </div>
   <div class="p-10 w-full">
     <div class="itbkk-us3 w-full">
       <div class="flex justify-between items-center mb-4">
@@ -164,24 +177,23 @@ const filteredStatuses = computed(() => {
         >
           IT-Bangmod Kradan Kanban
         </h1>
-      </div>
 
-      <div class="flex justify-between items-center mx-auto">
-        <div class="">
+        <div class="flex justify-between items-center">
           <button
-            class="itbkk-button-add top-10 right-60 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
-            @click="$router.push({ name: 'task-addmodal' })"
+          class="itbkk-button-add px-4 py-2 mr-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+          @click="$router.push({ name: 'task-addmodal' })"
           >
             Add Task
           </button>
+
           <button
-            class="itbkk-manage-status top-10 right-20 absolute px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
-            @click="$router.push({ name: 'statuslist' })"
+          class="itbkk-manage-status px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
+          @click="$router.push({ name: 'statuslist' })"
           >
             Manage Status
           </button>
         </div>
-      </div>
+    </div>
 
       <div class="itbkk-status-filter mb-5 flex flex-row">
         <input

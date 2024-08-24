@@ -5,6 +5,9 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Data
 @RequiredArgsConstructor
@@ -14,4 +17,23 @@ public class ErrorResponse {
     private final int status;
     private final String message;
     private final String instance;
+    private String stackTrace;
+    private List<ValidationError> errors;
+
+    public ErrorResponse(int status, String message, String instance) {
+        this.timestamp = ZonedDateTime.now();
+        this.status = status;
+        this.message = message;
+        this.instance = instance;
+    }
+
+    public void addValidationError(String field, String message) {
+        if (Objects.isNull(errors)) {
+            errors = new ArrayList<>();
+        }
+        errors.add(new ValidationError(field, message));
+    }
+
+    private record ValidationError(String field, String message) {
+    }
 }
