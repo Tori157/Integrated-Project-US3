@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
+import hideIcon from '/src/assets/ico/bx-hide.svg'
+import showIcon from '/src/assets/ico/bx-show.svg'
+
 const showPassword = ref(false)
 const username = ref('')
 const password = ref('')
@@ -96,10 +99,7 @@ const showToast = (message) => {
               maxlength="14"
             />
             <button @click="toggleShowPassword" type="button" class="absolute right-9">
-              <img
-                :src="showPassword ? '/src/assets/ico/bx-hide.svg' : '/src/assets/ico/bx-show.svg'"
-                alt="Toggle Password Visibility"
-              />
+              <img :src="showPassword ? hideIcon : showIcon" alt="Toggle Password Visibility" />
             </button>
             <img src="/src/assets/ico/bxs-lock.svg" alt="User Icon" class="input-icon" />
           </div>
