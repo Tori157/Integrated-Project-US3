@@ -16,8 +16,9 @@ services:
       - 8080:8080
     environment:
       - MYSQL_HOST=db
-      - MYSQL_PASSWORD=int221@SIT
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - PUBLIC_URL=https://intproj23.sit.kmutt.ac.th/us3/
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     networks:
       - proxy-network
       - backend-db-network
