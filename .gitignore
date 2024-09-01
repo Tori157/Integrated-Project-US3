@@ -1,5 +1,5 @@
 .idea
 .env
 
-backend/target/
-backend/target/classes/
+# Maven build directories
+/backend/target/
