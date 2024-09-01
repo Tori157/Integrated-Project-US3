@@ -91,7 +91,6 @@ const router = createRouter({
   ]
 })
 
-
 router.beforeEach((to, from, next) => {
   // Should initialize the access token every time when routing
   const accessToken = document.cookie.match(/access_token=([^;]*)/)

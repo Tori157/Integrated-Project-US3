@@ -24,7 +24,7 @@ const saveStatus = async () => {
       router.push('/statuslist')
       // Alert
       showAlert('The status has been added', 'rgb(34 197 94)')
-    } 
+    }
     if (response.status === 400) {
       router.push('/statuslist')
       console.error('Failed to save Status:', response.statusText)
