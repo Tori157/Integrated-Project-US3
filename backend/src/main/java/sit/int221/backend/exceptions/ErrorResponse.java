@@ -2,9 +2,8 @@ package sit.int221.backend.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +12,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
-    private final ZonedDateTime timestamp;
+    private final String timestamp;
     private final int status;
     private final String message;
     private final String instance;
@@ -21,7 +20,7 @@ public class ErrorResponse {
     private List<ValidationError> errors;
 
     public ErrorResponse(int status, String message, String instance) {
-        this.timestamp = ZonedDateTime.now();
+        this.timestamp = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         this.status = status;
         this.message = message;
         this.instance = instance;
