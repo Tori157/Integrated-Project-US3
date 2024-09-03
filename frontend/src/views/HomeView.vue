@@ -13,12 +13,25 @@ const access_token = ref(null)
 const name = ref('')
 
 async function fetchData() {
-  const response = await fetch(BASE_URL + `/v2/tasks`)
-  const data = await response.json()
-  tasks.value = data
-  originalTasks.value = [...data]
-  console.log(data)
-  return data
+  try {
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1]
+    const response = await fetch(BASE_URL + `/v2/tasks`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      tasks.value = data
+      originalTasks.value = [...data]
+      console.log(data)
+      return data
+    } else {
+      console.error('Failed to fetch tasks:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Error fetching tasks:', error)
+  }
 }
 
 onMounted(async () => {
@@ -74,7 +87,12 @@ const toggleSortIcon = () => {
 
 const fetchStatuses = async () => {
   try {
-    const response = await fetch(BASE_URL + '/v2/statuses')
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
+    const response = await fetch(BASE_URL + '/v2/statuses', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    })
     if (response.ok) {
       const data = await response.json()
       statuses.value = data
