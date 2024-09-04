@@ -16,6 +16,13 @@ if (accessToken) {
         const headers = new Headers(args[1] && args[1].headers ? args[1].headers : {})
         headers.set('Authorization', `Bearer ${token}`)
         return originalFetch(...args, { headers })
+          .then((response) => {
+            if (response.status === 401) {
+              token = null
+              router.push('/login')
+            }
+            return response
+          })
         }
   })(window.fetch)
 }
