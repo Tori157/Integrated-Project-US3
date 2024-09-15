@@ -11,7 +11,12 @@ const router = useRouter()
 // Fetch status details
 async function fetchStatus() {
   try {
-    const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`)
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
+    const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`, {
+        headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+  })
     if (!response.ok) {
       throw new Error('Failed to fetch status')
     }
@@ -20,7 +25,7 @@ async function fetchStatus() {
     if (data.name === 'No Status' || data.name === 'Done') {
       console.error('Cannot edit status named No Status.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-      router.push('/statuslist')
+      router.push('/status')
       return
     }
     statuses.value = data
@@ -34,19 +39,21 @@ async function fetchStatus() {
 // Save changes to task
 async function saveChanges() {
   try {
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
     statuses.value.name = statuses.value.name ? statuses.value.name.trim() : ''
     statuses.value.description = statuses.value.description ? statuses.value.description.trim() : ''
 
     const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`, {
       method: 'PUT',
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(statuses.value)
     })
 
     if (response.ok) {
-      router.push('/statuslist')
+      router.push('/status')
       console.log('status updated successfully')
       console.log(statuses.value)
       // Alert
@@ -61,7 +68,7 @@ async function saveChanges() {
     }
     if (response.status === 500) {
       console.error('Failed to update status')
-      router.push('/statuslist')
+      router.push('/status')
       showAlert('Status name must be uniques, please choose another name.', 'rgb(251 146 60)')
     }
   } catch (error) {
@@ -194,7 +201,7 @@ function showAlert2(message, backgroundColor) {
           <button
             id="itbkk-button-cancel"
             type="button"
-            @click="() => router.push('/statuslist')"
+            @click="() => router.push('/status')"
             class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel

@@ -13,27 +13,29 @@ const saveStatus = async () => {
     description: description.value.trim()
   }
   try {
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
     const response = await fetch(BASE_URL + `/v2/statuses`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(statusData)
     })
     if (response.status === 201) {
-      router.push('/statuslist')
+      router.push('/status')
       // Alert
       showAlert('The status has been added', 'rgb(34 197 94)')
     } 
     if (response.status === 400) {
-      router.push('/statuslist')
+      router.push('/status')
       console.error('Failed to save Status:', response.statusText)
       // Alert
       showAlert('Status name must be uniques, please choose another name.', 'rgb(251 146 60)')
     }
   } catch (error) {
     console.error('Error saving task:', error)
-    router.push('/statuslist')
+    router.push('/status')
     showAlert('An error has occurred, Status Cant Add.', 'rgb(251 146 60)')
   }
 }
@@ -163,7 +165,7 @@ function showAlert2(message, backgroundColor) {
           <button
             id="itbkk-button-cancel"
             type="button"
-            @click="() => router.push('/statuslist')"
+            @click="() => router.push('/status')"
             class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel

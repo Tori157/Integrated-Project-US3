@@ -1,2 +1,5 @@
 .idea
 .env
+
+# Maven build directories
+/backend/target/
