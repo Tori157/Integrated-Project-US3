@@ -40,7 +40,6 @@ async function fetchStatus() {
 async function saveChanges() {
   try {
     const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    console.log('Access token:', accessToken)
     statuses.value.name = statuses.value.name ? statuses.value.name.trim() : ''
     statuses.value.description = statuses.value.description ? statuses.value.description.trim() : ''
 
