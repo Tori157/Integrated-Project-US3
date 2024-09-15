@@ -48,13 +48,8 @@ public class StatusService {
 
     @Transactional
     public Status createStatus(AddEditStatusDTO status) {
-//        if (status.getDescription() != null) {
-//            status.setDescription(status.getDescription());
-//
-//        }
-//        return statusRepository.save(status);
-        if (statusRepository.existsByNameIgnoreCase(status.getName())) {
-            throw new DuplicatedStatusException("Status name must be unique");
+        if (statusRepository. findStatusWithNameNoStatus(status.getName())) {
+            throw new DuplicatedStatusException("The 'No Status' must be unique");
         }
         Status newStatus = modelMapper.map(status, Status.class);
         return statusRepository.save(newStatus);
@@ -69,14 +64,6 @@ public class StatusService {
 
         statusRepository.delete(existingStatus);
         return existingStatus;
-//        if (id == 1) {
-//            throw new BadRequestException("The 'No Status' cannot be delete");
-//        }
-//        Status status = statusRepository.findById(id).orElseThrow(
-//                () -> new ItemNotFoundException("NOT FOUND")
-//        );
-//
-//        statusRepository.delete(status);
     }
 
     @Transactional
@@ -104,21 +91,13 @@ public class StatusService {
 
     @Transactional
     public StatusDTO updateStatus(int id, AddEditStatusDTO newStatus) {
-        if (statusRepository.existsByNameIgnoreCase(newStatus.getName())) {
-            throw new DuplicatedStatusException("Status name must be unique");
+        if (statusRepository.findStatusWithNameNoStatus(newStatus.getName())) {
+            throw new DuplicatedStatusException("The 'No Status' must be unique");
         }
-
+        System.out.println(statusRepository.findStatusWithNameNoStatus(newStatus.getName()));
         Status status = modelMapper.map(newStatus, Status.class);
         status.setId(id);
         Status updatedStatus = statusRepository.save(status);
         return modelMapper.map(updatedStatus, StatusDTO.class);
-//        if( id == 1) {
-//            throw new BadRequestException("The 'No Status' cannot be edited");
-//        }
-//        statusRepository.findById(id).orElseThrow(
-//                () -> new ItemNotFoundException("NOT FOUND")
-//        );
-//        return statusRepository.save(status);
-
     }
 }

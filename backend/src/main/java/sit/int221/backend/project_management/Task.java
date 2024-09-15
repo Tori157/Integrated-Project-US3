@@ -49,20 +49,4 @@ public class Task {
     @Column(name = "updatedOn", insertable = false, updatable = false)
     private Instant updatedOn;
 
-//    public void setTitle(String title) {
-//        if (title != null) {
-//            this.title = title.trim();
-//        }
-//    }
-//
-//    public void setDescription(String description) {
-//        String trimmedDescription = (description != null) ? description.trim() : null;
-//        this.description = (trimmedDescription != null && !trimmedDescription.isEmpty()) ? trimmedDescription : null;
-//    }
-//
-//    public void setAssignees(String assignees) {
-//        String trimmedAssignees = (assignees != null) ? assignees.trim() : null;
-//        this.assignees = (trimmedAssignees != null && !trimmedAssignees.isEmpty()) ? trimmedAssignees : null;
-//    }
-
 }
