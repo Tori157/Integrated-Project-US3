@@ -38,17 +38,18 @@ onMounted(async () => {
 
 async function deleteStatus(statusId) {
   try {
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
     if (statusId === 1 && statusToDelete.name === 'No Status') {
       console.error('Cannot delete status named No Status.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-      router.push('/statuslist')
+      router.push('/status')
       return
     }
 
     if (statusId === 7) {
       console.error('Cannot delete status named Done.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-      router.push('/statuslist')
+      router.push('/status')
       return
     }
 
@@ -67,13 +68,16 @@ async function deleteStatus(statusId) {
         : `${BASE_URL}/v2/statuses/${statusId}`
 
     const res = await fetch(url, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
     })
     const statusToDelete = statuses.value.find((status) => status.id === statusId)
     if (!statusToDelete) {
       console.error('Status not found.')
       showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
-      router.push('/statuslist')
+      router.push('/status')
       return
     }
 
@@ -94,7 +98,7 @@ async function deleteStatus(statusId) {
       if (targetStatusId.value) {
         await transferTasks(statusId, targetStatusId.value)
       }
-      router.push('/statuslist')
+      router.push('/status')
       // alert
       const message =
         tasksCount.value > 0
@@ -181,7 +185,7 @@ function showAlert2(message, backgroundColor) {
 }
 
 function cancel() {
-  router.push('/statuslist')
+  router.push('/status')
 }
 </script>
 

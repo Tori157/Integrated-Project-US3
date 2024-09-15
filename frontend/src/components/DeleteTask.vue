@@ -10,14 +10,32 @@ const taskId = parseInt(route.params.id)
 const taskTitle = ref('')
 
 onMounted(async () => {
+  // try {
+  //   const response = await fetch(BASE_URL + `/v2/tasks`)
+  //   const data = await response.json()
+  //   tasks.value = data
+
+  //   const task = tasks.value.find((task) => task.id === parseInt(taskId))
+  //   if (task) {
+  //     taskTitle.value = task.title
+  //   }
+  // } catch (error) {
+  //   console.error('Error fetching tasks:', error)
+  // }
   try {
     const response = await fetch(BASE_URL + `/v2/tasks`)
-    const data = await response.json()
-    tasks.value = data
+    if (response.ok) {
+      const data = await response.json()
+      tasks.value = data
 
-    const task = tasks.value.find((task) => task.id === parseInt(taskId))
-    if (task) {
-      taskTitle.value = task.title
+      const task = tasks.value.find((task) => task.id === parseInt(taskId))
+      if (task) {
+        taskTitle.value = task.title
+      }
+    } else if (response.status === 401) {
+      router.push('/login')
+    } else {
+      console.error('Error fetching tasks:', response.statusText)
     }
   } catch (error) {
     console.error('Error fetching tasks:', error)
@@ -26,8 +44,12 @@ onMounted(async () => {
 
 async function deleteTask(taskId) {
   try {
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
     const res = await fetch(BASE_URL + `/v2/tasks/${taskId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
     })
 
     if (res.status === 200) {
