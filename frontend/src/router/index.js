@@ -61,7 +61,7 @@ const router = createRouter({
       component: () => import('../views/StatusNotFound.vue')
     },
     {
-      path: '/statuslist',
+      path: '/status',
       name: 'statuslist',
       component: () => import('../views/StatusList.vue'),
       children: [

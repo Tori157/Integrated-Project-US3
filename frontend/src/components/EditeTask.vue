@@ -17,7 +17,12 @@ onMounted(async () => {
 
 async function fetchTask() {
   try {
-    const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`)
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
+    const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    })
     if (!response.ok) {
       throw new Error('Failed to fetch tasks')
     }
@@ -55,9 +60,11 @@ async function saveChanges() {
       statusId: tasks.value.status.id
     }
 
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
     const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`, {
       method: `PUT`,
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(updatedTask)
