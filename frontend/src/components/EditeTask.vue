@@ -39,7 +39,12 @@ async function fetchTask() {
 
 async function fetchStatuses() {
   try {
-    const response = await fetch(`${BASE_URL}/v2/statuses`)
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
+    const response = await fetch(`${BASE_URL}/v2/statuses`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    })
     if (!response.ok) {
       throw new Error('Failed to fetch statuses')
     }
