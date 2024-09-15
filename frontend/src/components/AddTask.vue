@@ -19,14 +19,15 @@ const statuses = ref([])
 
 const fetchStatuses = async () => {
   try {
-    const response = await fetch(BASE_URL + '/v2/statuses')
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
+    const response = await fetch(BASE_URL + '/v2/statuses', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    })
     if (response.ok) {
       const data = await response.json()
       statuses.value = data
-
-      // if (statuses.value.length > 0) {
-      //   selectedStatus.value = statuses.value[0]
-      // }
     } else {
       console.error('Failed to fetch statuses:', response.statusText)
     }
@@ -55,9 +56,11 @@ const saveTask = async () => {
   // }
 
   try {
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
     const response = await fetch(BASE_URL + `/v2/tasks`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(taskData)

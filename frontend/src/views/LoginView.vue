@@ -92,7 +92,6 @@ const showToast = (message) => {
             <input
               :type="showPassword ? 'text' : 'password'"
               class="itbkk-password"
-              type="password"
               id="password"
               placeholder="Password"
               v-model="password"

@@ -8,11 +8,27 @@ const statuses = ref([])
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 async function fetchData() {
-  const response = await fetch(BASE_URL + `/v2/statuses`)
+  // const response = await fetch(BASE_URL + `/v2/statuses`)
 
-  const data = await response.json()
-  console.log(data)
-  return data
+  // const data = await response.json()
+  // console.log(data)
+  // return data
+  try {
+    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
+    const response = await fetch(BASE_URL + '/v2/statuses', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      return data
+    } else {
+      console.error('Failed to fetch statuses:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Error fetching statuses:', error)
+  }
 }
 onMounted(async () => {
   const data = await fetchData()
