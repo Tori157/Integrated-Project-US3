@@ -22,6 +22,9 @@ const router = createRouter({
       path: '/task',
       name: 'tasks',
       component: () => import('../views/HomeView.vue'),
+      meta: {
+        requiresAuth: true
+      },
       children: [
         {
           path: ':id',
@@ -64,6 +67,9 @@ const router = createRouter({
       path: '/status',
       name: 'statuslist',
       component: () => import('../views/StatusList.vue'),
+      meta: {
+        requiresAuth: true
+      },
       children: [
         {
           path: 'add',
@@ -80,18 +86,19 @@ const router = createRouter({
           name: 'status-deletemodal',
           component: () => import('../components/DeleteStatus.vue')
         }
-        
       ]
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  const accessToken = document.cookie.match(/access_token=([^;]*)/);
-  if (!accessToken && to.path !== '/login') {
-    next({ name: 'login' });
+  // Should initialize the access token every time when routing
+  const accessToken = document.cookie.match(/access_token=([^;]*)/)
+  // Use to.meta.requiresAuth for flexibility
+  if (!accessToken && to.meta.requiresAuth) {
+    next({ name: 'login' })
   } else {
-    next();
+    next()
   }
 })
 

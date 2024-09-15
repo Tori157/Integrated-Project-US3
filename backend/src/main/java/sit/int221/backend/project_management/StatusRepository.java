@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface StatusRepository extends JpaRepository<Status, Integer> {
-    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Status s WHERE LOWER(s.name) = LOWER(:name)")
-    boolean existsByNameIgnoreCase(@Param("name") String name);
+    @Query("SELECT COUNT(s) > 0 FROM Status s WHERE LOWER(s.name) = LOWER(:name) AND LOWER(:name) = LOWER('No Status')")
+    boolean findStatusWithNameNoStatus(@Param("name") String name);
+
 }

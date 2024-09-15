@@ -32,25 +32,4 @@ public class Status {
     @JsonIgnore
     @OneToMany(mappedBy = "status")
     private Set<Task> tasks = new HashSet<>();
-
-//    public void setName(String name) {
-//        if (name == null) {
-//            return;
-//        }
-//        this.name = name.trim();
-//        if (this.name.isEmpty()) {
-//            this.name = null;
-//        }
-//    }
-//
-//    public void setDescription(String description) {
-//        if (description == null) {
-//            return;
-//        }
-//        this.description = description.trim();
-//        if (this.description.isEmpty()) {
-//            this.description = null;
-//        }
-//    }
-
 }
