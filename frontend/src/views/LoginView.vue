@@ -29,7 +29,7 @@ async function login() {
 
     if (response.ok) {
       const { access_token } = await response.json()
-      document.cookie = `access_token=${access_token}; path=/; SameSite=None; Secure;`
+      document.cookie = `access_token=${access_token}; path=/`
       router.push({ name: 'tasks' })
     } else if ([400, 401].includes(response.status)) {
       showToast('Username or Password is incorrect.')
