@@ -8,15 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import sit.int221.backend.dtos.AddEditStatusDTO;
 import sit.int221.backend.dtos.StatusDTO;
 import sit.int221.backend.exceptions.DuplicatedStatusException;
-import sit.int221.backend.project_management.Status;
-import sit.int221.backend.project_management.Task;
+import sit.int221.backend.project_management.*;
 import sit.int221.backend.exceptions.IllegalDeleteStatusException;
 import sit.int221.backend.exceptions.IllegalStatusTransferException;
 import sit.int221.backend.exceptions.StatusWithIdNotFoundException;
-import sit.int221.backend.project_management.StatusRepository;
-import sit.int221.backend.project_management.TaskRepository;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.*;
 
 @Service
 public class StatusService {
@@ -39,7 +37,6 @@ public class StatusService {
         return statusRepository.findAll();
     }
 
-
     public Status getStatusById(int id) {
         return statusRepository.findById(id).orElseThrow(
                 () -> new StatusWithIdNotFoundException("status does not exist")
@@ -48,7 +45,7 @@ public class StatusService {
 
     @Transactional
     public Status createStatus(AddEditStatusDTO status) {
-        if (statusRepository. findStatusWithNameNoStatus(status.getName())) {
+        if (statusRepository.findStatusWithNameNoStatus(status.getName())) {
             throw new DuplicatedStatusException("The 'No Status' must be unique");
         }
         Status newStatus = modelMapper.map(status, Status.class);
@@ -99,5 +96,33 @@ public class StatusService {
         status.setId(id);
         Status updatedStatus = statusRepository.save(status);
         return modelMapper.map(updatedStatus, StatusDTO.class);
+    }
+
+    @Transactional
+    public void createDefaultStatuses(Board board) {
+        String boardId = board.getBoardId();
+        List<Status> defaultStatuses = Arrays.asList(
+                buildStatus("No Status", "The default status", board),
+                buildStatus("To Do", null, board),
+                buildStatus("Doing", "Being worked on", board),
+                buildStatus("Done", "Finished", board)
+        );
+
+        for (Status status : defaultStatuses) {
+            boolean exists = statusRepository.existsByNameAndBoard_BoardId(status.getName(), boardId);
+            if (!exists) {
+                statusRepository.save(status);
+            }
+        }
+
+        statusRepository.saveAll(defaultStatuses);
+    }
+
+    private Status buildStatus(String name, String description, Board board) {
+        Status status = new Status();
+        status.setName(name);
+        status.setDescription(description);
+        status.setBoard(board);
+        return status;
     }
 }

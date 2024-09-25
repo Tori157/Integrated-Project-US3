@@ -49,4 +49,9 @@ public class Task {
     @Column(name = "updatedOn", insertable = false, updatable = false)
     private Instant updatedOn;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "boardId", nullable = false)
+    private Board board;
+
 }

@@ -32,4 +32,8 @@ public class Status {
     @JsonIgnore
     @OneToMany(mappedBy = "status")
     private Set<Task> tasks = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "boardId")
+    private Board board;
 }
