@@ -15,7 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardDTO {
-    private String boardId;
+    private String id;
     @NotNull
     @NotBlank
     @Size(max = 120)

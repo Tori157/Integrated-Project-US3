@@ -34,7 +34,7 @@ public class BoardService {
         }
 
         User owner = userService.getUserById(userId).orElse(null);
-        return boardRepository.findByBoardIdAndOwnerId(boardId, userId)
+        return boardRepository.findByIdAndOwnerId(boardId, userId)
                 .map(board -> convertToBoardDTO(board, owner))
                 .orElseThrow(() -> new NotFoundException("Board id '" + boardId + "' not found"));
     }
@@ -50,12 +50,12 @@ public class BoardService {
     }
 
     private boolean userHasAccessToBoard(String userId, String boardId) {
-        return boardRepository.findByBoardIdAndOwnerId(boardId, userId).isPresent();
+        return boardRepository.findByIdAndOwnerId(boardId, userId).isPresent();
     }
 
     public BoardDTO createBoard(BoardDTO boardDto, String userId) {
         User currentUser = userService.getUserById(userId).orElse(null);
-        Board newBoard = Board.builder().boardId(NanoId.generate(10)).name(boardDto.getName()).ownerId(userId).build();
+        Board newBoard = Board.builder().id(NanoId.generate(10)).name(boardDto.getName()).ownerId(userId).build();
         Board savedBoard = boardRepository.save(newBoard);
         statusService.createDefaultStatuses(savedBoard);
         return convertToBoardDTO(savedBoard, currentUser);

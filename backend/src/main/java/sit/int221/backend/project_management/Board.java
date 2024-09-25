@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 public class Board {
     @Id
     @Column(name = "boardId", nullable = false, length = 10)
-    private String boardId;
+    private String id;
 
     @NotNull
     @Column(name = "name", nullable = false, length = 120)

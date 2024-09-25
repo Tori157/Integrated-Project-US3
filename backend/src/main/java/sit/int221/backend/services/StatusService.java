@@ -100,7 +100,7 @@ public class StatusService {
 
     @Transactional
     public void createDefaultStatuses(Board board) {
-        String boardId = board.getBoardId();
+        String boardId = board.getId();
         List<Status> defaultStatuses = Arrays.asList(
                 buildStatus("No Status", "The default status", board),
                 buildStatus("To Do", null, board),
@@ -109,7 +109,7 @@ public class StatusService {
         );
 
         for (Status status : defaultStatuses) {
-            boolean exists = statusRepository.existsByNameAndBoard_BoardId(status.getName(), boardId);
+            boolean exists = statusRepository.existsByNameAndBoardId(status.getName(), boardId);
             if (!exists) {
                 statusRepository.save(status);
             }
