@@ -18,7 +18,6 @@ public class ListMapper {
                 .collect(Collectors.toList());
     }
 
-
     public static ListMapper getInstance() {
         return listMapper;
     }
