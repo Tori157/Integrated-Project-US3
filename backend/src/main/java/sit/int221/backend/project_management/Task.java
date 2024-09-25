@@ -1,5 +1,6 @@
 package sit.int221.backend.project_management;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -49,6 +50,7 @@ public class Task {
     @Column(name = "updatedOn", insertable = false, updatable = false)
     private Instant updatedOn;
 
+    @JsonIgnore
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "boardId", nullable = false)

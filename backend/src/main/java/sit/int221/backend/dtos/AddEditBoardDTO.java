@@ -14,6 +14,6 @@ public class AddEditBoardDTO {
     @NotNull
     @NotBlank
     @Size(max = 120)
-    private  String name;
+    private String name;
     private Optional<BoardOwnerDTO> ownerId;
 }

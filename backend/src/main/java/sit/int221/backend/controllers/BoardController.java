@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import sit.int221.backend.dtos.AddEditBoardDTO;
 import sit.int221.backend.dtos.BoardDTO;
 import sit.int221.backend.services.BoardService;
 import sit.int221.backend.user_account.User;
@@ -29,7 +30,7 @@ public class BoardController {
     }
 
     @PostMapping
-    public ResponseEntity<BoardDTO> createBoard(@Valid @RequestBody BoardDTO boardDTO, @AuthenticationPrincipal User user) {
+    public ResponseEntity<BoardDTO> createBoard(@Valid @RequestBody AddEditBoardDTO boardDTO, @AuthenticationPrincipal User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(boardService.createBoard(boardDTO, user.getOid()));
     }
 }
