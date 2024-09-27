@@ -24,9 +24,8 @@ public class Board {
     @Column(name = "ownerId", nullable = false, length = 36)
     private String ownerId;
 
-//    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "visibility", nullable = false, length = 10)
+    @Column(name = "visibility", nullable = false, length = 10, columnDefinition = "ENUM('PUBLIC', 'PRIVATE') DEFAULT 'PRIVATE'")
     private Visibility visibility;
 
 }

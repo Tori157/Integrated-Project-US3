@@ -34,27 +34,26 @@ public class BoardController {
     @GetMapping("/{id}")
     public ResponseEntity<BoardDTO> getBoardById(@PathVariable String id, @AuthenticationPrincipal User user) {
 
-        System.out.println("get board by id"+boardService.getBoardById(id).isEmpty());
+//        System.out.println("get board by id"+boardService.getBoardById(id).isEmpty());
         if (boardService.getBoardById(id).isEmpty()) {
-            System.out.println("Not found"+id);
+//            System.out.println("Not found"+id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        System.out.println("Found "+id);
+//        System.out.println("Found "+id);
         BoardDTO boardDTO = boardService.getBoardByUserAndId(user.getOid(), id);
         System.out.println("check condition");
 
         if (boardDTO.getVisibility().equals("PUBLIC") || boardDTO.getOwner().map(owner -> owner.getOid().equals(user.getOid())).orElse(false)) {
-            System.out.println("Found "+boardDTO);
+//            System.out.println("Found "+boardDTO);
             return ResponseEntity.ok(boardDTO);
         } else {
-            System.out.println("Forbidden "+boardDTO);
+//            System.out.println("Forbidden "+boardDTO);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
     @PostMapping
     public ResponseEntity<BoardDTO> createBoard(@Valid @RequestBody AddEditBoardDTO boardDTO, @AuthenticationPrincipal User user) {
-        System.out.println("create board "+boardDTO.getVisibility());
         return ResponseEntity.status(HttpStatus.CREATED).body(boardService.createBoard(boardDTO, user.getOid()));
     }
 
@@ -63,34 +62,37 @@ public class BoardController {
 
         //404
         if (boardService.getBoardById(id).isEmpty()) {
-            System.out.println("Not found"+id);
+//            System.out.println("Not found"+id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        System.out.println("Found "+id);
+//        System.out.println("Found "+id);
 
         BoardDTO boardDTO = boardService.getBoardByUserAndId(user.getOid(), id);
-        System.out.println("board "+boardDTO.getId());
+//        System.out.println("board "+boardDTO.getId());
 //        if (boardDTO == null) {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 //        }
+
         //403
-        System.out.println("owner "+boardDTO.getOwner().map(owner -> owner.getOid()).orElse(null));
-        System.out.println("user "+user.getOid());
-        boolean isOwner = boardDTO.getOwner().map(owner -> owner.getOid().equals(user.getOid())).orElse(false);
-        System.out.println("owner "+isOwner);
+//        System.out.println("owner "+boardDTO.getOwner().map(owner -> owner.getOid()).orElse(null));
+//        System.out.println("user "+user.getOid());
+//        boolean isOwner = boardDTO.getOwner().map(owner -> owner.getOid().equals(user.getOid())).orElse(false);
+//        System.out.println("owner "+isOwner);
         if (!boardDTO.getOwner().map(owner -> owner.getOid().equals(user.getOid())).orElse(false)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Visibility visibility = requestBody.getVisibility();
-        System.out.println("visibility "+visibility);
+//        System.out.println("visibility "+visibility);
+
         //400
         if (visibility != Visibility.PRIVATE && visibility != Visibility.PUBLIC) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         boardService.updateBoardVisibility(id, visibility);
+
         //200
         return ResponseEntity.ok(boardService.getBoardByUserAndId(user.getOid(), id));
     }

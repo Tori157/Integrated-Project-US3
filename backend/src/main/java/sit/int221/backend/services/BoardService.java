@@ -38,19 +38,12 @@ public class BoardService {
                 .map(board -> convertToBoardDTO(board, owner))
                 .orElseThrow(() -> new NotFoundException("Board id '" + boardId + "' not found"));
     }
-//    public BoardDTO getBoardDTO(String userId, String boardId) {
-//        User owner = userService.getUserById(userId)
-//                .orElseThrow(() -> new NotFoundException("User not found"));
-//        return boardRepository.findById(boardId)
-//                .map(board -> convertToBoardDTO(board, owner))
-//                .orElseThrow(() -> new NotFoundException("Board id '" + boardId + "' not found"));
-//    }
+
     public Optional<Board> getBoardById(String boardId) {
         return boardRepository.findById(boardId);
     }
 
     private BoardDTO convertToBoardDTO(Board board, User owner) {
-     System.out.println("convert to board");
         BoardDTO boardDTO = modelMapper.map(board, BoardDTO.class);
         boardDTO.setOwner(Optional.ofNullable(owner).map(user -> modelMapper.map(user, BoardOwnerDTO.class)));
         return boardDTO;

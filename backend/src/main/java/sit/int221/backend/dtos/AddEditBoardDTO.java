@@ -17,5 +17,6 @@ public class AddEditBoardDTO {
     @Size(max = 120)
     private String name;
     private Optional<BoardOwnerDTO> ownerId;
-    private Visibility visibility;
+
+    private Visibility visibility = Visibility.PRIVATE;
 }

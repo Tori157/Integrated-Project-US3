@@ -1,6 +1,0 @@
-package sit.int221.backend.services;
-
-public enum VisibilityService {
-    PRIVATE,
-    PUBLIC
-}
