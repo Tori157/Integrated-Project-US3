@@ -3,6 +3,7 @@ package sit.int221.backend.project_management;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter
@@ -25,7 +26,8 @@ public class Board {
     private String ownerId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "visibility", nullable = false, length = 10, columnDefinition = "ENUM('PUBLIC', 'PRIVATE') DEFAULT 'PRIVATE'")
-    private Visibility visibility;
+    @ColumnDefault("'PRIVATE'")
+    @Column(name = "visibility")
+    private Visibility visibility = Visibility.PRIVATE;
 
 }

@@ -21,6 +21,6 @@ public class BoardDTO {
     @NotBlank
     @Size(max = 120)
     private String name;
-    private Optional<BoardOwnerDTO> owner;
     private Visibility visibility;
+    private Optional<BoardOwnerDTO> owner;
 }
