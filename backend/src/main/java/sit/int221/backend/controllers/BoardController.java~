@@ -43,7 +43,7 @@ public class BoardController {
         BoardDTO boardDTO = boardService.getBoardByUserAndId(user.getOid(), id);
         System.out.println("check condition");
 
-        if (boardDTO.getVisibility().equals("PUBLIC") || boardDTO.getOwner().map(owner -> owner.getOid().equals(user.getOid())).orElse(false)) {
+        if (boardDTO.getVisibility().equals("PUBLIC") && boardDTO.getOwner().map(owner -> owner.getOid().equals(user.getOid())).orElse(false)) {
             System.out.println("Found "+boardDTO);
             return ResponseEntity.ok(boardDTO);
         } else {

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import sit.int221.backend.project_management.Visibility;
 
 import java.util.Optional;
 
@@ -21,4 +22,5 @@ public class BoardDTO {
     @Size(max = 120)
     private String name;
     private Optional<BoardOwnerDTO> owner;
+    private Visibility visibility;
 }

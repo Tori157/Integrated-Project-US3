@@ -1,0 +1,4 @@
+package sit.int221.backend.dtos;
+
+public class VisibilityDTO {
+}
