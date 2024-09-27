@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import sit.int221.backend.dtos.AddEditBoardDTO;
 import sit.int221.backend.dtos.BoardDTO;
 import sit.int221.backend.dtos.VisibilityDTO;
+import sit.int221.backend.exceptions.BoardAccessDeniedException;
+import sit.int221.backend.exceptions.ErrorResponse;
+import sit.int221.backend.exceptions.NotFoundException;
 import sit.int221.backend.project_management.Visibility;
 import sit.int221.backend.services.BoardService;
 import sit.int221.backend.user_account.User;
@@ -26,27 +29,35 @@ public class BoardController {
         return boardService.getAllBoardsByUserId(user.getOid());
     }
 
-//    @GetMapping("/{id}")
-//    public BoardDTO getBoardId(@PathVariable String id, @AuthenticationPrincipal User user) {
-//        return boardService.getBoardByUserAndId(user.getOid(), id);
-//    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<BoardDTO> getBoardById(@PathVariable String id, @AuthenticationPrincipal User user) {
-
-        if (boardService.getBoardById(id).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        BoardDTO boardDTO = boardService.getBoardByUserAndId(user.getOid(), id);
-        System.out.println("check condition");
-
-        if (boardDTO.getVisibility().equals("PUBLIC") || boardDTO.getOwner().map(owner -> owner.getOid().equals(user.getOid())).orElse(false)) {
-            return ResponseEntity.ok(boardDTO);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    public BoardDTO getBoardId(@PathVariable String id, @AuthenticationPrincipal User user) {
+//        try {
+//            BoardDTO boardDTO = boardService.getBoardByUserAndId(user.getOid(), id);
+//            return ResponseEntity.ok(boardDTO);
+//        } catch (NotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        } catch (BoardAccessDeniedException e) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+//        }
+        return boardService.getBoardByUserAndId(user.getOid(), id);
     }
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<BoardDTO> getBoardById(@PathVariable String id, @AuthenticationPrincipal User user) {
+//
+//        if (boardService.getBoardById(id).isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//
+//        BoardDTO boardDTO = boardService.getBoardByUserAndId(user.getOid(), id);
+//        System.out.println("check condition");
+//
+//        if (boardDTO.getVisibility().equals("PUBLIC") || boardDTO.getOwner().map(owner -> owner.getOid().equals(user.getOid())).orElse(false)) {
+//            return ResponseEntity.ok(boardDTO);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+//    }
 
     @PostMapping
     public ResponseEntity<BoardDTO> createBoard(@Valid @RequestBody AddEditBoardDTO boardDTO, @AuthenticationPrincipal User user) {

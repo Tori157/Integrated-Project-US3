@@ -50,6 +50,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(BoardAccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ErrorResponse> handleBoardAccessDeniedException(BoardAccessDeniedException exception, WebRequest request) {
+        return buildErrorResponse(exception, HttpStatus.FORBIDDEN, request);
+    }
+
     @ExceptionHandler({InvalidParameterException.class, HttpMessageNotReadableException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleInvalidParameterException(Exception exception, WebRequest request) {

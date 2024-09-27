@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import sit.int221.backend.dtos.AddEditBoardDTO;
 import sit.int221.backend.dtos.BoardDTO;
 import sit.int221.backend.dtos.BoardOwnerDTO;
+import sit.int221.backend.exceptions.BoardAccessDeniedException;
 import sit.int221.backend.exceptions.NotFoundException;
 import sit.int221.backend.project_management.Board;
 import sit.int221.backend.project_management.BoardRepository;
@@ -34,28 +35,50 @@ public class BoardService {
     public BoardDTO getBoardByUserAndId(String userId, String boardId) {
         User owner = userService.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        return boardRepository.findByIdAndOwnerId(boardId, userId)
-                .map(board -> convertToBoardDTO(board, owner))
-                .orElseThrow(() -> new NotFoundException("Board id '" + boardId + "' not found"));
+        boardServiceUtil.verifyBoardExists(boardId);
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
+
+        if (!board.getOwnerId().equals(userId) && board.getVisibility() != Visibility.PUBLIC) {
+            throw new BoardAccessDeniedException("User does not have permission to view this board");
+        }
+
+        return convertToBoardDTO(board, owner);
+//        return boardRepository.findByIdAndOwnerId(boardId, userId)
+//                .map(board -> convertToBoardDTO(board, owner))
+//                .orElseThrow(() -> new NotFoundException("Board id '" + boardId + "' not found"));
     }
 
     public Optional<Board> getBoardById(String boardId) {
         return boardRepository.findById(boardId);
     }
 
+//    private BoardDTO convertToBoardDTO(Board board, User owner) {
+//        BoardDTO boardDTO = modelMapper.map(board, BoardDTO.class);
+//        boardDTO.setOwner(Optional.ofNullable(owner).map(user -> modelMapper.map(user, BoardOwnerDTO.class)));
+//        return boardDTO;
+//    }
+
     private BoardDTO convertToBoardDTO(Board board, User owner) {
         BoardDTO boardDTO = modelMapper.map(board, BoardDTO.class);
-        boardDTO.setOwner(Optional.ofNullable(owner).map(user -> modelMapper.map(user, BoardOwnerDTO.class)));
+
+        if (owner != null) {
+            BoardOwnerDTO boardOwnerDTO = modelMapper.map(owner, BoardOwnerDTO.class);
+            boardDTO.setOwner(Optional.of(boardOwnerDTO));
+        } else {
+            boardDTO.setOwner(Optional.empty());
+        }
+
         return boardDTO;
     }
 
-    public BoardDTO createBoard(AddEditBoardDTO boardDto, String userId) {
+    public BoardDTO createBoard(AddEditBoardDTO boardDTO, String userId) {
         User currentUser = userService.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        Board newBoard = Board.builder().id(NanoId.generate(10)).name(boardDto.getName()).ownerId(userId).build();
-        if (boardDto.getVisibility() != null) {
-            newBoard.setVisibility(boardDto.getVisibility());
-        }
+//        Board newBoard = Board.builder().id(NanoId.generate(10)).name(boardDto.getName()).ownerId(userId).build();
+        Board newBoard = modelMapper.map(boardDTO, Board.class);
+        newBoard.setId(NanoId.generate(10));
+        newBoard.setOwnerId(userId);
         Board savedBoard = boardRepository.save(newBoard);
         statusService.createDefaultStatuses(savedBoard);
         return convertToBoardDTO(savedBoard, currentUser);
