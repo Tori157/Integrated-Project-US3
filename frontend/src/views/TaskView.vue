@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted, ref, onUnmounted, computed } from 'vue'
-
+import { useRoute } from 'vue-router/dist/vue-router'
 import { useJwt } from '@vueuse/integrations/useJwt'
 import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
-import { useCurrentBoardStore } from '@/stores/BoardStore'
-const BASE_URL = import.meta.env.VITE_BASE_URL
+import { useCurrentBoardStore, useBoardStore } from '@/stores/BoardStore'
 
+const { params: { boardId } } = useRoute()
+const BASE_URL = import.meta.env.VITE_BASE_URL
 const taskStore = useTaskStore()
 const statusStore = useStatusStore()
 
@@ -20,18 +21,14 @@ const access_token = ref(null)
 const name = ref('')
 
 const currentBoardStore = useCurrentBoardStore()
+const boardStore = useBoardStore()
 
-const boardId = computed(() => currentBoardStore.currentBoardId)
 const boardName = computed(() => currentBoardStore.currentBoardName)
 
-console.log(boardId.value)
-console.log(boardName.value)
-taskStore.fetchTasks(boardId.value)
-
 // Fetch tasks from TaskStore
-async function fetchData() {
+async function loadTasks() {
   try {
-    await taskStore.fetchTasks(boardId.value)
+    await taskStore.fetchTasks(boardId)
     tasks.value = taskStore.tasks
     originalTasks.value = [...taskStore.tasks]
   } catch (error) {
@@ -42,7 +39,7 @@ async function fetchData() {
 // Fetch statuses from StatusStore
 const fetchStatuses = async () => {
   try {
-    await statusStore.fetchStatuses(boardId.value)
+    await statusStore.fetchStatuses(boardId)
     statuses.value = statusStore.statuses
   } catch (error) {
     console.error('Error fetching statuses:', error)
@@ -51,6 +48,8 @@ const fetchStatuses = async () => {
 
 // Initial setup on mounted
 onMounted(async () => {
+  const board = await boardStore.getBoardById(boardId);
+  currentBoardStore.setCurrentBoard(boardId, board?.name ?? '')
   const accessToken = document.cookie.match(/access_token=([^;]*)/)
   if (accessToken) {
     access_token.value = accessToken[1]
@@ -58,7 +57,7 @@ onMounted(async () => {
   const { payload } = useJwt(access_token)
   name.value = payload.value.name
 
-  await fetchData()
+  await loadTasks()
   await fetchStatuses()
 })
 
@@ -114,7 +113,7 @@ const redirectToFilteredTasks = async () => {
   } else {
     // Fetch all tasks if no status is selected
     try {
-      await fetchData()
+      await loadTasks()
     } catch (error) {
       console.error('Error fetching all tasks:', error)
     }
@@ -158,7 +157,7 @@ onUnmounted(() => {
 const clearFilter = async () => {
   selectedStatuses.value = []
   searchStatus.value = ''
-  await fetchData()
+  await loadTasks()
 }
 
 const showClearFilterButton = computed(() => {
@@ -207,7 +206,7 @@ const filteredStatuses = computed(() => {
 
             <button
               class="itbkk-manage-status px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold text-center hover:bg-blue-600"
-              @click="$router.push({ name: 'statuslist' })"
+              @click="$router.push({ name: 'statuslist', params: { boardId } })"
             >
               Manage Status
             </button>
@@ -318,7 +317,7 @@ const filteredStatuses = computed(() => {
                     href="#"
                     class="px-6 py-4 font-medium text-base text-blue-600 hover:underline break-words"
                   >
-                    <router-link :to="{ name: 'task-modaldetail', params: { id: task.id } }">
+                    <router-link :to="{ name: 'task-modaldetail', params: { boardId, id: task.id } }">
                       {{ task.title.trim() }}
                     </router-link>
                   </a>
@@ -347,9 +346,9 @@ const filteredStatuses = computed(() => {
                     <button
                       id="itbkk-button-edite"
                       class="itbkk-button-edite"
-                      @click="$router.push({ name: 'task-edite', params: { id: task.id } })"
+                      @click="$router.push({ name: 'task-edite', params: { boardId, id: task.id } })"
                     >
-                      <router-link :to="{ name: 'task-edite', params: { id: task.id } }">
+                      <router-link :to="{ name: 'task-edite', params: { boardId, id: task.id } }">
                         <img
                           src="/image/ico/edit-3-svgrepo-com.svg"
                           class="itbkk-button-edite h-8 li-3 w-36"
@@ -360,9 +359,9 @@ const filteredStatuses = computed(() => {
                     <button
                       id="itbkk-button-delete"
                       class="itbkk-button-delete"
-                      @click="$router.push({ name: 'task-deletemodal', params: { id: task.id } })"
+                      @click="$router.push({ name: 'task-deletemodal', params: { boardId, id: task.id } })"
                     >
-                      <router-link :to="{ name: 'task-deletemodal', params: { id: task.id } }">
+                      <router-link :to="{ name: 'task-deletemodal', params: { boardId, id: task.id } }">
                         <img
                           src="/image/ico/delete-svgrepo-com.svg"
                           class="itbkk-button-delete h-7 w-36 mt-0.5"

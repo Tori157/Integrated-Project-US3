@@ -83,7 +83,7 @@ const openBoard = async (board) => {
 
   currentBoardStore.setCurrentBoard(board.id, board.name)
 
-  router.push({ name: 'tasks', params: { id: board.id, name: board.name } })
+  router.push({ name: 'tasks', params: { boardId: board.id } })
 }
 </script>
 <template>

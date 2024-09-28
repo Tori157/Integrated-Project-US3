@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { showAlert, showAlert2 } from '@/components/utils/toast'
+import { showAlert, showAlert2 } from '@/utils/toast'
 import { useStatusStore } from '@/stores/StatusStore' // Import your StatusStore
 
 const router = useRouter()

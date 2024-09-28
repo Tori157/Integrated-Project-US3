@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router' // import router
 import { useCurrentBoardStore } from '@/stores/BoardStore' // นำเข้า CurrentBoardStore
+import { getCookie } from '@/utils/cookie'
 
 export const useTaskStore = defineStore('taskStore', () => {
   const tasks = ref([])
@@ -25,11 +26,7 @@ export const useTaskStore = defineStore('taskStore', () => {
         throw new Error('No current board selected')
       }
 
-      const accessTokenMatch = document.cookie.match(/access_token=([^;]*)/)
-      if (!accessTokenMatch) {
-        throw new Error('Access token not found')
-      }
-      const accessToken = accessTokenMatch[1]
+      const accessToken = getCookie('access_token')
 
       const response = await fetch(`${BASE_URL}/v3/boards/${boardId}/tasks`, {
         headers: {
@@ -46,6 +43,20 @@ export const useTaskStore = defineStore('taskStore', () => {
       }
     } catch (error) {
       console.error('Error fetching tasks:', error)
+    }
+  }
+
+  // Fetch task by id
+  const getTaskById = async (taskId) => {
+    const boardId = currentBoardStore.currentBoardId
+    const accessToken = getCookie('access_token')
+    const response = await fetch(`${BASE_URL}/v3/boards/${boardId}/tasks/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    if (response.ok) {
+      return await response.json()
     }
   }
 
@@ -154,5 +165,5 @@ export const useTaskStore = defineStore('taskStore', () => {
     }
   }
 
-  return { tasks, fetchTasks, addTask, updateTask, deleteTask }
+  return { tasks, fetchTasks, getTaskById, addTask, updateTask, deleteTask }
 })

@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStatusStore } from '@/stores/StatusStore' // Adjust the path as necessary
-import { showAlert, showAlert2 } from '@/components/utils/toast'
+import { showAlert, showAlert2 } from '@/utils/toast'
 import { useCurrentBoardStore } from '@/stores/BoardStore'
 
 const name = ref('')
