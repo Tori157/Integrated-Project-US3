@@ -11,7 +11,7 @@ export const useStatusStore = defineStore('statusStore', {
     // Fetch all statuses for a specific board (GET)
     async fetchStatuses(boardId) {
       const router = useRouter() // instantiate router
-
+      
       try {
         const accessToken = document.cookie.match(/access_token=([^;]*)/)[1]
         const response = await fetch(`${BASE_URL}/v3/boards/${boardId}/statuses`, {

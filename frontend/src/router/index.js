@@ -24,17 +24,17 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue')
     },
     {
-      path: '/tasks/:id/',
+      path: '/board/:id/tasks',
       name: 'tasks',
       component: () => import('../views/TaskView.vue'),
       children: [
         {
-          path: ':id',
+          path: '/board/:id/tasks/:id',
           name: 'task-modaldetail',
           component: () => import('../components/TaskDetail.vue')
         },
         {
-          path: ':id/edit',
+          path: '/board/:id/tasks/:id/edit',
           name: 'task-edite',
           component: () => import('../components/EditeTask.vue')
         },
@@ -66,7 +66,7 @@ const router = createRouter({
       component: () => import('../components/otherpage/StatusNotFound.vue')
     },
     {
-      path: '/status',
+      path: '/status/:id',
       name: 'statuslist',
       component: () => import('../views/StatusList.vue'),
       children: [

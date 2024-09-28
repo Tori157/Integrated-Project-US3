@@ -41,7 +41,7 @@ async function fetchData() {
 // Fetch statuses from StatusStore
 const fetchStatuses = async () => {
   try {
-    await statusStore.fetchStatuses()
+    await statusStore.fetchStatuses(boardId)
     statuses.value = statusStore.statuses
   } catch (error) {
     console.error('Error fetching statuses:', error)
