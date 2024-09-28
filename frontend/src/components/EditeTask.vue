@@ -1,60 +1,49 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useTaskStore } from '@/stores/TaskStore'
+import { useStatusStore } from '@/stores/StatusStore'
+import { showAlert } from '@/components/utils/toast'
+import { showAlert2 } from '@/components/utils/toast'
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
 const route = useRoute()
 const router = useRouter()
 
+// Access Pinia stores
+const taskStore = useTaskStore()
+const statusStore = useStatusStore()
+
+// Reactive task and status data
 const tasks = ref({})
 const originalTasks = ref({})
 const statuses = ref([])
 
 onMounted(async () => {
   await fetchTask()
-  await fetchStatuses()
+  await statusStore.fetchStatuses()
+  statuses.value = statusStore.statuses
 })
 
+// Fetch task from the store based on route params
 async function fetchTask() {
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
-    })
-    if (!response.ok) {
-      throw new Error('Failed to fetch tasks')
+    await taskStore.fetchTasks()
+    const fetchedTask = taskStore.tasks.find((task) => task.id === parseInt(route.params.id))
+    if (!fetchedTask) {
+      throw new Error('Task not found')
     }
-    const data = await response.json()
-    tasks.value = { ...data }
-    originalTasks.value = { ...data }
-    console.log(tasks.value)
+    tasks.value = { ...fetchedTask }
+    originalTasks.value = { ...fetchedTask }
+    console.log(fetchedTask)
+    console.log(tasks.value.description)
     getTimezone()
   } catch (error) {
-    console.error('Error fetching tasks:', error)
+    console.error('Error fetching task:', error)
     router.push('/editerror')
   }
 }
 
-async function fetchStatuses() {
-  try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(`${BASE_URL}/v2/statuses`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
-    })
-    if (!response.ok) {
-      throw new Error('Failed to fetch statuses')
-    }
-    statuses.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching statuses:', error)
-  }
-}
-
-// Save changes to task
+// Save changes to task using the store's update method
 async function saveChanges() {
   try {
     const updatedTask = {
@@ -65,56 +54,16 @@ async function saveChanges() {
       statusId: tasks.value.status.id
     }
 
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`, {
-      method: `PUT`,
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(updatedTask)
-    })
-
-    if (response.ok) {
-      console.log('Task updated successfully')
-      showAlert('The task has been updated', 'rgb(34 197 94)')
-      router.push('/task')
-      console.log(updatedTask)
-      console.log(route.params.id)
-    } else {
-      console.error('Failed to update task')
-      console.log(updatedTask)
-      console.log(route.params.id)
-      router.push('/task')
-      showAlert('An error has occurred, the task does not exist.', 'rgb(251 146 60)')
-    }
+    await taskStore.updateTask(updatedTask)
+    showAlert('The task has been updated', 'rgb(34 197 94)')
+    router.push('/task')
   } catch (error) {
     console.error('Error updating task:', error)
     showAlert('An error has occurred during the update process.', 'rgb(251 146 60)')
   }
 }
 
-// Show alert message
-function showAlert(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-    window.location.reload()
-  }, 2000)
-}
-
+// Utility functions
 function formateDateTime(time) {
   const date = new Date(time)
   const options = {
@@ -163,32 +112,6 @@ const checkMaxLength = (field) => {
   if (tasks.value[field].length >= maxLengths[field]) {
     showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
   }
-}
-
-function showAlert2(message, backgroundColor) {
-  const existingAlert = document.querySelector('.alert-success')
-  if (existingAlert) {
-    existingAlert.parentElement.removeChild(existingAlert)
-  }
-
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    if (toastDiv.parentElement) {
-      toastDiv.parentElement.removeChild(toastDiv)
-    }
-  }, 2000)
 }
 </script>
 
@@ -266,22 +189,19 @@ function showAlert2(message, backgroundColor) {
                 class="itbkk-button-edit btn text-white border-white mr-6 bg-green-500 hover:bg-green-600 border-4 hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
                 :class="{
                   'bg-gray-400': !isModified || tasks.title.trim().length === 0 || isStatusModified,
-                  'text-white': !isModified || tasks.title.trim().length === 0 || isStatusModified,
-                  'border-white':
-                    !isModified || tasks.title.trim().length === 0 || isStatusModified,
-                  disabled: !isModified || tasks.title.trim().length === 0 || isStatusModified
+                  'bg-green-500': isModified && tasks.title.trim().length > 0 && !isStatusModified
                 }"
               >
                 Save
               </button>
-              <button
-                id="itbkk-button-cancel"
-                class="itbkk-button-cancel btn mr-6 bg-red-500 hover:bg-red-600 border-4 border-white hover:border-red-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
-                @click="cancelEditing"
-              >
-                Cancel
-              </button>
             </form>
+            <button
+              id="itbkk-button-cancel"
+              @click="cancelEditing"
+              class="btn text-white border-white mr-6 bg-red-500 hover:bg-red-600 border-4 hover:border-red-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>

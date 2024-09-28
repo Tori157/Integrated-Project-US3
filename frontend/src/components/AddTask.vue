@@ -1,6 +1,10 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTaskStore } from '@/stores/TaskStore'
+import { useStatusStore } from '@/stores/StatusStore'
+import { showAlert } from '@/components/utils/toast'
+import { showAlert2 } from '@/components/utils/toast'
 
 const formData = reactive({
   title: '',
@@ -10,34 +14,12 @@ const formData = reactive({
 })
 
 const router = useRouter()
-const BASE_URL = import.meta.env.VITE_BASE_URL
+const taskStore = useTaskStore() // Store ของ task
+const statusStore = useStatusStore() // Store ของ status
 
 onMounted(async () => {
-  await fetchStatuses()
+  await statusStore.fetchStatuses() // ใช้ store ของ status เพื่อดึงสถานะ
 })
-const statuses = ref([])
-
-const fetchStatuses = async () => {
-  try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(BASE_URL + '/v2/statuses', {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
-      statuses.value = data
-    } else {
-      console.error('Failed to fetch statuses:', response.statusText)
-    }
-  } catch (error) {
-    console.error('Error fetching statuses:', error)
-  }
-}
-
-console.log(statuses)
-fetchStatuses()
 
 const saveTask = async () => {
   if (!formData.statusId) {
@@ -49,59 +31,22 @@ const saveTask = async () => {
     assignees: formData.assignees.trim(),
     statusId: formData.statusId
   }
-  // if (formData.selectedStatusId && formData.selectedStatusId.length > 0) {
-  //   taskData.status.id = formData.selectedStatusId
-  // } else {
-  //   taskData.status.id = 1
-  // }
 
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(BASE_URL + `/v2/tasks`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(taskData)
-    })
+    const response = await taskStore.addTask(taskData)
     if (response.status === 201) {
-      router.push('/task')
-      // console.log(taskData)
-      // console.log(formData.statusId)
-      // Alert
       showAlert('The task has been successfully added.', 'rgb(34 197 94)')
-    } else {
       router.push('/task')
-      console.error('Failed to save task:', response.statusText)
+    } else {
       showAlert('An error has occurred, the task Cant Add.', 'rgb(251 146 60)')
-      console.log(taskData)
-      console.log(formData.statusId)
+      console.error('Failed to save task:', response.statusText)
+      router.push('/task')
     }
   } catch (error) {
     console.error('Error saving task:', error)
   }
 }
 
-function showAlert(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-    window.location.reload()
-  }, 2000)
-}
 const maxLengths = {
   title: 100,
   description: 500,
@@ -112,32 +57,6 @@ const checkMaxLength = (field) => {
   if (formData[field].length >= maxLengths[field]) {
     showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
   }
-}
-
-function showAlert2(message, backgroundColor) {
-  const existingAlert = document.querySelector('.alert-success')
-  if (existingAlert) {
-    existingAlert.parentElement.removeChild(existingAlert)
-  }
-
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    if (toastDiv.parentElement) {
-      toastDiv.parentElement.removeChild(toastDiv)
-    }
-  }, 2000)
 }
 </script>
 
@@ -196,7 +115,7 @@ function showAlert2(message, backgroundColor) {
             v-model="formData.statusId"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option v-for="status in statuses" :value="status.id" :key="status.id">
+            <option v-for="status in statusStore.statuses" :value="status.id" :key="status.id">
               {{ status.name }}
             </option>
           </select>
@@ -207,22 +126,8 @@ function showAlert2(message, backgroundColor) {
             type="submit"
             :disabled="formData.title.trim().length === 0"
             @click="toggleModal"
-            class="itbkk-button-confirm"
-            :class="[
-              'border-4',
-              'border-white',
-              'rounded-3xl',
-              'mx-5',
-              'p-8',
-              'px-7',
-              'py-2',
-              'text-base',
-              'text-white',
-              'font-semibold',
-              'text-center',
-              formData.title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
-              formData.title.trim().length === 0 ? 'disabled' : ''
-            ]"
+            class="itbkk-button-confirm border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
+            :class="formData.title.trim().length === 0 ? 'bg-gray-400 disabled' : 'bg-green-400'"
           >
             Save
           </button>

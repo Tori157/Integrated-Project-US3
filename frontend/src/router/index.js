@@ -11,7 +11,12 @@ const router = createRouter({
     // },
     {
       path: '/',
-      redirect: '/task'
+      redirect: 'board'
+    },
+    {
+      path: '/board',
+      name: 'board',
+      component: () => import('../views/BoardView.vue')
     },
     {
       path: '/login',
@@ -19,14 +24,14 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue')
     },
     {
-      path: '/task',
+      path: '/tasks/:id/',
       name: 'tasks',
-      component: () => import('../views/HomeView.vue'),
+      component: () => import('../views/TaskView.vue'),
       children: [
         {
           path: ':id',
           name: 'task-modaldetail',
-          component: () => import('../views/TaskDetail.vue')
+          component: () => import('../components/TaskDetail.vue')
         },
         {
           path: ':id/edit',
@@ -46,19 +51,19 @@ const router = createRouter({
       ]
     },
     {
-      path: '/error',
+      path: '/taskerror',
       name: 'task-error',
-      component: () => import('../views/NotFound.vue')
+      component: () => import('../components/otherpage/NotFound.vue')
     },
     {
       path: '/editerror',
       name: 'taskedite-error',
-      component: () => import('../views/EditNotFound.vue')
+      component: () => import('../components/otherpage/EditNotFound.vue')
     },
     {
       path: '/editstatuserror',
       name: 'statusedit-error',
-      component: () => import('../views/StatusNotFound.vue')
+      component: () => import('../components/otherpage/StatusNotFound.vue')
     },
     {
       path: '/status',
@@ -80,18 +85,17 @@ const router = createRouter({
           name: 'status-deletemodal',
           component: () => import('../components/DeleteStatus.vue')
         }
-        
       ]
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  const accessToken = document.cookie.match(/access_token=([^;]*)/);
+  const accessToken = document.cookie.match(/access_token=([^;]*)/)
   if (!accessToken && to.path !== '/login') {
-    next({ name: 'login' });
+    next({ name: 'login' })
   } else {
-    next();
+    next()
   }
 })
 
