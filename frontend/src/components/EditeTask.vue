@@ -5,6 +5,7 @@ import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
 import { showAlert } from '@/components/utils/toast'
 import { showAlert2 } from '@/components/utils/toast'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,6 +18,9 @@ const statusStore = useStatusStore()
 const tasks = ref({})
 const originalTasks = ref({})
 const statuses = ref([])
+
+const currentBoardStore = useCurrentBoardStore()
+const boardId = computed(() => currentBoardStore.currentBoardId)
 
 onMounted(async () => {
   await fetchTask()
@@ -36,11 +40,13 @@ async function fetchTask() {
     originalTasks.value = { ...fetchedTask }
     console.log(fetchedTask)
     console.log(tasks.value.description)
+
     getTimezone()
   } catch (error) {
     console.error('Error fetching task:', error)
     router.push('/editerror')
   }
+  console.log(tasks)
 }
 
 // Save changes to task using the store's update method
@@ -51,12 +57,13 @@ async function saveChanges() {
       title: tasks.value.title.trim(),
       description: tasks.value.description ? tasks.value.description.trim() : '',
       assignees: tasks.value.assignees ? tasks.value.assignees.trim() : '',
-      statusId: tasks.value.status.id
+      status: tasks.value.status.id
     }
-
+    console.log(tasks.value.status.id)
     await taskStore.updateTask(updatedTask)
+
     showAlert('The task has been updated', 'rgb(34 197 94)')
-    router.push('/task')
+    router.push(`/boards/${boardId.value}/tasks`)
   } catch (error) {
     console.error('Error updating task:', error)
     showAlert('An error has occurred during the update process.', 'rgb(251 146 60)')
@@ -83,7 +90,7 @@ function getTimezone() {
 }
 
 function cancelEditing() {
-  router.back()
+  router.push(`/boards/${boardId.value}/tasks`)
 }
 
 const handleStatusChange = (event) => {
@@ -149,7 +156,7 @@ const checkMaxLength = (field) => {
           </div>
         </div>
         <div class="r-zone m-10">
-          <div class="text-base text-rose-400 font-medium">Assigness:</div>
+          <div class="text-base text-rose-400 font-medium">Assignees:</div>
           <input
             v-model="tasks.assignees"
             type="text"
@@ -164,20 +171,21 @@ const checkMaxLength = (field) => {
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             @change="handleStatusChange"
           >
+            <option value="" disabled>Select a status</option>
             <option v-for="status in statuses" :value="status.id" :key="status.id">
               {{ status.name }}
             </option>
           </select>
           <div class="itbkk-timezone mt-6 mb-3 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Timezone :</span>
+            <span class="text-base text-rose-400 font-medium">Timezone:</span>
             {{ getTimezone() }}
           </div>
           <div class="itbkk-created-on mb-3 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Create On :</span>
+            <span class="text-base text-rose-400 font-medium">Created On:</span>
             {{ formateDateTime(tasks.createdOn).replace(/,/g, '') }}
           </div>
           <div class="itbkk-updated-on mb-8 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Update On :</span>
+            <span class="text-base text-rose-400 font-medium">Updated On:</span>
             {{ formateDateTime(tasks.updatedOn).replace(/,/g, '') }}
           </div>
           <div class="flex">

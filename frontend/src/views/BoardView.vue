@@ -5,7 +5,7 @@ import { useBoardStore } from '@/stores/BoardStore'
 import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
 import { useRouter } from 'vue-router'
-
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 import BoardModal from '@/components/BoardModal.vue'
 
 const name = ref('')
@@ -15,7 +15,7 @@ const taskStore = useTaskStore()
 const StatusStore = useStatusStore()
 const router = useRouter()
 const dropdownIndex = ref(null)
-
+const currentBoardStore = useCurrentBoardStore()
 const toggleDropdown = (index) => {
   dropdownIndex.value = dropdownIndex.value === index ? null : index
 }
@@ -80,9 +80,10 @@ const openBoard = async (board) => {
 
   await taskStore.fetchTasks(board.id)
   await StatusStore.fetchStatuses(board.id)
+
+  currentBoardStore.setCurrentBoard(board.id, board.name)
+
   router.push({ name: 'tasks', params: { id: board.id, name: board.name } })
-  console.log(board.id)
-  console.log(board.name)
 }
 </script>
 <template>

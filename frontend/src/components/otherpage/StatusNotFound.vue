@@ -30,7 +30,7 @@ export default {
         } else {
           clearInterval(interval)
           // Redirect back to HomeView.vue
-          this.$router.push('/board')
+          this.$router.push('/boards')
         }
       }, 1000)
     }

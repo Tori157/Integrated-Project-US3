@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useStatusStore } from '@/stores/StatusStore'
-
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 // เรียกใช้ StatusStore
 const statusStore = useStatusStore()
 
@@ -9,18 +9,21 @@ const statusStore = useStatusStore()
 onMounted(() => {
   statusStore.fetchStatuses()
 })
+const currentBoardStore = useCurrentBoardStore()
+const boardId = computed(() => currentBoardStore.currentBoardId)
+const boardName = computed(() => currentBoardStore.currentBoardName)
 </script>
 
 <template>
   <div>
     <div class="bg-blue-500 text-white p-4 flex justify-between items-center">
       <button
-        @click="$router.push('/board')"
+        @click="$router.push(`/boards/${boardId}/tasks`)"
         class="itbkk-back-button px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold hover:bg-blue-600"
       >
         &lt; Status
       </button>
-      <h2 class="itbkk-fullname font-bold">Welcome, {{ name }}!</h2>
+      <h2 class="itbkk-fullname font-bold">Welcome, {{ boardName }}!</h2>
     </div>
 
     <div class="p-10 w-full">
@@ -29,7 +32,7 @@ onMounted(() => {
           <h1
             class="mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r to-emerald-400 from-sky-400"
           >
-            IT-Bangmod Kradan Kanban
+            {{ boardName }}
           </h1>
           <div class="flex space-x-4">
             <button

@@ -3,6 +3,9 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTaskStore } from '@/stores/TaskStore'
 import { showAlert } from '@/components/utils/toast'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
+const currentBoardStore = useCurrentBoardStore()
+const boardId = computed(() => currentBoardStore.currentBoardId)
 
 const router = useRouter()
 const route = useRoute()
@@ -49,7 +52,7 @@ async function deleteTask(taskId) {
   try {
     await taskStore.deleteTask(taskId)
     console.log('Task deleted successfully')
-    router.push('/task')
+    router.push(`/boards/${boardId.value}/tasks`)
     showAlert('The task has been deleted.', 'rgb(244 63 94)')
   } catch (error) {
     console.error('Error deleting task:', error)
@@ -58,7 +61,7 @@ async function deleteTask(taskId) {
 }
 
 function cancel() {
-  router.push('/task')
+  router.push(`/boards/${boardId.value}/tasks`)
 }
 </script>
 

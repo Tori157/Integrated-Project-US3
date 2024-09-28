@@ -2,6 +2,28 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router' // import router
 
+export const useCurrentBoardStore = defineStore('currentBoard', () => {
+  const currentBoardId = ref(null)
+  const currentBoardName = ref('')
+
+  function setCurrentBoard(id, name) {
+    currentBoardId.value = id
+    currentBoardName.value = name
+  }
+
+  function clearCurrentBoard() {
+    currentBoardId.value = null
+    currentBoardName.value = ''
+  }
+
+  return {
+    currentBoardId,
+    currentBoardName,
+    setCurrentBoard,
+    clearCurrentBoard
+  }
+})
+
 export const useBoardStore = defineStore('boardStore', () => {
   const boards = ref([])
   const BASE_URL = import.meta.env.VITE_BASE_URL

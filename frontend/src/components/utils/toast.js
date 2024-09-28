@@ -16,7 +16,7 @@ export function showAlert(message, backgroundColor) {
   setTimeout(() => {
     if (toastDiv.parentElement) {
       toastDiv.parentElement.removeChild(toastDiv)
-      window.location.reload()
+      // window.location.reload()
     }
   }, 2000)
 }

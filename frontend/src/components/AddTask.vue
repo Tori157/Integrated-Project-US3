@@ -1,46 +1,52 @@
 <script setup>
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
-import { showAlert } from '@/components/utils/toast'
-import { showAlert2 } from '@/components/utils/toast'
+import { showAlert, showAlert2 } from '@/components/utils/toast'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 
 const formData = reactive({
   title: '',
   description: '',
   assignees: '',
-  statusId: null
+  status: null
 })
 
 const router = useRouter()
-const taskStore = useTaskStore() // Store ของ task
-const statusStore = useStatusStore() // Store ของ status
+const taskStore = useTaskStore()
+const statusStore = useStatusStore()
+const currentBoardStore = useCurrentBoardStore()
+const boardId = computed(() => currentBoardStore.currentBoardId)
 
 onMounted(async () => {
-  await statusStore.fetchStatuses() // ใช้ store ของ status เพื่อดึงสถานะ
+  await statusStore.fetchStatuses(boardId.value)
 })
 
 const saveTask = async () => {
-  if (!formData.statusId) {
-    formData.statusId = 1
+  if (!formData.status || !statusStore.statuses.some((status) => status.id === formData.status)) {
+    console.error('Invalid status ID')
+    showAlert('Invalid status ID. Please select a valid status.', 'rgb(251 146 60)')
+    return
   }
+
   const taskData = {
     title: formData.title.trim(),
     description: formData.description.trim(),
     assignees: formData.assignees.trim(),
-    statusId: formData.statusId
+    status: formData.status
   }
+  console.log(taskData)
 
   try {
     const response = await taskStore.addTask(taskData)
     if (response.status === 201) {
       showAlert('The task has been successfully added.', 'rgb(34 197 94)')
-      router.push('/task')
+      router.push(`/boards/${boardId.value}/tasks`)
     } else {
-      showAlert('An error has occurred, the task Cant Add.', 'rgb(251 146 60)')
+      showAlert("An error has occurred, the task can't be added.", 'rgb(251 146 60)')
       console.error('Failed to save task:', response.statusText)
-      router.push('/task')
+      router.push(`/boards/${boardId.value}/tasks`)
     }
   } catch (error) {
     console.error('Error saving task:', error)
@@ -112,9 +118,10 @@ const checkMaxLength = (field) => {
           >
           <select
             id="itbkk-status"
-            v-model="formData.statusId"
+            v-model="formData.status"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
+            <option value="" disabled>Select a status</option>
             <option v-for="status in statusStore.statuses" :value="status.id" :key="status.id">
               {{ status.name }}
             </option>
@@ -125,7 +132,6 @@ const checkMaxLength = (field) => {
             id="itbkk-button-confirm"
             type="submit"
             :disabled="formData.title.trim().length === 0"
-            @click="toggleModal"
             class="itbkk-button-confirm border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
             :class="formData.title.trim().length === 0 ? 'bg-gray-400 disabled' : 'bg-green-400'"
           >
@@ -134,7 +140,7 @@ const checkMaxLength = (field) => {
           <button
             id="itbkk-button-cancel"
             type="button"
-            @click="() => router.push('/task')"
+            @click="() => router.push(`/boards/${boardId.value}/tasks`)"
             class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel

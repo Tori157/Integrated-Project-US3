@@ -1,30 +1,38 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useTaskStore } from '@/stores/TaskStore'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 
-const tasks = ref([])
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const route = useRoute()
 const router = useRouter()
+const route = useRoute()
+const taskStore = useTaskStore()
+const tasks = ref({})
+const currentBoardStore = useCurrentBoardStore()
+
+// Assuming you need both boardId and taskId
+const boardId = computed(() => currentBoardStore.currentBoardId)
+const taskId = computed(() => route.params.taskId)
+
 async function fetchTask() {
   try {
-    const response = await fetch(BASE_URL + `/v2/tasks/${route.params.id}`)
-    if (!response.ok) {
-      throw new Error('Failed to fetch tasks')
+    await taskStore.fetchTask(boardId.value, taskId.value)
+    tasks.value = taskStore.tasks.find((task) => task.id === taskId.value) || {}
+
+    if (!Object.keys(tasks.value).length) {
+      throw new Error('Task not found')
     }
-    const data = await response.json()
-    console.log(data)
-    tasks.value = data
-    getTimezone() // Call setTimezone function here
+
+    getTimezone()
   } catch (error) {
-    console.error('Error fetching tasks:', error)
-    router.push('/taskerror')
+    console.error('Error fetching task:', error)
+    // router.push('/taskerror')
   }
 }
 
 onMounted(async () => {
+  console.log('taskStore:', taskStore)
   await fetchTask()
-  console.log(tasks.value)
 })
 
 function formateDateTime(time) {
@@ -40,6 +48,7 @@ function formateDateTime(time) {
   }
   return date.toLocaleString('en-GB', formate)
 }
+
 function getTimezone() {
   return Intl.DateTimeFormat().resolvedOptions().timeZone
 }

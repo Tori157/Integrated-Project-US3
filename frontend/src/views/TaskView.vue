@@ -1,9 +1,10 @@
 <script setup>
 import { onMounted, ref, onUnmounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+
 import { useJwt } from '@vueuse/integrations/useJwt'
 import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const taskStore = useTaskStore()
@@ -18,19 +19,19 @@ const selectedStatuses = ref([])
 const access_token = ref(null)
 const name = ref('')
 
-const route = useRoute()
-const boardName = route.params.name
+const currentBoardStore = useCurrentBoardStore()
 
-// Get boardId from the route parameter
-const boardId = route.params.id
+const boardId = computed(() => currentBoardStore.currentBoardId)
+const boardName = computed(() => currentBoardStore.currentBoardName)
 
-// Fetch tasks for the board when the component is mounted
-taskStore.fetchTasks(boardId)
+console.log(boardId.value)
+console.log(boardName.value)
+taskStore.fetchTasks(boardId.value)
 
 // Fetch tasks from TaskStore
 async function fetchData() {
   try {
-    await taskStore.fetchTasks()
+    await taskStore.fetchTasks(boardId.value)
     tasks.value = taskStore.tasks
     originalTasks.value = [...taskStore.tasks]
   } catch (error) {
@@ -41,7 +42,7 @@ async function fetchData() {
 // Fetch statuses from StatusStore
 const fetchStatuses = async () => {
   try {
-    await statusStore.fetchStatuses(boardId)
+    await statusStore.fetchStatuses(boardId.value)
     statuses.value = statusStore.statuses
   } catch (error) {
     console.error('Error fetching statuses:', error)
@@ -180,7 +181,7 @@ const filteredStatuses = computed(() => {
   <div>
     <div class="bg-blue-500 text-white p-4 flex justify-between items-center">
       <button
-        @click="$router.push('/board')"
+        @click="$router.push('/boards')"
         class="itbkk-back-button px-4 py-2 bg-blue-500 border-4 border-blue-100 rounded-3xl text-base text-white font-semibold hover:bg-blue-600"
       >
         &lt; Task
