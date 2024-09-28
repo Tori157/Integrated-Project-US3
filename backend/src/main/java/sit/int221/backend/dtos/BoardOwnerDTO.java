@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class BoardOwnerDTO {
     private String oid;
-    private String name;
+    private String username;
 }

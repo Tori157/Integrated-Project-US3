@@ -76,18 +76,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception, HttpStatus httpStatus, WebRequest request) {
-        return buildErrorResponse(exception.getMessage(), httpStatus, request);
-    }
-
-    private ResponseEntity<ErrorResponse> buildErrorResponse(String message, HttpStatus httpStatus, WebRequest request) {
-        int statusCode = httpStatus.value();
-        String requestUri = ((ServletWebRequest) request).getRequest().getRequestURI();
-
-        ErrorResponse errorResponse = new ErrorResponse(statusCode, message, requestUri);
-        return ResponseEntity.status(httpStatus).body(errorResponse);
-    }
-
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException exception , WebRequest request){
@@ -98,5 +86,17 @@ public class GlobalExceptionHandler {
         );
         errorResponse.addValidationError("status", exception.getMessage());
         return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception, HttpStatus httpStatus, WebRequest request) {
+        return buildErrorResponse(exception.getMessage(), httpStatus, request);
+    }
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(String message, HttpStatus httpStatus, WebRequest request) {
+        int statusCode = httpStatus.value();
+        String requestUri = ((ServletWebRequest) request).getRequest().getRequestURI();
+
+        ErrorResponse errorResponse = new ErrorResponse(statusCode, message, requestUri);
+        return ResponseEntity.status(httpStatus).body(errorResponse);
     }
 }
