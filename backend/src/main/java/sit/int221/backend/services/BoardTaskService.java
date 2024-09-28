@@ -9,11 +9,7 @@ import sit.int221.backend.dtos.AddEditTaskDTO;
 import sit.int221.backend.dtos.AllTasksDTO;
 import sit.int221.backend.dtos.TaskDTO;
 import sit.int221.backend.exceptions.NotFoundException;
-import sit.int221.backend.project_management.Board;
-import sit.int221.backend.project_management.Status;
-import sit.int221.backend.project_management.Task;
-import sit.int221.backend.project_management.TaskRepository;
-import sit.int221.backend.utils.BoardServiceUtil;
+import sit.int221.backend.project_management.*;
 import sit.int221.backend.utils.ListMapper;
 
 import java.util.List;

@@ -3,6 +3,7 @@ package sit.int221.backend.securities;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private static final String[] login = {
-            "/login",
+            "/login"
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -28,8 +29,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(login)
                                 .permitAll()
-                                .anyRequest()
-                                .authenticated()
+                                .requestMatchers(HttpMethod.GET, "/v3/boards/**")
+                                .permitAll()
+                                .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

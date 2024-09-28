@@ -25,13 +25,14 @@ import sit.int221.backend.utils.JwtUtil;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String HEADER_NAME = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
-
+    private static final Set<String> ALLOWED_URIS = Set.of("/login", "/v3/boards/.*");
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -39,14 +40,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        if (request.getRequestURI().equalsIgnoreCase("/login")) {
+        String jwt = getJwtFromRequest(request);
+
+        if (isUriAllowed(request.getRequestURI()) && jwt == null) {
+            System.out.println("Allowed URI: " + request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String authHeader = request.getHeader(HEADER_NAME);
-
-        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+        if (jwt == null) {
             handleUnauthorized(
                     response,
                     "Authorization header is missing or invalid.",
@@ -54,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwt = authHeader.substring(BEARER_PREFIX.length());
+
         String username;
 
         try {
@@ -69,6 +71,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isUriAllowed(String uri) {
+        return ALLOWED_URIS.stream().anyMatch(uri::matches);
+    }
+
+    private String getJwtFromRequest(HttpServletRequest request) {
+        String authHeader = request.getHeader(HEADER_NAME);
+        return (authHeader != null && authHeader.startsWith(BEARER_PREFIX))
+                ? authHeader.substring(BEARER_PREFIX.length()).trim()
+                : null;
     }
 
     private void handleJwtException(

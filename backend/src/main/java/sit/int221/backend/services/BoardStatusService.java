@@ -8,7 +8,6 @@ import sit.int221.backend.dtos.AddEditStatusDTO;
 import sit.int221.backend.dtos.StatusDTO;
 import sit.int221.backend.exceptions.*;
 import sit.int221.backend.project_management.*;
-import sit.int221.backend.utils.BoardServiceUtil;
 
 import java.util.List;
 
@@ -17,24 +16,20 @@ import java.util.List;
 public class BoardStatusService {
     private final StatusRepository statusRepository;
     private final TaskRepository taskRepository;
-    private final BoardServiceUtil boardServiceUtil;
     private final TaskService taskService;
     private final ModelMapper modelMapper;
 
     public List<Status> findAllByBoardId(String boardId) {
-        boardServiceUtil.verifyBoardExists(boardId);
         return statusRepository.findAllByBoardId(boardId);
     }
 
     public Status findByIdAndBoardId(Integer statusId, String boardId) {
-        boardServiceUtil.verifyBoardExists(boardId);
         return statusRepository.findByIdAndBoardId(statusId, boardId)
                 .orElseThrow(() -> new NotFoundException("The requested status does not exist"));
     }
 
     @Transactional
     public Status createStatus(AddEditStatusDTO status, String boardId) {
-        boardServiceUtil.verifyBoardExists(boardId);
         if (statusRepository.existsByNameIgnoreCaseAndBoardId(status.getName(), boardId)) {
             throw new DuplicatedStatusException("Status name must be unique");
         }
@@ -47,7 +42,6 @@ public class BoardStatusService {
 
     @Transactional
     public StatusDTO updateStatus(Integer statusId, String boardId, AddEditStatusDTO status) {
-        boardServiceUtil.verifyBoardExists(boardId);
         if (statusRepository.existsByNameIgnoreCaseAndBoardId(status.getName(), boardId)) {
             throw new DuplicatedStatusException("Status name must be unique");
         }
@@ -67,7 +61,6 @@ public class BoardStatusService {
 
     @Transactional
     public Status deleteStatusById(Integer statusId, String boardId) {
-        boardServiceUtil.verifyBoardExists(boardId);
         if (taskService.hasTaskWithStatus(statusId)) {
             throw new IllegalDeleteStatusException("Cannot delete status because there are tasks associated with this status.");
         }
@@ -83,7 +76,6 @@ public class BoardStatusService {
 
     @Transactional
     public Status transferAndDeleteStatus(Integer statusId, Integer newStatusId, String boardId) {
-        boardServiceUtil.verifyBoardExists(boardId);
         if (statusId.equals(newStatusId)) {
             throw new IllegalStatusTransferException("Destination status for task transfer must be different from current status.");
         }

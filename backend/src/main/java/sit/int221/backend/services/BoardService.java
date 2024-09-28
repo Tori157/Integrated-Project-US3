@@ -15,7 +15,6 @@ import sit.int221.backend.project_management.Board;
 import sit.int221.backend.project_management.BoardRepository;
 import sit.int221.backend.project_management.Visibility;
 import sit.int221.backend.user_account.User;
-import sit.int221.backend.utils.BoardServiceUtil;
 
 import java.util.*;
 
@@ -23,7 +22,6 @@ import java.util.*;
 @AllArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final BoardServiceUtil boardServiceUtil;
     private final StatusService statusService;
     private final UserService userService;
     private final ModelMapper modelMapper;
@@ -37,7 +35,6 @@ public class BoardService {
     public BoardDTO getBoardByUserAndId(String userId, String boardId) {
         User owner = userService.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        boardServiceUtil.verifyBoardExists(boardId);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
 
@@ -77,7 +74,6 @@ public class BoardService {
     }
 
     public BoardDTO updateBoardVisibility(String userId, String boardId, VisibilityDTO visibilityDTO) {
-        boardServiceUtil.verifyBoardExists(boardId);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
 
@@ -99,6 +95,14 @@ public class BoardService {
 
     private boolean isValidVisibility(Visibility visibility) {
         return visibility == Visibility.PRIVATE || visibility == Visibility.PUBLIC;
+    }
+
+    public BoardDTO getPublicBoardById(String boardId) {
+        Board board = boardRepository.findByIdAndVisibility(boardId, Visibility.PUBLIC)
+                .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
+
+        User owner = userService.getUserById(board.getOwnerId()).orElse(null);
+        return convertToBoardDTO(board, owner);
     }
 }
 
