@@ -1,24 +1,25 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { showAlert, showAlert2 } from '@/utils/toast'
+import { showAlert, showAlert2 } from '@/utils/toast.js'
 import { useStatusStore } from '@/stores/StatusStore' // Import your StatusStore
 
 const router = useRouter()
 const route = useRoute()
-const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const statusesStore = useStatusStore() // Initialize StatusStore
-const statuses = ref([])
+const statuses = ref([]) // Store statuses from the store
 const tasksCount = ref(0)
 const statusId = parseInt(route.params.id)
 const statusesname = ref('')
 const targetStatusId = ref(null)
-
-const boardId = route.params.id
+const {
+  params: { boardId }
+} = useRoute()
 
 onMounted(async () => {
-  await statusesStore.fetchStatuses() // Fetch statuses from the store
+  // Fetch statuses from the store
+  await statusesStore.fetchStatuses()
   statuses.value = statusesStore.statuses
 
   const status = statuses.value.find((status) => status.id === statusId)
@@ -27,7 +28,7 @@ onMounted(async () => {
   }
 
   // Count tasks in the current status
-  const Taskresponse = await fetch(`${BASE_URL}/v2/tasks`)
+  const Taskresponse = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`)
   const tasksData = await Taskresponse.json()
   const tasksInStatus = tasksData.filter((task) => task.status.id === statusId)
   tasksCount.value = tasksInStatus.length
@@ -35,38 +36,24 @@ onMounted(async () => {
 
 async function deleteStatus(statusId) {
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1]
-
     // Check if there are tasks in the current status
     if (tasksCount.value > 0) {
       if (!targetStatusId.value) {
-        console.error('Target status ID is required for transferring tasks.')
         showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
         return
       }
-      // Use the transferTasks from the store
+      // Call the transferTasks function from the store
       await statusesStore.transferTasks(statusId, targetStatusId.value)
     }
 
-    // Proceed to delete the status
-    const res = await fetch(`${BASE_URL}/v2/statuses/${statusId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
+    // Call the deleteStatus function from the store
+    await statusesStore.deleteStatus(statusId)
 
-    if (res.ok) {
-      console.log('Status deleted successfully')
-      statuses.value = statuses.value.filter((status) => status.id !== statusId)
-      router.push(`/boards/${boardId}/status`)
-      showAlert('The status has been deleted.', 'rgb(244 63 94)')
-    } else {
-      console.error('Failed to delete status:', res.statusText)
-      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
-    }
+    showAlert('The status has been deleted.', 'rgb(244 63 94)')
+    router.push(`/boards/${boardId}/status`)
   } catch (error) {
     console.error('Error:', error)
+    showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
   }
 }
 

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { showAlert, showAlert2 } from '@/utils/toast'
+import { showAlert, showAlert2 } from '@/utils/toast.js'
 import { useCurrentBoardStore } from '@/stores/BoardStore'
 import { useStatusStore } from '@/stores/StatusStore' // Import StatusStore
 
@@ -19,9 +19,9 @@ const originalStatus = ref({ name: '', description: '' })
 // Fetch status details using StatusStore
 async function fetchStatus() {
   try {
-    const status = await statusStore.fetchStatuses() // Fetch all statuses first
+    const status = await statusStore.fetchStatuses()
 
-    const fetchedStatus = status.find((s) => s.id === route.params.id) // Find the status by ID
+    const fetchedStatus = status.find((s) => s.id === route.params.id)
     if (!fetchedStatus) {
       throw new Error('Failed to fetch status')
     }
@@ -138,7 +138,7 @@ const checkMaxLength = (field, value) => {
           <button
             id="itbkk-button-cancel"
             type="button"
-            @click="() => router.push(`/board/${boardId.value}/status`)"
+            @click="() => router.push(`/boards/${boardId.value}/status`)"
             class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel

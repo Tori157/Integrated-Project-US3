@@ -3,7 +3,7 @@ import { reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
-import { showAlert, showAlert2 } from '@/utils/toast'
+import { showAlert, showAlert2 } from '@/utils/toast.js'
 import { useCurrentBoardStore } from '@/stores/BoardStore'
 
 const formData = reactive({

@@ -116,6 +116,7 @@ export const useStatusStore = defineStore('statusStore', () => {
       })
 
       if (response.ok) {
+        statuses.value = statuses.value.filter((status) => status.id !== id)
         const data = await response.json()
         const statusIndex = statuses.value.findIndex((status) => status.id === id)
         if (statusIndex !== -1) {

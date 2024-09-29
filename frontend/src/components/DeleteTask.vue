@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTaskStore } from '@/stores/TaskStore'
-import { showAlert } from '@/utils/toast'
+import { showAlert } from '@/utils/toast.js'
 import { useCurrentBoardStore } from '@/stores/BoardStore'
 const currentBoardStore = useCurrentBoardStore()
 const boardId = computed(() => currentBoardStore.currentBoardId)

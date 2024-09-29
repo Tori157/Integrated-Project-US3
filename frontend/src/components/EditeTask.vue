@@ -3,8 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
-import { showAlert } from '@/utils/toast'
-import { showAlert2 } from '@/utils/toast'
+import { showAlert, showAlert2 } from '@/utils/toast.js'
 import { useCurrentBoardStore } from '@/stores/BoardStore'
 
 const route = useRoute()

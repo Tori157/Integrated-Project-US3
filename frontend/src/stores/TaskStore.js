@@ -1,6 +1,7 @@
 // src/stores/TaskStore.js
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+
 import { useRouter } from 'vue-router' // import router
 import { useCurrentBoardStore } from '@/stores/BoardStore' // นำเข้า CurrentBoardStore
 import { getCookie } from '@/utils/cookie'
@@ -87,7 +88,9 @@ export const useTaskStore = defineStore('taskStore', () => {
         console.error('Error:', errorResponse)
       }
       if (response.status === 201) {
-        await fetchTasks() // Refresh tasks after adding
+        await fetchTasks()
+        // const addedTask = await response.json()
+        // addTask.value.push(addedTask)
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to add task:', response.statusText)
@@ -124,6 +127,8 @@ export const useTaskStore = defineStore('taskStore', () => {
 
       if (response.ok) {
         await fetchTasks() // Refresh tasks after updating
+        // const updateTask = await response.json()
+        // addTask.value.push(updateTask)
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to update task:', response.statusText)
@@ -156,6 +161,8 @@ export const useTaskStore = defineStore('taskStore', () => {
 
       if (response.ok) {
         await fetchTasks() // Refresh tasks after deletion
+        // const deleteTask = await response.json()
+        // addTask.value.push(deleteTask)
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to delete task:', response.statusText)

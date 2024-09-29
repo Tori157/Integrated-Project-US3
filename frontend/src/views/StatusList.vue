@@ -1,17 +1,42 @@
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { useRoute } from 'vue-router/dist/vue-router'
 import { useStatusStore } from '@/stores/StatusStore'
-import { useCurrentBoardStore } from '@/stores/BoardStore'
-// เรียกใช้ StatusStore
-const statusStore = useStatusStore()
+import { useCurrentBoardStore, useBoardStore } from '@/stores/BoardStore'
 
-// เรียกใช้ lifecycle hook เพื่อดึงข้อมูล
+const boardStore = useBoardStore()
+const statuses = ref([])
+const statusStore = useStatusStore()
+const currentBoardStore = useCurrentBoardStore()
+const name = ref('')
+const {
+  params: { boardId }
+} = useRoute()
+const boardName = computed(() => currentBoardStore.currentBoardName)
+
+const access_token = ref(null)
+
+const fetchStatuses = async () => {
+  try {
+    await statusStore.fetchStatuses(boardId)
+    statuses.value = statusStore.statuses
+  } catch (error) {
+    console.error('Error fetching statuses:', error)
+  }
+}
+
 onMounted(() => {
   statusStore.fetchStatuses()
 })
-const currentBoardStore = useCurrentBoardStore()
-const boardId = computed(() => currentBoardStore.currentBoardId)
-const boardName = computed(() => currentBoardStore.currentBoardName)
+onMounted(async () => {
+  const board = await boardStore.getBoardById(boardId)
+  currentBoardStore.setCurrentBoard(boardId, board?.name ?? '')
+  const accessToken = document.cookie.match(/access_token=([^;]*)/)
+  if (accessToken) {
+    access_token.value = accessToken[1]
+  }
+  await fetchStatuses()
+})
 </script>
 
 <template>
@@ -23,7 +48,7 @@ const boardName = computed(() => currentBoardStore.currentBoardName)
       >
         &lt; Status
       </button>
-      <h2 class="itbkk-fullname font-bold">Welcome, {{ boardName }}!</h2>
+      <h2 class="itbkk-fullname font-bold">Welcome, {{ name }}!</h2>
     </div>
 
     <div class="p-10 w-full">
@@ -85,9 +110,13 @@ const boardName = computed(() => currentBoardStore.currentBoardName)
                     id="itbkk-button-edit"
                     v-if="status.name !== 'No Status' && status.name !== 'Done'"
                     class="itbkk-button-edit"
-                    @click="$router.push({ name: 'status-editmodal', params: { id: status.id } })"
+                    @click="
+                      $router.push({ name: 'status-editmodal', params: { boardId, id: status.id } })
+                    "
                   >
-                    <router-link :to="{ name: 'status-editmodal', params: { id: status.id } }">
+                    <router-link
+                      :to="{ name: 'status-editmodal', params: { boardId, id: status.id } }"
+                    >
                       <img src="/image/ico/edit-3-svgrepo-com.svg" class="h-8 li-3 w-36 mt-3" />
                     </router-link>
                   </button>
@@ -95,9 +124,16 @@ const boardName = computed(() => currentBoardStore.currentBoardName)
                     id="itbkk-button-delete"
                     v-if="status.name !== 'No Status' && status.name !== 'Done'"
                     class="itbkk-button-delete"
-                    @click="$router.push({ name: 'status-deletemodal', params: { id: status.id } })"
+                    @click="
+                      $router.push({
+                        name: 'status-deletemodal',
+                        params: { boardId, id: status.id }
+                      })
+                    "
                   >
-                    <router-link :to="{ name: 'status-deletemodal', params: { id: status.id } }">
+                    <router-link
+                      :to="{ name: 'status-deletemodal', params: { boardId, id: status.id } }"
+                    >
                       <img src="/image/ico/delete-svgrepo-com.svg" class="h-7 w-36 mt-3.5" />
                     </router-link>
                   </button>
