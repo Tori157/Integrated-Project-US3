@@ -1,107 +1,69 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { showAlert, showAlert2 } from '@/utils/toast.js'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
+import { useStatusStore } from '@/stores/StatusStore' // Import StatusStore
 
-const statuses = ref({ name: '', description: '' })
-
-const BASE_URL = import.meta.env.VITE_BASE_URL
 const route = useRoute()
 const router = useRouter()
 
-// Fetch status details
+// Store setup
+const currentBoardStore = useCurrentBoardStore()
+const statusStore = useStatusStore() // Initialize StatusStore
+const boardId = computed(() => currentBoardStore.currentBoardId)
+
+const statuses = ref({ name: '', description: '' })
+const originalStatus = ref({ name: '', description: '' })
+
+// Fetch status details using StatusStore
 async function fetchStatus() {
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`, {
-        headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-  })
-    if (!response.ok) {
+    const status = await statusStore.fetchStatuses()
+
+    const fetchedStatus = status.find((s) => s.id === route.params.id)
+    if (!fetchedStatus) {
       throw new Error('Failed to fetch status')
     }
-    const data = await response.json()
 
-    if (data.name === 'No Status' || data.name === 'Done') {
+    // Validate status name
+    if (fetchedStatus.name === 'No Status' || fetchedStatus.name === 'Done') {
       console.error('Cannot edit status named No Status.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-      router.push('/status')
+      router.push(`/boards/${boardId.value}/status`)
       return
     }
-    statuses.value = data
-    originalStatus.value = { ...data }
+
+    // Assign the status details to form
+    statuses.value = fetchedStatus
+    originalStatus.value = { ...fetchedStatus }
   } catch (error) {
     console.error('Error fetching status:', error)
-    router.push('/editstatuserror')
+    // router.push('/editstatuserror')
   }
 }
 
-// Save changes to task
+// Save changes using StatusStore
 async function saveChanges() {
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    statuses.value.name = statuses.value.name ? statuses.value.name.trim() : ''
-    statuses.value.description = statuses.value.description ? statuses.value.description.trim() : ''
+    statuses.value.name = statuses.value.name.trim()
+    statuses.value.description = statuses.value.description.trim()
 
-    const response = await fetch(BASE_URL + `/v2/statuses/${route.params.id}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(statuses.value)
-    })
+    await statusStore.updateStatus(route.params.id, statuses.value) // Update the status
 
-    if (response.ok) {
-      router.push('/status')
-      console.log('status updated successfully')
-      console.log(statuses.value)
-      // Alert
-      showAlert('The status has been update.', 'rgb(34 197 94)')
-    }
-    if (response.status === 404) {
-      console.log('The status does not exist.')
-      console.error('Failed to update status')
-
-      // alert
-      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
-    }
-    if (response.status === 500) {
-      console.error('Failed to update status')
-      router.push('/status')
-      showAlert('Status name must be uniques, please choose another name.', 'rgb(251 146 60)')
-    }
+    router.push(`/boards/${boardId.value}/status`)
+    showAlert('The status has been updated.', 'rgb(34 197 94)')
   } catch (error) {
     console.error('Failed to update Status:', error)
+    if (error.response?.status === 500) {
+      showAlert('Status name must be unique, please choose another name.', 'rgb(251 146 60)')
+    }
   }
-}
-
-// Show alert message
-function showAlert(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-    window.location.reload()
-  }, 2000)
 }
 
 onMounted(fetchStatus)
 
-const originalStatus = ref({ name: '', description: '' })
 const isModified = computed(() => {
-  if (!statuses.value) return false // If status is not defined, consider it not modified
   return (
     statuses.value.name !== originalStatus.value.name ||
     statuses.value.description !== originalStatus.value.description
@@ -118,32 +80,6 @@ const checkMaxLength = (field, value) => {
     showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
   }
 }
-
-function showAlert2(message, backgroundColor) {
-  const existingAlert = document.querySelector('.alert-success')
-  if (existingAlert) {
-    existingAlert.parentElement.removeChild(existingAlert)
-  }
-
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    if (toastDiv.parentElement) {
-      toastDiv.parentElement.removeChild(toastDiv)
-    }
-  }, 2000)
-}
 </script>
 
 <template>
@@ -155,9 +91,9 @@ function showAlert2(message, backgroundColor) {
 
       <form @submit.prevent="">
         <div class="itbkk-item mb-6">
-          <label for="status-name" class="text-rose-400 block text-sm font-medium text-gray-700"
-            >Name</label
-          >
+          <label for="status-name" class="text-rose-400 block text-sm font-medium text-gray-700">
+            Name
+          </label>
           <input
             type="text"
             id="itbkk-status-name"
@@ -171,8 +107,9 @@ function showAlert2(message, backgroundColor) {
           <label
             for="status-description"
             class="text-rose-400 block text-sm font-medium text-gray-700"
-            >Description</label
           >
+            Description
+          </label>
           <textarea
             id="itbkk-status-description"
             v-model="statuses.description"
@@ -188,12 +125,12 @@ function showAlert2(message, backgroundColor) {
             :disabled="!isModified || statuses.name.trim().length === 0"
             @click="saveChanges"
             class="itbkk-button-edit btn text-white border-white mr-6 bg-green-500 hover:bg-green-600 border-4 hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
-            :class="
-              (!isModified || statuses.name.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
-              !isModified || statuses.name.trim().length === 0 ? 'text-white' : '',
-              !isModified || statuses.name.trim().length === 0 ? 'border-white' : '',
-              !isModified || statuses.name.trim().length === 0 ? 'disabled' : '')
-            "
+            :class="{
+              'bg-gray-400': !isModified || statuses.name.trim().length === 0,
+              'text-white': !isModified || statuses.name.trim().length === 0,
+              'border-white': !isModified || statuses.name.trim().length === 0,
+              disabled: !isModified || statuses.name.trim().length === 0
+            }"
           >
             Save
           </button>
@@ -201,7 +138,7 @@ function showAlert2(message, backgroundColor) {
           <button
             id="itbkk-button-cancel"
             type="button"
-            @click="() => router.push('/status')"
+            @click="() => router.push(`/boards/${boardId.value}/status`)"
             class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel

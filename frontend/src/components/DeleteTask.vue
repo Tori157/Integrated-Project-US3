@@ -1,108 +1,67 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useTaskStore } from '@/stores/TaskStore'
+import { showAlert } from '@/utils/toast.js'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
+const currentBoardStore = useCurrentBoardStore()
+const boardId = computed(() => currentBoardStore.currentBoardId)
 
 const router = useRouter()
 const route = useRoute()
-const BASE_URL = import.meta.env.VITE_BASE_URL
-const tasks = ref([])
+const taskStore = useTaskStore()
+
 const taskId = parseInt(route.params.id)
 const taskTitle = ref('')
 
+// Fetch tasks on component mount
 onMounted(async () => {
-  // try {
-  //   const response = await fetch(BASE_URL + `/v2/tasks`)
-  //   const data = await response.json()
-  //   tasks.value = data
+  await taskStore.fetchTasks() // Ensure tasks are fetched first
 
-  //   const task = tasks.value.find((task) => task.id === parseInt(taskId))
-  //   if (task) {
-  //     taskTitle.value = task.title
-  //   }
-  // } catch (error) {
-  //   console.error('Error fetching tasks:', error)
-  // }
-  try {
-    const response = await fetch(BASE_URL + `/v2/tasks`)
-    if (response.ok) {
-      const data = await response.json()
-      tasks.value = data
-
-      const task = tasks.value.find((task) => task.id === parseInt(taskId))
-      if (task) {
-        taskTitle.value = task.title
-      }
-    } else if (response.status === 401) {
-      router.push('/login')
+  if (taskStore.tasks.value) {
+    const task = taskStore.tasks.value.find((task) => task.id === taskId)
+    if (task) {
+      taskTitle.value = task.title
     } else {
-      console.error('Error fetching tasks:', response.statusText)
+      console.error('Task not found')
     }
-  } catch (error) {
-    console.error('Error fetching tasks:', error)
+  } else {
+    console.error('Tasks are not loaded yet')
   }
 })
 
-async function deleteTask(taskId) {
-  try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const res = await fetch(BASE_URL + `/v2/tasks/${taskId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    })
-
-    if (res.status === 200) {
-      console.log('Task deleted successfully')
-      tasks.value = tasks.value.filter((task) => task.id !== taskId)
-      router.push('/task')
-      // alert
-      showAlert('The task has been deleted.', 'rgb(244 63 94)')
-    }
-    if (res.status === 404) {
-      router.push('/task')
-      console.log('The task does not exist.')
-      console.error('Failed to delete task')
-
-      // Alert
-      showAlert('An error has occurred, the task does not exist.', 'rgb(251 146 60)')
-    }
-  } catch (error) {
-    console.error('Error:', error)
-  }
-}
-// Show alert message
-function showAlert(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-    window.location.reload()
-  }, 2000)
-}
+const taskIndex = computed(() => {
+  if (!taskStore.tasks.value) return null
+  return findIndexById(taskId) + 1 // Add 1 for 1-based indexing
+})
 
 function findIndexById(taskId) {
-  for (let i = 0; i < tasks.value.length; i++) {
-    if (tasks.value[i].id === taskId) {
+  if (!taskStore.tasks.value) {
+    return null // Return null if tasks are not loaded yet
+  }
+
+  for (let i = 0; i < taskStore.tasks.value.length; i++) {
+    if (taskStore.tasks.value[i].id === taskId) {
       return i
     }
   }
-  return null // หากไม่พบ task ที่มีไอดีที่ระบุ
+  return null // Return null if no task with the specified ID is found
+}
+
+async function deleteTask(taskId) {
+  try {
+    await taskStore.deleteTask(taskId)
+    console.log('Task deleted successfully')
+    router.push(`/boards/${boardId.value}/tasks`)
+    showAlert('The task has been deleted.', 'rgb(244 63 94)')
+  } catch (error) {
+    console.error('Error deleting task:', error)
+    showAlert('An error occurred while deleting the task.', 'rgb(251 146 60)')
+  }
 }
 
 function cancel() {
-  router.push('/task')
+  router.push(`/boards/${boardId.value}/tasks`)
 }
 </script>
 
@@ -118,7 +77,7 @@ function cancel() {
         <h3
           class="itbkk-message text-xl font-semi text-gray-500 mt-5 mb-6 whitespace-normal break-words"
         >
-          "Do you want to delete the task number {{ findIndexById(taskId) + 1 }} - {{ taskTitle }}"?
+          "Do you want to delete the task number {{ taskIndex }} - {{ taskTitle }}"?
         </h3>
 
         <button

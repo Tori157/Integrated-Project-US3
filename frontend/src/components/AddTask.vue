@@ -1,107 +1,58 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTaskStore } from '@/stores/TaskStore'
+import { useStatusStore } from '@/stores/StatusStore'
+import { showAlert, showAlert2 } from '@/utils/toast.js'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 
 const formData = reactive({
   title: '',
   description: '',
   assignees: '',
-  statusId: null
+  status: null
 })
 
 const router = useRouter()
-const BASE_URL = import.meta.env.VITE_BASE_URL
+const taskStore = useTaskStore()
+const statusStore = useStatusStore()
+const currentBoardStore = useCurrentBoardStore()
+const boardId = computed(() => currentBoardStore.currentBoardId)
 
 onMounted(async () => {
-  await fetchStatuses()
+  await statusStore.fetchStatuses(boardId.value)
 })
-const statuses = ref([])
-
-const fetchStatuses = async () => {
-  try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(BASE_URL + '/v2/statuses', {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
-    })
-    if (response.ok) {
-      const data = await response.json()
-      statuses.value = data
-    } else {
-      console.error('Failed to fetch statuses:', response.statusText)
-    }
-  } catch (error) {
-    console.error('Error fetching statuses:', error)
-  }
-}
-
-console.log(statuses)
-fetchStatuses()
 
 const saveTask = async () => {
-  if (!formData.statusId) {
-    formData.statusId = 1
+  if (!formData.status || !statusStore.statuses.some((status) => status.id === formData.status)) {
+    console.error('Invalid status ID')
+    showAlert('Invalid status ID. Please select a valid status.', 'rgb(251 146 60)')
+    return
   }
+
   const taskData = {
     title: formData.title.trim(),
     description: formData.description.trim(),
     assignees: formData.assignees.trim(),
-    statusId: formData.statusId
+    status: formData.status
   }
-  // if (formData.selectedStatusId && formData.selectedStatusId.length > 0) {
-  //   taskData.status.id = formData.selectedStatusId
-  // } else {
-  //   taskData.status.id = 1
-  // }
+  console.log(taskData)
 
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(BASE_URL + `/v2/tasks`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(taskData)
-    })
+    const response = await taskStore.addTask(taskData)
     if (response.status === 201) {
-      router.push('/task')
-      // console.log(taskData)
-      // console.log(formData.statusId)
-      // Alert
       showAlert('The task has been successfully added.', 'rgb(34 197 94)')
+      router.push(`/boards/${boardId.value}/tasks`)
     } else {
-      router.push('/task')
+      showAlert("An error has occurred, the task can't be added.", 'rgb(251 146 60)')
       console.error('Failed to save task:', response.statusText)
-      showAlert('An error has occurred, the task Cant Add.', 'rgb(251 146 60)')
-      console.log(taskData)
-      console.log(formData.statusId)
+      router.push(`/boards/${boardId.value}/tasks`)
     }
   } catch (error) {
     console.error('Error saving task:', error)
   }
 }
 
-function showAlert(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-    window.location.reload()
-  }, 2000)
-}
 const maxLengths = {
   title: 100,
   description: 500,
@@ -112,32 +63,6 @@ const checkMaxLength = (field) => {
   if (formData[field].length >= maxLengths[field]) {
     showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
   }
-}
-
-function showAlert2(message, backgroundColor) {
-  const existingAlert = document.querySelector('.alert-success')
-  if (existingAlert) {
-    existingAlert.parentElement.removeChild(existingAlert)
-  }
-
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    if (toastDiv.parentElement) {
-      toastDiv.parentElement.removeChild(toastDiv)
-    }
-  }, 2000)
 }
 </script>
 
@@ -193,10 +118,11 @@ function showAlert2(message, backgroundColor) {
           >
           <select
             id="itbkk-status"
-            v-model="formData.statusId"
+            v-model="formData.status"
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
-            <option v-for="status in statuses" :value="status.id" :key="status.id">
+            <option value="" disabled>Select a status</option>
+            <option v-for="status in statusStore.statuses" :value="status.id" :key="status.id">
               {{ status.name }}
             </option>
           </select>
@@ -206,30 +132,15 @@ function showAlert2(message, backgroundColor) {
             id="itbkk-button-confirm"
             type="submit"
             :disabled="formData.title.trim().length === 0"
-            @click="toggleModal"
-            class="itbkk-button-confirm"
-            :class="[
-              'border-4',
-              'border-white',
-              'rounded-3xl',
-              'mx-5',
-              'p-8',
-              'px-7',
-              'py-2',
-              'text-base',
-              'text-white',
-              'font-semibold',
-              'text-center',
-              formData.title.trim().length === 0 ? 'bg-gray-400' : 'bg-green-400',
-              formData.title.trim().length === 0 ? 'disabled' : ''
-            ]"
+            class="itbkk-button-confirm border-4 border-white rounded-3xl mx-5 p-8 px-7 py-2 text-base text-white font-semibold text-center"
+            :class="formData.title.trim().length === 0 ? 'bg-gray-400 disabled' : 'bg-green-400'"
           >
             Save
           </button>
           <button
             id="itbkk-button-cancel"
             type="button"
-            @click="() => router.push('/task')"
+            @click="() => router.push(`/boards/${boardId.value}/tasks`)"
             class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel
