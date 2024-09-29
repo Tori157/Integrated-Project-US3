@@ -34,7 +34,7 @@ public class BoardService {
     public BoardDTO getBoardByUserAndId(String boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
-        User owner = userService.getUserById(board.getId())
+        User owner = userService.getUserById(board.getOwnerId())
                 .orElse(null);
         return convertToBoardDTO(board, owner);
     }
