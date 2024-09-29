@@ -1,7 +1,7 @@
 package sit.int221.backend.controllers;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,14 +11,17 @@ import sit.int221.backend.dtos.BoardDTO;
 import sit.int221.backend.dtos.VisibilityDTO;
 import sit.int221.backend.services.BoardService;
 import sit.int221.backend.user_account.User;
+import sit.int221.backend.utils.BoardAccessVerifier;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/v3/boards")
+@AllArgsConstructor
 public class BoardController {
-    @Autowired
+
     private BoardService boardService;
+    private BoardAccessVerifier boardAccessVerifier;
 
     @GetMapping
     public List<BoardDTO> getAllBoardsByUser(@AuthenticationPrincipal User user) {
@@ -26,11 +29,9 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public BoardDTO getBoardId(@PathVariable String id, @AuthenticationPrincipal User user) {
-        if (user == null) {
-            return boardService.getPublicBoardById(id);
-        }
-        return boardService.getBoardByUserAndId(user.getOid(), id);
+    public BoardDTO getBoardId(@PathVariable String id) {
+        boardAccessVerifier.verifyUserBoardAccess(id, false);
+        return boardService.getBoardByUserAndId(id);
     }
 
     @PostMapping
@@ -42,6 +43,7 @@ public class BoardController {
     public ResponseEntity<BoardDTO> updateBoardVisibility(@PathVariable("id") String boardId,
                                                           @AuthenticationPrincipal User user,
                                                           @RequestBody VisibilityDTO visibilityDTO) {
+        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         BoardDTO updatedBoard = boardService.updateBoardVisibility(user.getOid(), boardId, visibilityDTO);
         return ResponseEntity.ok(updatedBoard);
     }

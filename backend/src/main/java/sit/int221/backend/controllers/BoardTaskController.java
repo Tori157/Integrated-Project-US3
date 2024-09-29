@@ -11,6 +11,7 @@ import sit.int221.backend.dtos.TaskDTO;
 import sit.int221.backend.exceptions.DuplicatedStatusException;
 import sit.int221.backend.project_management.Task;
 import sit.int221.backend.services.BoardTaskService;
+import sit.int221.backend.utils.BoardAccessVerifier;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class BoardTaskController {
     private BoardTaskService boardTaskService;
+    private BoardAccessVerifier boardAccessVerifier;
 
     @GetMapping
     public ResponseEntity<List<AllTasksDTO>> getAllTasksForBoard(
@@ -29,27 +31,32 @@ public class BoardTaskController {
             @RequestParam(defaultValue = "createdOn") String[] sortBy,
             @RequestParam(defaultValue = "ASC") String[] direction,
             @RequestParam Map<String, String> allParameters) {
+        boardAccessVerifier.verifyUserBoardAccess(boardId, false);
         validateGetAllTasksParameters(allParameters);
         return ResponseEntity.ok(boardTaskService.sortTasksByStatusName(boardId, filterStatuses, sortBy, direction));
     }
 
     @GetMapping("/{taskId}")
     public ResponseEntity<Task> getTaskById(@PathVariable Integer taskId, @PathVariable String boardId) {
+        boardAccessVerifier.verifyUserBoardAccess(boardId, false);
         return ResponseEntity.ok(boardTaskService.getTaskById(taskId, boardId));
     }
 
     @PostMapping
     public ResponseEntity<TaskDTO> createTask(@PathVariable String boardId, @Valid @RequestBody AddEditTaskDTO newTask) {
+        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         return ResponseEntity.status(HttpStatus.CREATED).body(boardTaskService.createTask(boardId, newTask));
     }
 
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskDTO> updateTaskById(@PathVariable Integer taskId, @PathVariable String boardId, @Valid @RequestBody AddEditTaskDTO taskDTO) {
+        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         return ResponseEntity.ok(boardTaskService.updateTaskById(taskId, boardId, taskDTO));
     }
 
     @DeleteMapping("/{taskId}")
     public ResponseEntity<AllTasksDTO> removeTaskById(@PathVariable Integer taskId, @PathVariable String boardId) {
+        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         return ResponseEntity.ok(boardTaskService.removeTaskById(taskId, boardId));
     }
 

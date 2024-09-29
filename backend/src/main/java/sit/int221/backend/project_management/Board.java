@@ -29,5 +29,4 @@ public class Board {
     @ColumnDefault("'PRIVATE'")
     @Column(name = "visibility")
     private Visibility visibility = Visibility.PRIVATE;
-
 }

@@ -76,9 +76,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    @ExceptionHandler(AuthenticationException.class)
+    @ExceptionHandler({AuthenticationException.class, UserNotAuthenticatedException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException exception , WebRequest request){
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(Exception exception , WebRequest request){
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.UNAUTHORIZED.value(),
                 "Username or Password is incorrect.",

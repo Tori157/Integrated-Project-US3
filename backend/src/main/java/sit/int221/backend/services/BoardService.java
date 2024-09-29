@@ -9,7 +9,6 @@ import sit.int221.backend.dtos.AddEditBoardDTO;
 import sit.int221.backend.dtos.BoardDTO;
 import sit.int221.backend.dtos.BoardOwnerDTO;
 import sit.int221.backend.dtos.VisibilityDTO;
-import sit.int221.backend.exceptions.BoardAccessDeniedException;
 import sit.int221.backend.exceptions.NotFoundException;
 import sit.int221.backend.project_management.Board;
 import sit.int221.backend.project_management.BoardRepository;
@@ -32,16 +31,11 @@ public class BoardService {
         return allBoards.stream().map(board -> convertToBoardDTO(board, owner)).toList();
     }
 
-    public BoardDTO getBoardByUserAndId(String userId, String boardId) {
-        User owner = userService.getUserById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+    public BoardDTO getBoardByUserAndId(String boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
-
-        if (!board.getOwnerId().equals(userId) && board.getVisibility() != Visibility.PUBLIC) {
-            throw new BoardAccessDeniedException("User does not have permission to view this board");
-        }
-
+        User owner = userService.getUserById(board.getId())
+                .orElse(null);
         return convertToBoardDTO(board, owner);
     }
 
@@ -63,9 +57,9 @@ public class BoardService {
     }
 
     public BoardDTO createBoard(AddEditBoardDTO boardDTO, String userId) {
+        Board newBoard = modelMapper.map(boardDTO, Board.class);
         User currentUser = userService.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        Board newBoard = modelMapper.map(boardDTO, Board.class);
         newBoard.setId(NanoId.generate(10));
         newBoard.setOwnerId(userId);
         Board savedBoard = boardRepository.save(newBoard);
@@ -76,10 +70,6 @@ public class BoardService {
     public BoardDTO updateBoardVisibility(String userId, String boardId, VisibilityDTO visibilityDTO) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
-
-        if (!board.getOwnerId().equals(userId)) {
-            throw new BoardAccessDeniedException("User does not have permission to view this board");
-        }
 
         if (visibilityDTO == null || !isValidVisibility(visibilityDTO.getVisibility())) {
             throw new HttpMessageNotReadableException("Visibility must be either PRIVATE or PUBLIC");
@@ -100,10 +90,6 @@ public class BoardService {
     public BoardDTO getPublicBoardById(String boardId) {
         Board board = getBoardById(boardId)
                 .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
-
-        if (board.getVisibility() != Visibility.PUBLIC) {
-               throw  new BoardAccessDeniedException("User does not have permission to view this board");
-        }
 
         User owner = userService.getUserById(board.getOwnerId()).orElse(null);
         return convertToBoardDTO(board, owner);
