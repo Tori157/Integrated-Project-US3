@@ -32,7 +32,8 @@ import java.util.Set;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String HEADER_NAME = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final Set<String> ALLOWED_URIS = Set.of("/login", "/v3/boards/.*");
+    private static final String PUBLIC_ENDPOINT = "/login";
+    private static final Map<String, String> NON_AUTHENTICATED_REQUESTS = Map.of("/v3/boards/.*", "GET");
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -41,14 +42,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String jwt = getJwtFromRequest(request);
+        boolean isAuthRequired = isAuthenticationRequired(request.getRequestURI(), request.getMethod());
 
-        if (isUriAllowed(request.getRequestURI()) && jwt == null) {
-            System.out.println("Allowed URI: " + request.getRequestURI());
+        if (isPublicEndpoint(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (jwt == null) {
+        if (isAuthRequired && jwt == null) {
             handleUnauthorized(
                     response,
                     "Authorization header is missing or invalid.",
@@ -56,25 +57,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-
         String username;
 
         try {
             username = jwtUtil.extractUsername(jwt);
-        } catch (JwtException e) {
-            handleJwtException(response, e, request.getRequestURI());
-            return;
-        }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            authenticateUser(request, response, jwt, username);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                authenticateUser(request, response, jwt, username);
+            }
+
+        } catch (Exception e) {
+            if (isAuthRequired) {;
+                handleUnauthorized(response, e.getMessage(), request.getRequestURI());
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private boolean isUriAllowed(String uri) {
-        return ALLOWED_URIS.stream().anyMatch(uri::matches);
+    private boolean isPublicEndpoint(String uri) {
+        return uri.equals(PUBLIC_ENDPOINT);
+    }
+
+    private boolean isAuthenticationRequired(String uri, String method) {
+        return NON_AUTHENTICATED_REQUESTS.entrySet().stream()
+                .noneMatch(entry -> uri.matches(entry.getKey()) && entry.getValue().equals(method));
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
@@ -86,7 +94,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void handleJwtException(
             HttpServletResponse response,
-            JwtException e,
+            Exception e,
             String instance)
             throws IOException {
         Map<Class<? extends JwtException>, String> errorMessages = Map.of(
@@ -106,6 +114,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username)
             throws IOException {
         User userDetails = (User) userDetailsService.loadUserByUsername(username);
+        if (userDetails == null) {
+            handleUnauthorized(response, "User not found.", request.getRequestURI());
+            return;
+        }
+
         if (!jwtUtil.isTokenValid(jwt, userDetails)) {
             handleUnauthorized(response, "Invalid or expired token.", request.getRequestURI());
             return;

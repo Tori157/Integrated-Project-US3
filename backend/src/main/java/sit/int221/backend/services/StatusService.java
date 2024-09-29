@@ -91,7 +91,6 @@ public class StatusService {
         if (statusRepository.findStatusWithNameNoStatus(newStatus.getName())) {
             throw new DuplicatedStatusException("The 'No Status' must be unique");
         }
-        System.out.println(statusRepository.findStatusWithNameNoStatus(newStatus.getName()));
         Status status = modelMapper.map(newStatus, Status.class);
         status.setId(id);
         Status updatedStatus = statusRepository.save(status);

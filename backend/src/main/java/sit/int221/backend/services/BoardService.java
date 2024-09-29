@@ -98,8 +98,12 @@ public class BoardService {
     }
 
     public BoardDTO getPublicBoardById(String boardId) {
-        Board board = boardRepository.findByIdAndVisibility(boardId, Visibility.PUBLIC)
+        Board board = getBoardById(boardId)
                 .orElseThrow(() -> new NotFoundException("Board with ID '" + boardId + "' not found"));
+
+        if (board.getVisibility() != Visibility.PUBLIC) {
+               throw  new BoardAccessDeniedException("User does not have permission to view this board");
+        }
 
         User owner = userService.getUserById(board.getOwnerId()).orElse(null);
         return convertToBoardDTO(board, owner);

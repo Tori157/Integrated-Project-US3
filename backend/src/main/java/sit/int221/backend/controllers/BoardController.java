@@ -27,7 +27,6 @@ public class BoardController {
 
     @GetMapping("/{id}")
     public BoardDTO getBoardId(@PathVariable String id, @AuthenticationPrincipal User user) {
-        System.out.println("User: " + user);
         if (user == null) {
             return boardService.getPublicBoardById(id);
         }
