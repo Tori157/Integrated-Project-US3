@@ -59,7 +59,9 @@ export const useBoardStore = defineStore('boardStore', () => {
   const addBoard = async (newBoard) => {
     try {
       const accessTokenMatch = document.cookie.match(/access_token=([^;]*)/)
+
       if (!accessTokenMatch) {
+        router.push('/login')
         throw new Error('Access token not found')
       }
       const accessToken = accessTokenMatch[1]
@@ -72,9 +74,13 @@ export const useBoardStore = defineStore('boardStore', () => {
         body: JSON.stringify(newBoard)
       })
       if (response.status === 201) {
+        const createdBoard = await response.json()
         await fetchBoards()
+        const currentBoardStore = useCurrentBoardStore()
+        currentBoardStore.setCurrentBoard(createdBoard.id, createdBoard.name)
+        router.push({ name: 'tasks', params: { boardId: createdBoard.id } })
       } else if (response.status === 401) {
-        router.push('/login') // Redirect to login page on 401
+        router.push('/login')
       } else {
         console.error('Failed to add board:', response.statusText)
       }
@@ -129,7 +135,7 @@ export const useBoardStore = defineStore('boardStore', () => {
       if (response.ok) {
         await fetchBoards()
       } else if (response.status === 401) {
-        router.push('/login') // Redirect to login page on 401
+        router.push('/login')
       } else {
         console.error('Failed to update board:', response.statusText)
       }
@@ -138,7 +144,6 @@ export const useBoardStore = defineStore('boardStore', () => {
     }
   }
 
-  // Delete a board by ID
   const deleteBoard = async (boardId) => {
     try {
       const accessTokenMatch = document.cookie.match(/access_token=([^;]*)/)

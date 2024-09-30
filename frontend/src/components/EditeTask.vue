@@ -37,15 +37,12 @@ async function fetchTask() {
     }
     tasks.value = { ...fetchedTask }
     originalTasks.value = { ...fetchedTask }
-    console.log(fetchedTask)
-    console.log(tasks.value.description)
 
     getTimezone()
   } catch (error) {
     console.error('Error fetching task:', error)
     router.push('/editerror')
   }
-  console.log(tasks)
 }
 
 // Save changes to task using the store's update method
@@ -58,8 +55,7 @@ async function saveChanges() {
       assignees: tasks.value.assignees ? tasks.value.assignees.trim() : '',
       status: tasks.value.status.id
     }
-    console.log(tasks.value.status.id)
-    await taskStore.updateTask(updatedTask)
+    taskStore.updateTask(updatedTask)
 
     showAlert('The task has been updated', 'rgb(34 197 94)')
     router.push(`/boards/${boardId.value}/tasks`)

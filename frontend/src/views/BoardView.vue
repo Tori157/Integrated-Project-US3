@@ -4,7 +4,7 @@ import { useJwt } from '@vueuse/integrations/useJwt'
 import { useBoardStore } from '@/stores/BoardStore'
 import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router' // นำเข้า useRoute ด้วย
 import { useCurrentBoardStore } from '@/stores/BoardStore'
 import BoardModal from '@/components/BoardModal.vue'
 
@@ -14,24 +14,12 @@ const boardStore = useBoardStore()
 const taskStore = useTaskStore()
 const StatusStore = useStatusStore()
 const router = useRouter()
+const route = useRoute()
 const dropdownIndex = ref(null)
 const currentBoardStore = useCurrentBoardStore()
 const toggleDropdown = (index) => {
   dropdownIndex.value = dropdownIndex.value === index ? null : index
 }
-
-// const manageStatus = (boardId) => {
-//   console.log(`Manage status for board ${boardId}`)
-// }
-
-// const deleteBoard = async (boardId) => {
-//   await boardStore.deleteBoard(boardId)
-//   console.log(`Board ${boardId} deleted`)
-// }
-
-// const openBoard = (boardId) => {
-//   console.log(`Opening board ${boardId}`)
-// }
 
 const modal = ref(null)
 
@@ -46,15 +34,12 @@ const handleModalSubmit = async (boardData) => {
     if (boardData.id) {
       // Editing existing board
       await boardStore.updateBoard(boardData)
-      console.log(`Board "${boardData.name}" updated successfully.`)
     } else {
       // Creating new board
       await boardStore.addBoard(boardData)
-      console.log(`Board "${boardData.name}" created successfully.`)
     }
   } catch (error) {
     console.error('Error processing board:', error)
-    alert('An error occurred while processing your request.')
   }
 }
 
@@ -69,7 +54,20 @@ onMounted(async () => {
     name.value = payload.value.name
   }
 
-  await boardStore.fetchBoards()
+  await boardStore.fetchBoards() // Fetch existing boards
+
+  // ตรวจสอบว่าเส้นทางปัจจุบันคือ /login หรือไม่ โดยใช้ชื่อเส้นทาง
+  if (route.name === 'board') {
+    // เปลี่ยนเป็น 'login'
+    if (boardStore.boards.length === 0) {
+      // เปิด modal สำหรับสร้างบอร์ดใหม่
+    } else {
+      // Redirect ไปยังบอร์ดแรก
+      await openBoard(boardStore.boards[0])
+    }
+  } else {
+    // ไม่ทำการ redirect หรือเปิด modal อัตโนมัติ
+  }
 })
 
 const openBoard = async (board) => {

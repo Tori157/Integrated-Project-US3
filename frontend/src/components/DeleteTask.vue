@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useTaskStore } from '@/stores/TaskStore'
 import { showAlert } from '@/utils/toast.js'
 import { useCurrentBoardStore } from '@/stores/BoardStore'
+
 const currentBoardStore = useCurrentBoardStore()
 const boardId = computed(() => currentBoardStore.currentBoardId)
 
@@ -13,26 +14,24 @@ const taskStore = useTaskStore()
 
 const taskId = parseInt(route.params.id)
 const taskTitle = ref('')
+const taskIndex = ref(null)
 
 // Fetch tasks on component mount
 onMounted(async () => {
-  await taskStore.fetchTasks() // Ensure tasks are fetched first
+  await taskStore.fetchTasks()
 
   if (taskStore.tasks.value) {
     const task = taskStore.tasks.value.find((task) => task.id === taskId)
+
     if (task) {
       taskTitle.value = task.title
+      taskIndex.value = findIndexById(taskId) + 1 // Set taskIndex here
     } else {
       console.error('Task not found')
     }
   } else {
     console.error('Tasks are not loaded yet')
   }
-})
-
-const taskIndex = computed(() => {
-  if (!taskStore.tasks.value) return null
-  return findIndexById(taskId) + 1 // Add 1 for 1-based indexing
 })
 
 function findIndexById(taskId) {
@@ -51,7 +50,6 @@ function findIndexById(taskId) {
 async function deleteTask(taskId) {
   try {
     await taskStore.deleteTask(taskId)
-    console.log('Task deleted successfully')
     router.push(`/boards/${boardId.value}/tasks`)
     showAlert('The task has been deleted.', 'rgb(244 63 94)')
   } catch (error) {

@@ -24,10 +24,15 @@ onMounted(async () => {
 })
 
 const saveTask = async () => {
-  if (!formData.status || !statusStore.statuses.some((status) => status.id === formData.status)) {
-    console.error('Invalid status ID')
-    showAlert('Invalid status ID. Please select a valid status.', 'rgb(251 146 60)')
-    return
+  if (!formData.status) {
+    const noStatus = statusStore.statuses.find((status) => status.name === 'No Status')
+    if (noStatus) {
+      formData.status = noStatus.id
+    } else {
+      console.error('No Status ID not found')
+      showAlert('No Status ID not found. Please select a valid status.', 'rgb(251 146 60)')
+      return
+    }
   }
 
   const taskData = {
@@ -36,7 +41,6 @@ const saveTask = async () => {
     assignees: formData.assignees.trim(),
     status: formData.status
   }
-  console.log(taskData)
 
   try {
     const response = await taskStore.addTask(taskData)
@@ -67,10 +71,8 @@ const checkMaxLength = (field) => {
 </script>
 
 <template>
-  <div
-    class="itbkk-modal-task fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
-  >
-    <div class="bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
+  <div class="inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div class="itbkk-modal-task fixed bg-blue-100 rounded-lg p-8 max-w-3xl w-full">
       <h2 class="text-rose-400 text-xl font-bold mb-2 text-center text-20 text-black">Add Task</h2>
 
       <form @submit.prevent="saveTask">
@@ -83,7 +85,7 @@ const checkMaxLength = (field) => {
             id="itbkk-title"
             v-model="formData.title"
             @input="checkMaxLength('title')"
-            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="itbkk-title bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             maxlength="100"
           />
         </div>
@@ -95,7 +97,7 @@ const checkMaxLength = (field) => {
             id="itbkk-description"
             v-model="formData.description"
             @input="checkMaxLength('description')"
-            class="bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="itbkk-description bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             maxlength="500"
           ></textarea>
         </div>
@@ -108,7 +110,7 @@ const checkMaxLength = (field) => {
             id="itbkk-assignees"
             v-model="formData.assignees"
             @input="checkMaxLength('assignees')"
-            class="bg-white text-blue-600 mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="itbkk-assignees bg-white text-blue-600 mt-1 h-9 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             maxlength="30"
           />
         </div>
@@ -119,7 +121,7 @@ const checkMaxLength = (field) => {
           <select
             id="itbkk-status"
             v-model="formData.status"
-            class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="itbkk-status bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="" disabled>Select a status</option>
             <option v-for="status in statusStore.statuses" :value="status.id" :key="status.id">

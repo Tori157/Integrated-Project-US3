@@ -13,7 +13,7 @@ describe(`TC-PBI19-PERSIONAL-BOARD-3-FE-1\n
         cy.get('.itbkk-button-signin').click()
     }) ;
     
-
+    
     it('[Step 3 and 4] Should have a new board modal and Click "Create" button with default board name',()=>{
         cy.get('.itbkk-button-create').should('exist').as('button')
         cy.wait(100) 

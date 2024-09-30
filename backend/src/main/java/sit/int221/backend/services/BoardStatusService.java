@@ -22,19 +22,16 @@ public class BoardStatusService {
     private final ModelMapper modelMapper;
 
     public List<Status> findAllByBoardId(String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, false);
         return statusRepository.findAllByBoardId(boardId);
     }
 
     public Status findByIdAndBoardId(Integer statusId, String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, false);
         return statusRepository.findByIdAndBoardId(statusId, boardId)
                 .orElseThrow(() -> new NotFoundException("The requested status does not exist"));
     }
 
     @Transactional
     public Status createStatus(AddEditStatusDTO status, String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         if (statusRepository.existsByNameIgnoreCaseAndBoardId(status.getName(), boardId)) {
             throw new DuplicatedStatusException("Status name must be unique");
         }
@@ -47,7 +44,6 @@ public class BoardStatusService {
 
     @Transactional
     public StatusDTO updateStatus(Integer statusId, String boardId, AddEditStatusDTO status) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         if (statusRepository.existsByNameIgnoreCaseAndBoardId(status.getName(), boardId)) {
             throw new DuplicatedStatusException("Status name must be unique");
         }
@@ -67,7 +63,6 @@ public class BoardStatusService {
 
     @Transactional
     public Status deleteStatusById(Integer statusId, String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         if (taskService.hasTaskWithStatus(statusId)) {
             throw new IllegalDeleteStatusException("Cannot delete status because there are tasks associated with this status.");
         }
@@ -83,24 +78,22 @@ public class BoardStatusService {
 
     @Transactional
     public Status transferAndDeleteStatus(Integer statusId, Integer newStatusId, String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         if (statusId.equals(newStatusId)) {
             throw new IllegalStatusTransferException("Destination status for task transfer must be different from current status.");
         }
 
-        if (!isStatsBelongingToBoard(statusId, boardId)) {
+        if (!isStatusBelongingToBoard(statusId, boardId)) {
             throw new NotFoundException("The requested status does not exist");
         }
 
         Status oldStatus = statusRepository.findById(statusId).orElseThrow(
                 () -> new StatusWithIdNotFoundException("status does not exist")
         );
-        Status newStatus = statusRepository.findById(statusId).orElseThrow(
+        Status newStatus = statusRepository.findById(newStatusId).orElseThrow(
                 () -> new StatusWithIdNotFoundException("status does not exist")
         );
 
         List<Task> tasks = taskRepository.findAllByStatus(oldStatus);
-
         for (Task task : tasks) {
             task.setStatus(newStatus);
         }
@@ -110,12 +103,10 @@ public class BoardStatusService {
     }
 
     private boolean isStatsNotBelongingToBoard(Status status, String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
-        return !isStatsBelongingToBoard(status.getId(), boardId);
+        return !isStatusBelongingToBoard(status.getId(), boardId);
     }
 
-    private boolean isStatsBelongingToBoard(Integer statusId, String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
+    private boolean isStatusBelongingToBoard(Integer statusId, String boardId) {
         return statusRepository.existsByIdAndBoardId(statusId, boardId);
     }
 }

@@ -12,7 +12,7 @@ describe(`TC-PBI18-PERSIONAL-BOARD-3-FE-v3\n
         cy.get('.itbkk-button-signin').click()
 
         cy.wait(100)
-        cy.url().should('contain','/board')
+        cy.url().should('contain','/boards')
     }) ;
 
     it('[Step 3.1] Open the login page at /login and open the /board page', () => {
@@ -23,7 +23,7 @@ describe(`TC-PBI18-PERSIONAL-BOARD-3-FE-v3\n
             statusCode: 401
         }).as('request')
 
-        cy.visit('/board/1')
+        cy.visit('/boards/1')
 
         cy.wait('@request').then((interception) =>{
             const response = interception.response 
@@ -38,7 +38,7 @@ describe(`TC-PBI18-PERSIONAL-BOARD-3-FE-v3\n
             statusCode: 401
         }).as('request')
 
-        cy.visit('/board/1/task/1/edit')
+        cy.visit('/boards/1/task/1/edit')
 
         cy.wait('@request').then((interception) =>{
             const response = interception.response 
@@ -54,7 +54,7 @@ describe(`TC-PBI18-PERSIONAL-BOARD-3-FE-v3\n
             statusCode: 401
         }).as('request')
 
-        cy.visit('/board/1/status')
+        cy.visit('/boards/1/status')
 
         cy.wait('@request').then((interception) =>{
             const response = interception.response 
@@ -69,7 +69,7 @@ describe(`TC-PBI18-PERSIONAL-BOARD-3-FE-v3\n
             statusCode: 401
         }).as('request')
 
-        cy.visit('/board/1/status/1/edit')
+        cy.visit('/boards/1/status/1/edit')
 
         cy.wait('@request').then((interception) =>{
             const response = interception.response 

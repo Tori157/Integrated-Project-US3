@@ -6,7 +6,9 @@ import { useTaskStore } from '@/stores/TaskStore'
 import { useStatusStore } from '@/stores/StatusStore'
 import { useCurrentBoardStore, useBoardStore } from '@/stores/BoardStore'
 
-const { params: { boardId } } = useRoute()
+const {
+  params: { boardId }
+} = useRoute()
 const BASE_URL = import.meta.env.VITE_BASE_URL
 const taskStore = useTaskStore()
 const statusStore = useStatusStore()
@@ -48,7 +50,7 @@ const fetchStatuses = async () => {
 
 // Initial setup on mounted
 onMounted(async () => {
-  const board = await boardStore.getBoardById(boardId);
+  const board = await boardStore.getBoardById(boardId)
   currentBoardStore.setCurrentBoard(boardId, board?.name ?? '')
   const accessToken = document.cookie.match(/access_token=([^;]*)/)
   if (accessToken) {
@@ -248,7 +250,7 @@ const filteredStatuses = computed(() => {
               :key="status.id"
               @click="selectStatus(status)"
               :class="{ 'cursor-not-allowed': isSelected(status) }"
-              class="px-2 py-1 cursor-pointer text-black text-base rounded-md hover:bg-blue-200"
+              class="itbkk-status px-2 py-1 cursor-pointer text-black text-base rounded-md hover:bg-blue-200"
             >
               {{ status.name }}
             </li>
@@ -317,7 +319,9 @@ const filteredStatuses = computed(() => {
                     href="#"
                     class="px-6 py-4 font-medium text-base text-blue-600 hover:underline break-words"
                   >
-                    <router-link :to="{ name: 'task-modaldetail', params: { boardId, id: task.id } }">
+                    <router-link
+                      :to="{ name: 'task-modaldetail', params: { boardId, id: task.id } }"
+                    >
                       {{ task.title.trim() }}
                     </router-link>
                   </a>
@@ -332,10 +336,9 @@ const filteredStatuses = computed(() => {
 
                 <!-- Status -->
 
-                <td class="itbkk-status">
+                <td>
                   <div
-                    div
-                    class="w-[115px] border-4 border-blue-100 bg-blue-300 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
+                    class="itbkk-status first-letter:w-[115px] border-4 border-blue-100 bg-blue-300 rounded-3xl p-8 px-4 py-2 text-base text-white font-semibold text-center"
                   >
                     {{ task.status.name }}
                   </div>
@@ -346,7 +349,9 @@ const filteredStatuses = computed(() => {
                     <button
                       id="itbkk-button-edite"
                       class="itbkk-button-edite"
-                      @click="$router.push({ name: 'task-edite', params: { boardId, id: task.id } })"
+                      @click="
+                        $router.push({ name: 'task-edite', params: { boardId, id: task.id } })
+                      "
                     >
                       <router-link :to="{ name: 'task-edite', params: { boardId, id: task.id } }">
                         <img
@@ -359,9 +364,13 @@ const filteredStatuses = computed(() => {
                     <button
                       id="itbkk-button-delete"
                       class="itbkk-button-delete"
-                      @click="$router.push({ name: 'task-deletemodal', params: { boardId, id: task.id } })"
+                      @click="
+                        $router.push({ name: 'task-deletemodal', params: { boardId, id: task.id } })
+                      "
                     >
-                      <router-link :to="{ name: 'task-deletemodal', params: { boardId, id: task.id } }">
+                      <router-link
+                        :to="{ name: 'task-deletemodal', params: { boardId, id: task.id } }"
+                      >
                         <img
                           src="/image/ico/delete-svgrepo-com.svg"
                           class="itbkk-button-delete h-7 w-36 mt-0.5"

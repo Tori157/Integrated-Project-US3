@@ -1,28 +1,42 @@
-// src/stores/StatusStore.js
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
-import { useCurrentBoardStore } from '@/stores/BoardStore' // Import the current board store
+import { useCurrentBoardStore } from '@/stores/BoardStore'
+import { showAlert } from '@/utils/toast.js'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
-
+const router = useRouter()
+// Helper function to get access token
 const getAccessToken = () => {
   const match = document.cookie.match(/access_token=([^;]*)/)
   if (!match) {
+    console.error('Access token is missing or expired')
+    router.push('/login') // Redirect to login if token is missing
     throw new Error('Access token not found')
   }
   return match[1]
 }
 
+// Helper function to generate headers
+const getHeaders = (isJson = false) => {
+  const headers = {
+    Authorization: `Bearer ${getAccessToken()}`
+  }
+  if (isJson) {
+    headers['Content-Type'] = 'application/json'
+  }
+  return headers
+}
+
 export const useStatusStore = defineStore('statusStore', () => {
   const statuses = ref([])
-  const router = useRouter() // instantiate router
-  const currentBoardStore = useCurrentBoardStore() // initialize CurrentBoardStore
+  const router = useRouter()
+  const currentBoardStore = useCurrentBoardStore()
 
-  // Helper function to handle 401 status
+  // Handle unauthorized access
   const handleUnauthorized = (status) => {
     if (status === 401) {
-      router.push('/login') // redirect to login page
+      router.push('/login')
     }
   }
 
@@ -34,20 +48,17 @@ export const useStatusStore = defineStore('statusStore', () => {
         throw new Error('No current board selected')
       }
 
-      const accessTokenMatch = document.cookie.match(/access_token=([^;]*)/)
-      if (!accessTokenMatch) {
-        throw new Error('Access token not found')
-      }
-      const accessToken = accessTokenMatch[1]
-
       const response = await fetch(`${BASE_URL}/v3/boards/${boardId}/statuses`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+        headers: getHeaders()
       })
 
       if (response.ok) {
-        statuses.value = await response.json()
+        const data = await response.json()
+        if (Array.isArray(data)) {
+          statuses.value = data
+        } else {
+          console.error('Unexpected data format:', data)
+        }
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to fetch statuses:', response.statusText)
@@ -65,24 +76,19 @@ export const useStatusStore = defineStore('statusStore', () => {
         throw new Error('No current board selected')
       }
 
-      const accessTokenMatch = document.cookie.match(/access_token=([^;]*)/)
-      if (!accessTokenMatch) {
-        throw new Error('Access token not found')
-      }
-      const accessToken = accessTokenMatch[1]
-
       const response = await fetch(`${BASE_URL}/v3/boards/${boardId}/statuses`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        },
-        body: JSON.stringify(newStatus) // ส่ง newStatus ที่ประกอบไปด้วย name และ description
+        headers: getHeaders(true),
+        body: JSON.stringify(newStatus)
       })
 
-      if (response.ok) {
+      if (response.status === 201) {
         const addedStatus = await response.json()
         statuses.value.push(addedStatus)
+        showAlert('The status has been added', 'rgb(34 197 94)')
+      } else if (response.status === 400) {
+        console.error('Failed to save Status:', response.statusText)
+        showAlert('Status name must be unique, please choose another name.', 'rgb(251 146 60)')
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to add status:', response.statusText)
@@ -100,28 +106,25 @@ export const useStatusStore = defineStore('statusStore', () => {
         throw new Error('No current board selected')
       }
 
-      const accessTokenMatch = document.cookie.match(/access_token=([^;]*)/)
-      if (!accessTokenMatch) {
-        throw new Error('Access token not found')
-      }
-      const accessToken = accessTokenMatch[1]
-
       const response = await fetch(`${BASE_URL}/v3/boards/${boardId}/statuses/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        },
+        headers: getHeaders(true),
         body: JSON.stringify(updatedStatus)
       })
 
       if (response.ok) {
-        statuses.value = statuses.value.filter((status) => status.id !== id)
         const data = await response.json()
         const statusIndex = statuses.value.findIndex((status) => status.id === id)
         if (statusIndex !== -1) {
           statuses.value[statusIndex] = data
+          showAlert('The status has been updated.', 'rgb(34 197 94)')
         }
+      } else if (response.status === 404) {
+        console.error('The status does not exist.')
+        showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
+      } else if (response.status === 500) {
+        console.error('Failed to update status')
+        showAlert('Status name must be unique, please choose another name.', 'rgb(251 146 60)')
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to update status:', response.statusText)
@@ -131,96 +134,82 @@ export const useStatusStore = defineStore('statusStore', () => {
     }
   }
 
-  // Delete status from the current board
-  const deleteStatus = async (id) => {
-    try {
-      const boardId = currentBoardStore.currentBoardId
-      if (!boardId) {
-        throw new Error('No current board selected')
-      }
+  // Transfer tasks from one status to another
+  const transferTasks = async (fromStatusId, toStatusId) => {
+    const boardId = currentBoardStore.currentBoardId
+    if (!boardId) {
+      throw new Error('No current board selected')
+    }
 
-      const accessTokenMatch = document.cookie.match(/access_token=([^;]*)/)
-      if (!accessTokenMatch) {
-        throw new Error('Access token not found')
+    const response = await fetch(
+      `${BASE_URL}/v3/boards/${boardId}/statuses/${fromStatusId}/${toStatusId}`,
+      {
+        headers: getHeaders(),
+        method: 'DELETE'
       }
-      const accessToken = accessTokenMatch[1]
+    )
 
-      const response = await fetch(`${BASE_URL}/v3/boards/${boardId}/statuses/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      })
+    if (!response.ok) {
+      console.error('Failed to fetch tasks:', response.statusText)
+      handleUnauthorized(response.status)
+      throw new Error('Failed to fetch tasks for transfer.')
+    }
 
-      if (response.ok) {
-        statuses.value = statuses.value.filter((status) => status.id !== id)
-      } else {
-        handleUnauthorized(response.status)
-        console.error('Failed to delete status:', response.statusText)
-      }
-    } catch (error) {
-      console.error('Error deleting status:', error)
+    const tasks = await response.json()
+
+    if (tasks.length === 0) {
+      return
     }
   }
 
-  // Transfer tasks from one status to another
-  const transferTasks = async (fromStatusId, toStatusId) => {
+  // Delete status from the current board with task transfer
+  const deleteStatus = async (id, newStatusId = null) => {
     try {
       const boardId = currentBoardStore.currentBoardId
       if (!boardId) {
         throw new Error('No current board selected')
       }
 
-      const accessToken = getAccessToken()
+      let response
 
-      // Fetch tasks associated with the fromStatusId
-      const response = await fetch(
-        `${BASE_URL}/v3/boards/${boardId}/tasks?statusId=${fromStatusId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
-      )
+      if (newStatusId) {
+        // หากมีการโอนย้าย Tasks ก่อนลบ Status
+        await transferTasks(id, newStatusId)
 
-      if (!response.ok) {
-        handleUnauthorized(response.status)
-        throw new Error('Failed to fetch tasks for transfer.')
-      }
-
-      const tasks = await response.json()
-
-      if (tasks.length === 0) {
-        console.log('No tasks to transfer.')
-        return
-      }
-
-      // Prepare update promises
-      const updatePromises = tasks.map((task) =>
-        fetch(`${BASE_URL}/v3/boards/${boardId}/tasks/${task.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`
-          },
-          body: JSON.stringify({ ...task, statusId: toStatusId })
+        // ลบ Status โดยใช้ endpoint ที่โอนย้าย Tasks ไปแล้ว
+        response = await fetch(`${BASE_URL}/v3/boards/${boardId}/statuses/${id}/${newStatusId}`, {
+          method: 'DELETE',
+          headers: getHeaders()
         })
-      )
 
-      // Execute all update requests in parallel
-      const updateResponses = await Promise.all(updatePromises)
+        if (response.ok) {
+          statuses.value = statuses.value.filter((status) => status.id !== id)
+          showAlert('The status has been transferred and deleted.', 'rgb(244 63 94)')
+        } else {
+          handleUnauthorized(response.status)
+          console.error('Failed to delete status with transfer:', response.statusText)
+          throw new Error('Failed to delete status with transfer.')
+        }
+      } else {
+        // หากไม่มี Tasks ใน Status ให้ลบโดยตรง
+        response = await fetch(`${BASE_URL}/v3/boards/${boardId}/statuses/${id}`, {
+          method: 'DELETE',
+          headers: getHeaders()
+        })
 
-      // Check for any failed updates
-      const failedUpdates = updateResponses.filter((res) => !res.ok)
-      if (failedUpdates.length > 0) {
-        console.error('Some tasks failed to transfer.')
-        throw new Error('Failed to transfer some tasks.')
+        if (response.ok) {
+          statuses.value = statuses.value.filter((status) => status.id !== id)
+          showAlert('The status has been deleted.', 'rgb(244 63 94)')
+        } else {
+          handleUnauthorized(response.status)
+          console.error('Failed to delete status:', response.statusText)
+          throw new Error('Failed to delete status.')
+        }
       }
-
-      console.log('All tasks transferred successfully.')
     } catch (error) {
-      console.error('Error transferring tasks:', error)
-      throw error // Propagate the error to the caller
+      console.error('Error deleting status:', error)
+      showAlert('An error occurred while deleting the status.', 'rgb(251 146 60)')
+      throw error
     }
   }
 

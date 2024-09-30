@@ -5,7 +5,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router' // import router
 import { useCurrentBoardStore } from '@/stores/BoardStore' // นำเข้า CurrentBoardStore
 import { getCookie } from '@/utils/cookie'
-
+import { showAlert } from '@/utils/toast.js'
 export const useTaskStore = defineStore('taskStore', () => {
   const tasks = ref([])
   const BASE_URL = import.meta.env.VITE_BASE_URL
@@ -37,7 +37,8 @@ export const useTaskStore = defineStore('taskStore', () => {
 
       if (response.ok) {
         tasks.value = await response.json()
-        console.log(tasks.value)
+      } else if (response.status === 401) {
+        router.push('/login')
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to fetch tasks:', response.statusText)
@@ -91,6 +92,8 @@ export const useTaskStore = defineStore('taskStore', () => {
         await fetchTasks()
         // const addedTask = await response.json()
         // addTask.value.push(addedTask)
+      } else if (response.status === 401) {
+        router.push('/login')
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to add task:', response.statusText)
@@ -129,6 +132,8 @@ export const useTaskStore = defineStore('taskStore', () => {
         await fetchTasks() // Refresh tasks after updating
         // const updateTask = await response.json()
         // addTask.value.push(updateTask)
+      } else if (response.status === 401) {
+        router.push('/login')
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to update task:', response.statusText)
@@ -159,10 +164,18 @@ export const useTaskStore = defineStore('taskStore', () => {
         }
       })
 
-      if (response.ok) {
+      if (response.status === 200) {
         await fetchTasks() // Refresh tasks after deletion
         // const deleteTask = await response.json()
         // addTask.value.push(deleteTask)
+        showAlert('The task has been deleted.', 'rgb(244 63 94)')
+      }
+      if (response.status === 404) {
+        router.push('/task')
+        console.error('Failed to delete task')
+        showAlert('An error has occurred, the task does not exist.', 'rgb(251 146 60)')
+      } else if (response.status === 401) {
+        router.push('/login')
       } else {
         handleUnauthorized(response.status)
         console.error('Failed to delete task:', response.statusText)

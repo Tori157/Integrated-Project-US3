@@ -2,16 +2,18 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { showAlert, showAlert2 } from '@/utils/toast.js'
-import { useCurrentBoardStore } from '@/stores/BoardStore'
+
 import { useStatusStore } from '@/stores/StatusStore' // Import StatusStore
 
+const {
+  params: { boardId }
+} = useRoute()
 const route = useRoute()
 const router = useRouter()
 
 // Store setup
-const currentBoardStore = useCurrentBoardStore()
+
 const statusStore = useStatusStore() // Initialize StatusStore
-const boardId = computed(() => currentBoardStore.currentBoardId)
 
 const statuses = ref({ name: '', description: '' })
 const originalStatus = ref({ name: '', description: '' })
@@ -30,7 +32,7 @@ async function fetchStatus() {
     if (fetchedStatus.name === 'No Status' || fetchedStatus.name === 'Done') {
       console.error('Cannot edit status named No Status.')
       showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-      router.push(`/boards/${boardId.value}/status`)
+      router.push(`/boards/${boardId}/status`)
       return
     }
 
@@ -51,7 +53,7 @@ async function saveChanges() {
 
     await statusStore.updateStatus(route.params.id, statuses.value) // Update the status
 
-    router.push(`/boards/${boardId.value}/status`)
+    router.push(`/boards/${boardId}/status`)
     showAlert('The status has been updated.', 'rgb(34 197 94)')
   } catch (error) {
     console.error('Failed to update Status:', error)
@@ -138,7 +140,7 @@ const checkMaxLength = (field, value) => {
           <button
             id="itbkk-button-cancel"
             type="button"
-            @click="() => router.push(`/boards/${boardId.value}/status`)"
+            @click="() => router.push(`/boards/${boardId}/status`)"
             class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel

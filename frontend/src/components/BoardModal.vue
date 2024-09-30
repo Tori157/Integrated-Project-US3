@@ -1,52 +1,82 @@
 <script setup>
-import { ref, defineEmits, computed } from 'vue'
+import { ref, defineEmits, computed, onMounted } from 'vue'
+import { useBoardStore } from '@/stores/BoardStore'
+import { useRouter } from 'vue-router'
+import { useJwt } from '@vueuse/integrations/useJwt'
+import { showAlert2 } from '@/utils/toast.js'
 
-// Define the events that this component can emit
 const emit = defineEmits(['submit'])
-
+const router = useRouter()
+const access_token = ref(null)
 const isVisible = ref(false)
 const boardName = ref('')
 const currentBoard = ref(null)
+const boardStore = useBoardStore()
+const name = ref('')
 
-// Computed property to determine if the modal is in edit mode
 const isEditMode = computed(() => currentBoard.value !== null)
 
+// Function to open modal
 const open = (board) => {
+  isVisible.value = true
+  currentBoard.value = board
+
   if (board) {
-    isVisible.value = true
-    currentBoard.value = board
     boardName.value = board.name
   } else {
-    isVisible.value = true
-    currentBoard.value = null
-    boardName.value = ''
+    boardName.value = `${name.value} personal board`
   }
 }
 
+// Function to close modal
 const closeModal = () => {
   isVisible.value = false
   boardName.value = ''
   currentBoard.value = null
 }
 
-const submitForm = () => {
+// Function to submit form
+const submitForm = async () => {
+  // Validate board name
+  if (!boardName.value || boardName.value.length > 120) {
+    showAlert2(
+      'Board name must not be empty and should not exceed 120 characters.',
+      'rgb(251 146 60)'
+    )
+    return
+  }
+
   if (currentBoard.value) {
-    // Editing existing board
     emit('submit', { ...currentBoard.value, name: boardName.value })
   } else {
-    // Creating new board
-    emit('submit', { name: boardName.value })
+    try {
+      await boardStore.addBoard({ name: boardName.value })
+      closeModal()
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        router.push('/login')
+      } else {
+        console.error('Error creating board:', error)
+      }
+    }
   }
-  closeModal()
 }
 
-// Expose the open method to parent via ref
+// Fetch the access token and user name on mount
+onMounted(() => {
+  const token = document.cookie.match(/access_token=([^;]*)/)
+  if (token) {
+    access_token.value = token[1]
+  }
+  const { payload } = useJwt(access_token)
+  name.value = payload.value.name
+})
+
 defineExpose({
   open
 })
 </script>
 
-<!-- src/components/BoardCreate.vue -->
 <template>
   <div
     v-if="isVisible"
@@ -81,7 +111,7 @@ defineExpose({
             type="text"
             required
             class="itbkk-board-name w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-            placeholder="Enter board name"
+            maxlength="120"
           />
         </div>
         <div class="flex justify-end">

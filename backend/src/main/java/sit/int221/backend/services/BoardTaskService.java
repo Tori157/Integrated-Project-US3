@@ -25,7 +25,6 @@ public class BoardTaskService {
     private ListMapper listMapper;
 
     public List<AllTasksDTO> getAllTasks(String boardId, String field, String order, List<String> filterStatuses) {
-       boardAccessVerifier.verifyUserBoardAccess(boardId, false);
         List<Task> tasks;
         Sort sort = Sort.by(Sort.Direction.fromString(order), field);
 
@@ -40,7 +39,6 @@ public class BoardTaskService {
 
 
     public Task getTaskById(Integer taskId, String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, false);
         Task foundTask = taskRepository.findByBoardIdAndTaskId(taskId, boardId);
         if (foundTask == null) {
             throw new NotFoundException("Task " + taskId + " does not exist !!!");
@@ -50,7 +48,6 @@ public class BoardTaskService {
 
     @Transactional
     public TaskDTO createTask(String boardId, AddEditTaskDTO newTask) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         Status status = statusService.getStatusById(newTask.getStatus());
         Task task = modelMapper.map(newTask, Task.class);
         task.setStatus(status);
@@ -64,7 +61,6 @@ public class BoardTaskService {
 
     @Transactional
     public AllTasksDTO removeTaskById(Integer taskId, String boardId) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         Task existingTask = taskRepository.findByBoardIdAndTaskId(taskId, boardId);
 
         if (existingTask == null) {
@@ -76,7 +72,6 @@ public class BoardTaskService {
 
     @Transactional
     public TaskDTO updateTaskById(Integer taskId, String boardId, AddEditTaskDTO taskDTO) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         Task existingTask = taskRepository.findByBoardIdAndTaskId(taskId, boardId);
 
         if (existingTask == null) {
@@ -96,7 +91,6 @@ public class BoardTaskService {
     }
 
     public List<AllTasksDTO> sortTasksByStatusName(String boardId, List<String> filterStatuses, String[] sortBy, String[] direction) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         Sort sort = Sort.by(Sort.Direction.fromString(direction[0]), sortBy[0]);
 
         if (filterStatuses == null || filterStatuses.isEmpty())
@@ -106,7 +100,6 @@ public class BoardTaskService {
     }
 
     public List<AllTasksDTO> sortTasksByStatusId(String boardId, List<Integer> statusId, String[] sortBy, String[] direction) {
-        boardAccessVerifier.verifyUserBoardAccess(boardId, true);
         Sort sort = Sort.by(Sort.Direction.fromString(direction[0]), sortBy[0]);
 
         if (statusId == null || statusId.isEmpty())

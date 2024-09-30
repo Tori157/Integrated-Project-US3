@@ -14,24 +14,17 @@ const currentBoardStore = useCurrentBoardStore()
 const boardId = computed(() => currentBoardStore.currentBoardId)
 
 const saveStatus = async () => {
-  console.log('Saving status...')
-  console.log('Name:', name.value)
-  console.log('Description:', description.value)
-  console.log('Board ID:', boardId.value)
-
   const statusData = {
     name: name.value.trim(),
-    description: description.value.trim()
+    // ใส่ค่า description เป็นค่าว่างถ้าผู้ใช้ไม่กรอก
+    description: description.value.trim() || ''
   }
-  console.log('Payload:', statusData)
-
   if (!boardId.value) {
     showAlert('Invalid board ID.', 'rgb(251 146 60)')
     return
   }
 
   try {
-    // ลบ boardId ออกจากพารามิเตอร์
     await statusStore.addStatus(statusData)
     router.push(`/boards/${boardId.value}/status`)
     showAlert('The status has been added', 'rgb(34 197 94)')
@@ -96,7 +89,6 @@ const checkMaxLength = (field, value) => {
             class="itbkk-status-description bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             @input="checkMaxLength('description', $event.target.value)"
             maxlength="200"
-            required
           ></textarea>
         </div>
         <div class="flex mt-5 justify-center">

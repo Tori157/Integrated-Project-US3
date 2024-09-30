@@ -3,6 +3,7 @@ import { onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router/dist/vue-router'
 import { useStatusStore } from '@/stores/StatusStore'
 import { useCurrentBoardStore, useBoardStore } from '@/stores/BoardStore'
+import { useJwt } from '@vueuse/integrations/useJwt'
 
 const boardStore = useBoardStore()
 const statuses = ref([])
@@ -35,6 +36,8 @@ onMounted(async () => {
   if (accessToken) {
     access_token.value = accessToken[1]
   }
+  const { payload } = useJwt(access_token)
+  name.value = payload.value.name
   await fetchStatuses()
 })
 </script>

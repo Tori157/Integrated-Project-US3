@@ -2,13 +2,15 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { showAlert, showAlert2 } from '@/utils/toast.js'
-import { useStatusStore } from '@/stores/StatusStore' // Import your StatusStore
+import { useStatusStore } from '@/stores/StatusStore'
+import { useTaskStore } from '@/stores/TaskStore'
 
 const router = useRouter()
 const route = useRoute()
 
-const statusesStore = useStatusStore() // Initialize StatusStore
-const statuses = ref([]) // Store statuses from the store
+const statusesStore = useStatusStore()
+const TaskStore = useTaskStore()
+const statuses = ref([])
 const tasksCount = ref(0)
 const statusId = parseInt(route.params.id)
 const statusesname = ref('')
@@ -18,7 +20,6 @@ const {
 } = useRoute()
 
 onMounted(async () => {
-  // Fetch statuses from the store
   await statusesStore.fetchStatuses()
   statuses.value = statusesStore.statuses
 
@@ -27,28 +28,25 @@ onMounted(async () => {
     statusesname.value = status.name
   }
 
-  // Count tasks in the current status
-  const Taskresponse = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`)
-  const tasksData = await Taskresponse.json()
-  const tasksInStatus = tasksData.filter((task) => task.status.id === statusId)
+  await TaskStore.fetchTasks()
+  const tasksInStatus = TaskStore.tasks.filter((task) => task.status.id === statusId)
   tasksCount.value = tasksInStatus.length
 })
 
-async function deleteStatus(statusId) {
+async function deleteStatus(statusId, targetStatusId) {
   try {
-    // Check if there are tasks in the current status
     if (tasksCount.value > 0) {
-      if (!targetStatusId.value) {
+      if (!targetStatusId) {
         showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
         return
       }
-      // Call the transferTasks function from the store
-      await statusesStore.transferTasks(statusId, targetStatusId.value)
+      await statusesStore.transferTasks(statusId, targetStatusId)
+      showAlert('The status has been deleted.', 'rgb(244 63 94)')
+      router.push(`/boards/${boardId}/status`)
+      return
     }
 
-    // Call the deleteStatus function from the store
     await statusesStore.deleteStatus(statusId)
-
     showAlert('The status has been deleted.', 'rgb(244 63 94)')
     router.push(`/boards/${boardId}/status`)
   } catch (error) {
@@ -104,13 +102,15 @@ function cancel() {
           </h3>
         </template>
 
+        <!-- ปุ่มยืนยันการลบ -->
         <button
-          @click="deleteStatus(statusId)"
+          @click="deleteStatus(statusId, targetStatusId)"
           class="itbkk-button-confirm mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"
         >
           Confirm
         </button>
 
+        <!-- ปุ่มยกเลิก -->
         <button
           @click="cancel"
           class="itbkk-button-cancel ml-5 text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-cyan-200 border border-gray-200 font-medium inline-flex items-center rounded-lg text-base px-3 py-2.5 text-center"
