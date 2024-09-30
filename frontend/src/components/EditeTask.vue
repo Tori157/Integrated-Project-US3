@@ -1,60 +1,51 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useTaskStore } from '@/stores/TaskStore'
+import { useStatusStore } from '@/stores/StatusStore'
+import { showAlert, showAlert2 } from '@/utils/toast.js'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
 const route = useRoute()
 const router = useRouter()
 
+// Access Pinia stores
+const taskStore = useTaskStore()
+const statusStore = useStatusStore()
+
+// Reactive task and status data
 const tasks = ref({})
 const originalTasks = ref({})
 const statuses = ref([])
 
+const currentBoardStore = useCurrentBoardStore()
+const boardId = computed(() => currentBoardStore.currentBoardId)
+
 onMounted(async () => {
   await fetchTask()
-  await fetchStatuses()
+  await statusStore.fetchStatuses()
+  statuses.value = statusStore.statuses
 })
 
+// Fetch task from the store based on route params
 async function fetchTask() {
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
-    })
-    if (!response.ok) {
-      throw new Error('Failed to fetch tasks')
+    await taskStore.fetchTasks()
+    const fetchedTask = taskStore.tasks.find((task) => task.id === parseInt(route.params.id))
+    if (!fetchedTask) {
+      throw new Error('Task not found')
     }
-    const data = await response.json()
-    tasks.value = { ...data }
-    originalTasks.value = { ...data }
-    console.log(tasks.value)
+    tasks.value = { ...fetchedTask }
+    originalTasks.value = { ...fetchedTask }
+
     getTimezone()
   } catch (error) {
-    console.error('Error fetching tasks:', error)
+    console.error('Error fetching task:', error)
     router.push('/editerror')
   }
 }
 
-async function fetchStatuses() {
-  try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(`${BASE_URL}/v2/statuses`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
-    })
-    if (!response.ok) {
-      throw new Error('Failed to fetch statuses')
-    }
-    statuses.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching statuses:', error)
-  }
-}
-
-// Save changes to task
+// Save changes to task using the store's update method
 async function saveChanges() {
   try {
     const updatedTask = {
@@ -62,59 +53,19 @@ async function saveChanges() {
       title: tasks.value.title.trim(),
       description: tasks.value.description ? tasks.value.description.trim() : '',
       assignees: tasks.value.assignees ? tasks.value.assignees.trim() : '',
-      statusId: tasks.value.status.id
+      status: tasks.value.status.id
     }
+    taskStore.updateTask(updatedTask)
 
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(`${BASE_URL}/v2/tasks/${route.params.id}`, {
-      method: `PUT`,
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(updatedTask)
-    })
-
-    if (response.ok) {
-      console.log('Task updated successfully')
-      showAlert('The task has been updated', 'rgb(34 197 94)')
-      router.push('/task')
-      console.log(updatedTask)
-      console.log(route.params.id)
-    } else {
-      console.error('Failed to update task')
-      console.log(updatedTask)
-      console.log(route.params.id)
-      router.push('/task')
-      showAlert('An error has occurred, the task does not exist.', 'rgb(251 146 60)')
-    }
+    showAlert('The task has been updated', 'rgb(34 197 94)')
+    router.push(`/boards/${boardId.value}/tasks`)
   } catch (error) {
     console.error('Error updating task:', error)
     showAlert('An error has occurred during the update process.', 'rgb(251 146 60)')
   }
 }
 
-// Show alert message
-function showAlert(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-    window.location.reload()
-  }, 2000)
-}
-
+// Utility functions
 function formateDateTime(time) {
   const date = new Date(time)
   const options = {
@@ -134,7 +85,7 @@ function getTimezone() {
 }
 
 function cancelEditing() {
-  router.back()
+  router.push(`/boards/${boardId.value}/tasks`)
 }
 
 const handleStatusChange = (event) => {
@@ -163,32 +114,6 @@ const checkMaxLength = (field) => {
   if (tasks.value[field].length >= maxLengths[field]) {
     showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
   }
-}
-
-function showAlert2(message, backgroundColor) {
-  const existingAlert = document.querySelector('.alert-success')
-  if (existingAlert) {
-    existingAlert.parentElement.removeChild(existingAlert)
-  }
-
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    if (toastDiv.parentElement) {
-      toastDiv.parentElement.removeChild(toastDiv)
-    }
-  }, 2000)
 }
 </script>
 
@@ -226,7 +151,7 @@ function showAlert2(message, backgroundColor) {
           </div>
         </div>
         <div class="r-zone m-10">
-          <div class="text-base text-rose-400 font-medium">Assigness:</div>
+          <div class="text-base text-rose-400 font-medium">Assignees:</div>
           <input
             v-model="tasks.assignees"
             type="text"
@@ -241,20 +166,21 @@ function showAlert2(message, backgroundColor) {
             class="bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             @change="handleStatusChange"
           >
+            <option value="" disabled>Select a status</option>
             <option v-for="status in statuses" :value="status.id" :key="status.id">
               {{ status.name }}
             </option>
           </select>
           <div class="itbkk-timezone mt-6 mb-3 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Timezone :</span>
+            <span class="text-base text-rose-400 font-medium">Timezone:</span>
             {{ getTimezone() }}
           </div>
           <div class="itbkk-created-on mb-3 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Create On :</span>
+            <span class="text-base text-rose-400 font-medium">Created On:</span>
             {{ formateDateTime(tasks.createdOn).replace(/,/g, '') }}
           </div>
           <div class="itbkk-updated-on mb-8 ml-2 text-sm text-blue-600 font-normal">
-            <span class="text-base text-rose-400 font-medium">Update On :</span>
+            <span class="text-base text-rose-400 font-medium">Updated On:</span>
             {{ formateDateTime(tasks.updatedOn).replace(/,/g, '') }}
           </div>
           <div class="flex">
@@ -266,22 +192,19 @@ function showAlert2(message, backgroundColor) {
                 class="itbkk-button-edit btn text-white border-white mr-6 bg-green-500 hover:bg-green-600 border-4 hover:border-green-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
                 :class="{
                   'bg-gray-400': !isModified || tasks.title.trim().length === 0 || isStatusModified,
-                  'text-white': !isModified || tasks.title.trim().length === 0 || isStatusModified,
-                  'border-white':
-                    !isModified || tasks.title.trim().length === 0 || isStatusModified,
-                  disabled: !isModified || tasks.title.trim().length === 0 || isStatusModified
+                  'bg-green-500': isModified && tasks.title.trim().length > 0 && !isStatusModified
                 }"
               >
                 Save
               </button>
-              <button
-                id="itbkk-button-cancel"
-                class="itbkk-button-cancel btn mr-6 bg-red-500 hover:bg-red-600 border-4 border-white hover:border-red-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base text-white font-semibold text-center ml-16"
-                @click="cancelEditing"
-              >
-                Cancel
-              </button>
             </form>
+            <button
+              id="itbkk-button-cancel"
+              @click="cancelEditing"
+              class="btn text-white border-white mr-6 bg-red-500 hover:bg-red-600 border-4 hover:border-red-300 w-max h-5 text-slate-600 rounded-3xl p-6 px-8 py-2 text-base font-semibold text-center ml-16"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>

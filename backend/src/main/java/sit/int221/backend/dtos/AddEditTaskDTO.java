@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
+@ToString
 public class AddEditTaskDTO {
     Integer Id;
     @NotNull
@@ -20,7 +22,7 @@ public class AddEditTaskDTO {
     @Size(max = 30)
     String assignees;
     @NotNull
-    Integer statusId;
+    Integer status;
 
     public void setTitle(String title) {
         this.title = StringUtils.trimToNull(title);

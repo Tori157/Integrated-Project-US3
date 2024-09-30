@@ -1,64 +1,43 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStatusStore } from '@/stores/StatusStore' // Adjust the path as necessary
+import { showAlert, showAlert2 } from '@/utils/toast.js'
+import { useCurrentBoardStore } from '@/stores/BoardStore'
 
 const name = ref('')
 const description = ref('')
 const router = useRouter()
-const BASE_URL = import.meta.env.VITE_BASE_URL
+const statusStore = useStatusStore()
+
+const currentBoardStore = useCurrentBoardStore()
+const boardId = computed(() => currentBoardStore.currentBoardId)
 
 const saveStatus = async () => {
   const statusData = {
     name: name.value.trim(),
-    description: description.value.trim()
+    // ใส่ค่า description เป็นค่าว่างถ้าผู้ใช้ไม่กรอก
+    description: description.value.trim() || ''
   }
+  if (!boardId.value) {
+    showAlert('Invalid board ID.', 'rgb(251 146 60)')
+    return
+  }
+
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    const response = await fetch(BASE_URL + `/v2/statuses`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(statusData)
-    })
-    if (response.status === 201) {
-      router.push('/status')
-      // Alert
-      showAlert('The status has been added', 'rgb(34 197 94)')
-    } 
-    if (response.status === 400) {
-      router.push('/status')
-      console.error('Failed to save Status:', response.statusText)
-      // Alert
-      showAlert('Status name must be uniques, please choose another name.', 'rgb(251 146 60)')
-    }
+    await statusStore.addStatus(statusData)
+    router.push(`/boards/${boardId.value}/status`)
+    showAlert('The status has been added', 'rgb(34 197 94)')
   } catch (error) {
-    console.error('Error saving task:', error)
-    router.push('/status')
-    showAlert('An error has occurred, Status Cant Add.', 'rgb(251 146 60)')
+    if (error.response && error.response.data && error.response.data.message.includes('unique')) {
+      console.error('Failed to save Status:', error.response.data.message)
+      showAlert('Status name must be unique, please choose another name.', 'rgb(251 146 60)')
+    } else {
+      console.error('Error saving task:', error)
+      showAlert('An error has occurred, Status Cant Add.', 'rgb(251 146 60)')
+    }
+    router.push(`/boards/${boardId.value}/status`)
   }
-}
-
-// Show alert message
-function showAlert(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-    window.location.reload()
-  }, 2000)
 }
 
 const maxLengths = {
@@ -70,32 +49,6 @@ const checkMaxLength = (field, value) => {
   if (value.length >= maxLengths[field]) {
     showAlert2(`Your text in ${field} is at maximum length`, 'rgb(251 146 60)')
   }
-}
-
-function showAlert2(message, backgroundColor) {
-  const existingAlert = document.querySelector('.alert-success')
-  if (existingAlert) {
-    existingAlert.parentElement.removeChild(existingAlert)
-  }
-
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    if (toastDiv.parentElement) {
-      toastDiv.parentElement.removeChild(toastDiv)
-    }
-  }, 2000)
 }
 </script>
 
@@ -110,27 +63,29 @@ function showAlert2(message, backgroundColor) {
 
       <form @submit.prevent="saveStatus">
         <div class="mb-6">
-          <label for="status-name" class="text-rose-400 block text-sm font-medium text-gray-700"
-            >Name</label
-          >
+          <label for="status-name" class="text-rose-400 block text-sm font-medium text-gray-700">
+            Name
+          </label>
           <input
             type="text"
             id="itbkk-status-name"
-            v-model="name"
+            v-model.trim="name"
             class="itbkk-status-name bg-white text-blue-600 mt-1 block h-9 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             @input="checkMaxLength('name', $event.target.value)"
             maxlength="50"
+            required
           />
         </div>
         <div class="mb-4">
           <label
             for="status-description"
             class="text-rose-400 block text-sm font-medium text-gray-700"
-            >Description</label
           >
+            Description
+          </label>
           <textarea
             id="status-description"
-            v-model="description"
+            v-model.trim="description"
             class="itbkk-status-description bg-white text-blue-600 mt-1 block h-40 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             @input="checkMaxLength('description', $event.target.value)"
             maxlength="200"
@@ -141,7 +96,6 @@ function showAlert2(message, backgroundColor) {
             id="itbkk-button-confirm"
             type="submit"
             :disabled="name.trim().length === 0"
-            @click="toggleModal"
             class="itbkk-button-confirm"
             :class="[
               'border-4',
@@ -165,7 +119,7 @@ function showAlert2(message, backgroundColor) {
           <button
             id="itbkk-button-cancel"
             type="button"
-            @click="() => router.push('/status')"
+            @click="() => router.push(`/boards/${boardId.value}/status`)"
             class="itbkk-button-cancel bg-red-400 border-4 border-white rounded-3xl mx-5 p-8 px-6 py-2 text-base text-white font-semibold text-center"
           >
             Cancel

@@ -24,7 +24,7 @@
     "jwt-decode": "^4.0.0",
     "node-fetch": "^2.6.1",
     "npx": "^10.2.2",
-    "pinia": "^2.1.7",
+    "pinia": "^2.2.2",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
     "vue-toasted": "^1.1.28",

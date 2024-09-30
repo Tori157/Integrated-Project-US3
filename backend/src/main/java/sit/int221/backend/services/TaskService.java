@@ -1,5 +1,6 @@
 package sit.int221.backend.services;
 
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -19,20 +20,12 @@ import sit.int221.backend.project_management.TaskRepository;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class TaskService {
     private TaskRepository taskRepository;
     private StatusService statusService;
     private ModelMapper modelMapper;
     private ListMapper listMapper;
-
-    @Autowired
-    public TaskService(TaskRepository taskRepository, StatusService statusService, ModelMapper modelMapper, ListMapper listMapper) {
-        this.taskRepository = taskRepository;
-        this.statusService = statusService;
-        this.modelMapper = modelMapper;
-        this.listMapper = listMapper;
-    }
-
 
     public List<AllTasksDTO> getAllTasks(String field, String order, List<String> filterStatuses) {
         List<Task> tasks;
@@ -56,7 +49,7 @@ public class TaskService {
 
     @Transactional
     public TaskDTO createTask(AddEditTaskDTO newTask) {
-        Status status = statusService.getStatusById(newTask.getStatusId());
+        Status status = statusService.getStatusById(newTask.getStatus());
         Task task = modelMapper.map(newTask, Task.class);
         task.setStatus(status);
         Task createdTask = taskRepository.save(task);
@@ -73,22 +66,20 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDTO updateTaskById(Integer id, AddEditTaskDTO newTask) {
+    public TaskDTO updateTaskById(Integer id, AddEditTaskDTO taskDTO) {
 
         Task existingTask = taskRepository.findById(id).orElseThrow(
                 () -> new StatusWithIdNotFoundException("does not exist")
         );
 
-        newTask.setId(id);
-        Task task = modelMapper.map(newTask, Task.class);
-        Task updatedTask = taskRepository.save(task);
-        Status status = statusService.getStatusById(newTask.getStatusId());
+        taskDTO.setId(id);
+        Task task = modelMapper.map(taskDTO, Task.class);
+        Status status = statusService.getStatusById(taskDTO.getStatus());
         task.setStatus(status);
-
+        Task updatedTask = taskRepository.save(task);
         return modelMapper.map(updatedTask, TaskDTO.class);
     }
 
-    @Transactional
     public List<AllTasksDTO> sortTasksByStatusName(List<String> filterStatuses, String[] sortBy, String[] direction) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction[0]), sortBy[0]);
 
@@ -98,7 +89,6 @@ public class TaskService {
         return listMapper.mapList(taskRepository.findAllByStatusName(filterStatuses, sort), AllTasksDTO.class, modelMapper);
     }
 
-    @Transactional
     public List<AllTasksDTO> sortTasksByStatusId(List<Integer> statusId, String[] sortBy, String[] direction) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction[0]), sortBy[0]);
 

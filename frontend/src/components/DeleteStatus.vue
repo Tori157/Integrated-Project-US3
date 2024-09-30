@@ -1,191 +1,62 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { showAlert, showAlert2 } from '@/utils/toast.js'
+import { useStatusStore } from '@/stores/StatusStore'
+import { useTaskStore } from '@/stores/TaskStore'
 
 const router = useRouter()
 const route = useRoute()
-const BASE_URL = import.meta.env.VITE_BASE_URL
 
+const statusesStore = useStatusStore()
+const TaskStore = useTaskStore()
 const statuses = ref([])
 const tasksCount = ref(0)
 const statusId = parseInt(route.params.id)
 const statusesname = ref('')
 const targetStatusId = ref(null)
+const {
+  params: { boardId }
+} = useRoute()
 
 onMounted(async () => {
-  try {
-    const response = await fetch(`${BASE_URL}/v2/statuses`)
-    const data = await response.json()
-    statuses.value = data
+  await statusesStore.fetchStatuses()
+  statuses.value = statusesStore.statuses
 
-    const status = statuses.value.find((status) => status.id === parseInt(statusId))
-    if (status) {
-      statusesname.value = status.name
-    }
-    // นับจำนวน Task ที่ใช้ Status นั้นอยู่
-    const Taskresponse = await fetch(`${BASE_URL}/v2/tasks`)
-    const tasksData = await Taskresponse.json()
-    const tasksInStatus = tasksData.filter((task) => task.status.id === statusId)
-    tasksCount.value = tasksInStatus.length
-    console.log(tasksCount.value)
-    console.log(tasksInStatus.length)
-    console.log(tasksData)
-    //
-  } catch (error) {
-    console.error('Error fetching tasks:', error)
+  const status = statuses.value.find((status) => status.id === statusId)
+  if (status) {
+    statusesname.value = status.name
   }
+
+  await TaskStore.fetchTasks()
+  const tasksInStatus = TaskStore.tasks.filter((task) => task.status.id === statusId)
+  tasksCount.value = tasksInStatus.length
 })
 
-async function deleteStatus(statusId) {
+async function deleteStatus(statusId, targetStatusId) {
   try {
-    const accessToken = document.cookie.match(/access_token=([^;]*)/)[1];
-    if (statusId === 1 && statusToDelete.name === 'No Status') {
-      console.error('Cannot delete status named No Status.')
-      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-      router.push('/status')
-      return
-    }
-
-    if (statusId === 7) {
-      console.error('Cannot delete status named Done.')
-      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-      router.push('/status')
-      return
-    }
-
     if (tasksCount.value > 0) {
-      if (!targetStatusId.value) {
-        console.error('Target status ID is required for transferring tasks.')
+      if (!targetStatusId) {
         showAlert2('Please select a status to transfer tasks.', 'rgb(251 146 60)')
         return
       }
-      await transferTasks(statusId, targetStatusId.value)
-    }
-
-    const url =
-      tasksCount.value > 0
-        ? `${BASE_URL}/v2/statuses/${statusId}/${targetStatusId.value}`
-        : `${BASE_URL}/v2/statuses/${statusId}`
-
-    const res = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    })
-    const statusToDelete = statuses.value.find((status) => status.id === statusId)
-    if (!statusToDelete) {
-      console.error('Status not found.')
-      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
-      router.push('/status')
+      await statusesStore.transferTasks(statusId, targetStatusId)
+      showAlert('The status has been deleted.', 'rgb(244 63 94)')
+      router.push(`/boards/${boardId}/status`)
       return
     }
 
-    if (statusToDelete.name === 'No Status') {
-      console.error('Cannot delete status named No Status.')
-      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-    }
-
-    if (statusToDelete.name === 'Done') {
-      console.error('Cannot delete status named Done.')
-      showAlert('This status is the default status and cannot be modified.', 'rgb(251 146 60)')
-    }
-
-    if (res.status === 200) {
-      console.log('Status deleted successfully')
-
-      statuses.value = statuses.value.filter((status) => status.id !== statusId)
-      if (targetStatusId.value) {
-        await transferTasks(statusId, targetStatusId.value)
-      }
-      router.push('/status')
-      // alert
-      const message =
-        tasksCount.value > 0
-          ? 'The status has been deleted. And Task has been transferred status'
-          : 'The status has been deleted.'
-
-      showAlert(message, 'rgb(244 63 94)')
-    }
-    if (res.status === 404) {
-      console.log('Status not found.')
-      console.error('Failed to delete status')
-      showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
-    }
+    await statusesStore.deleteStatus(statusId)
+    showAlert('The status has been deleted.', 'rgb(244 63 94)')
+    router.push(`/boards/${boardId}/status`)
   } catch (error) {
     console.error('Error:', error)
+    showAlert('An error has occurred, the status does not exist.', 'rgb(251 146 60)')
   }
-}
-
-async function transferTasks(fromStatusId, toStatusId) {
-  try {
-    // Fetch tasks associated with the status being deleted
-    const response = await fetch(`${BASE_URL}/v2/tasks?filterStatuses=${statusId}`)
-    // const response = await fetch(BASE_URL + `/v2/tasks?statusId=${fromStatusId}`)
-    const tasks = await response.json()
-    console.log('Tasks transferred successfully')
-    const tasksToTransfer = tasks.filter((task) => task.statusId === fromStatusId)
-
-    // Update each task to set the new status
-    for (const task of tasksToTransfer) {
-      await fetch(BASE_URL + `/v2/tasks/${task.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...task,
-          statusId: toStatusId
-        })
-      })
-    }
-  } catch (error) {
-    console.error('Error transferring tasks:', error)
-    throw error // Propagate the error to the caller
-  }
-}
-// Show alert message
-function showAlert(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-    window.location.reload()
-  }, 2000)
-}
-
-function showAlert2(message, backgroundColor) {
-  const toastDiv = document.createElement('div')
-  toastDiv.className = 'toast toast-top toast-center z-50'
-  const alertDiv = document.createElement('div')
-  alertDiv.className = 'alert alert-success'
-  alertDiv.innerHTML = `<span>${message}</span>`
-  alertDiv.style.backgroundColor = backgroundColor
-  alertDiv.style.color = 'white'
-  alertDiv.style.textAlign = 'center'
-  alertDiv.style.display = 'flex'
-
-  toastDiv.appendChild(alertDiv)
-  document.body.appendChild(toastDiv)
-
-  setTimeout(() => {
-    document.body.removeChild(toastDiv)
-  }, 2000)
 }
 
 function cancel() {
-  router.push('/status')
+  router.push(`/boards/${boardId}/status`)
 }
 </script>
 
@@ -231,13 +102,15 @@ function cancel() {
           </h3>
         </template>
 
+        <!-- ปุ่มยืนยันการลบ -->
         <button
-          @click="deleteStatus(statusId)"
+          @click="deleteStatus(statusId, targetStatusId)"
           class="itbkk-button-confirm mr-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-base inline-flex items-center px-3 py-2.5 text-center mr-2"
         >
           Confirm
         </button>
 
+        <!-- ปุ่มยกเลิก -->
         <button
           @click="cancel"
           class="itbkk-button-cancel ml-5 text-gray-900 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-cyan-200 border border-gray-200 font-medium inline-flex items-center rounded-lg text-base px-3 py-2.5 text-center"
